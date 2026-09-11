@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <radialGradient id="bgYellowBadge" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </radialGradient>
+
+    <linearGradient id="ringLilacBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5b21b6"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetL1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e9d5ff"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#3b0764"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetR1" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#2e1065"/>
+    </linearGradient>
+
+    <filter id="glowYellowBadge">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#3b0764" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <circle cx="64" cy="64" r="58" fill="url(#bgYellowBadge)" stroke="url(#ringLilacBorder)" stroke-width="4" filter="url(#glowYellowBadge)"/>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#5b21b6" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+
+  <!-- Monogram W en Lila sobre Fondo Amarillo -->
+  <g filter="url(#glowYellowBadge)">
+    <!-- Left outer stem -->
+    <polygon points="24,34 38,34 54,88 40,88" fill="url(#wFacetL1)"/>
+    <!-- Left inner diagonal -->
+    <polygon points="40,88 54,88 64,55 55,55" fill="#6d28d9"/>
+    <!-- Center peak -->
+    <polygon points="55,55 64,55 73,55 64,83" fill="#e9d5ff"/>
+    <!-- Right inner diagonal -->
+    <polygon points="73,55 64,55 74,88 88,88" fill="#7c3aed"/>
+    <!-- Right outer stem -->
+    <polygon points="88,88 74,88 90,34 104,34" fill="url(#wFacetR1)"/>
+    <!-- Caps -->
+    <polygon points="24,34 38,34 35,29 27,29" fill="#f5f3ff"/>
+    <polygon points="90,34 104,34 101,29 93,29" fill="#f5f3ff"/>
+  </g>
+</svg>

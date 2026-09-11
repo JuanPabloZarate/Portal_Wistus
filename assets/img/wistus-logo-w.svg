@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Radial Gradient: Fondo Amarillo / Dorado Cálido -->
+    <radialGradient id="bgYellowGrad" cx="50%" cy="40%" r="60%" fx="50%" fy="30%">
+      <stop offset="0%" stop-color="#fff8cc"/>
+      <stop offset="45%" stop-color="#fbbf24"/>
+      <stop offset="85%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </radialGradient>
+
+    <!-- Outer Ring Gradient: Lilac y Dorado -->
+    <linearGradient id="outerRingLilac" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5b21b6"/>
+      <stop offset="30%" stop-color="#7c3aed"/>
+      <stop offset="60%" stop-color="#c084fc"/>
+      <stop offset="85%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#3b0764"/>
+    </linearGradient>
+
+    <!-- Inner Border Gradient -->
+    <linearGradient id="innerBorderLilac" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6d28d9"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- Letter W Facet Gradients: Todos en Tonos Lilas sobre Fondo Amarillo -->
+    <linearGradient id="wFacetLilac1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e9d5ff"/>
+      <stop offset="35%" stop-color="#8b5cf6"/>
+      <stop offset="75%" stop-color="#5b21b6"/>
+      <stop offset="100%" stop-color="#2e1065"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetLilac2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4c1d95"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetLilacCenter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="40%" stop-color="#d8b4fe"/>
+      <stop offset="75%" stop-color="#9333ea"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetLilac3" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#3b0764"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#e9d5ff"/>
+    </linearGradient>
+
+    <linearGradient id="wFacetLilac4" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="35%" stop-color="#a855f7"/>
+      <stop offset="75%" stop-color="#6d28d9"/>
+      <stop offset="100%" stop-color="#2e1065"/>
+    </linearGradient>
+
+    <!-- Shadow & Glow Filters -->
+    <filter id="lilacGlowOnYellow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#3b0764" flood-opacity="0.7"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#7c3aed" flood-opacity="0.5"/>
+    </filter>
+
+    <filter id="dropShadowDark">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Base Disc: Fondo Amarillo con Anillo Lila -->
+  <g filter="url(#dropShadowDark)">
+    <!-- Outer Shield Disc Amarillo -->
+    <circle cx="256" cy="256" r="236" fill="url(#bgYellowGrad)" stroke="url(#outerRingLilac)" stroke-width="12"/>
+
+    <!-- Decorative Inner Ring -->
+    <circle cx="256" cy="256" r="218" fill="none" stroke="url(#innerBorderLilac)" stroke-width="3" stroke-dasharray="10,6" opacity="0.85"/>
+
+    <!-- Rays / Pattern in Background -->
+    <g opacity="0.15" stroke="#5b21b6" stroke-width="2">
+      <line x1="256" y1="36" x2="256" y2="476"/>
+      <line x1="36" y1="256" x2="476" y2="256"/>
+      <line x1="100" y1="100" x2="412" y2="412"/>
+      <line x1="412" y1="100" x2="100" y2="412"/>
+    </g>
+
+    <!-- Chakana Andina Accent (Top Center) -->
+    <g transform="translate(256, 75) scale(0.65)" filter="url(#lilacGlowOnYellow)">
+      <path d="M -15,-45 L 15,-45 L 15,-30 L 30,-30 L 30,-15 L 45,-15 L 45,15 L 30,15 L 30,30 L 15,30 L 15,45 L -15,45 L -15,30 L -30,30 L -30,15 L -45,15 L -45,-15 L -30,-15 L -30,-30 L -15,-30 Z" 
+            fill="#5b21b6" stroke="#fbbf24" stroke-width="2"/>
+      <circle cx="0" cy="0" r="14" fill="#fbbf24" stroke="#5b21b6" stroke-width="2"/>
+    </g>
+
+    <!-- ========================================================================= -->
+    <!-- MONOGRAM "W" EN TONOS LILAS SOBRE FONDO AMARILLO                         -->
+    <!-- ========================================================================= -->
+    <g filter="url(#lilacGlowOnYellow)">
+      <!-- W Left Outer Stem -->
+      <polygon points="90,140 145,140 215,355 160,355" fill="url(#wFacetLilac1)"/>
+      <polygon points="145,140 160,140 215,355 200,355" fill="#f5f3ff" opacity="0.35"/>
+
+      <!-- W Left Inner Diagonal -->
+      <polygon points="160,355 215,355 256,225 220,225" fill="url(#wFacetLilac2)"/>
+
+      <!-- W Center Peak Apex -->
+      <polygon points="220,225 256,225 292,225 256,335" fill="url(#wFacetLilacCenter)"/>
+
+      <!-- W Right Inner Diagonal -->
+      <polygon points="292,225 256,225 297,355 352,355" fill="url(#wFacetLilac3)"/>
+
+      <!-- W Right Outer Stem -->
+      <polygon points="352,355 297,355 367,140 422,140" fill="url(#wFacetLilac4)"/>
+      <polygon points="367,140 382,140 422,355 407,355" fill="#ffffff" opacity="0.4"/>
+
+      <!-- Chamfer Caps -->
+      <polygon points="90,140 145,140 135,120 100,120" fill="#e9d5ff"/>
+      <polygon points="367,140 422,140 412,120 377,120" fill="#f5f3ff"/>
+
+      <!-- Center Bottom Diamond -->
+      <polygon points="256,335 235,385 256,400 277,385" fill="url(#wFacetLilacCenter)"/>
+    </g>
+
+    <!-- Bottom Arc Text "TINKUS WISTUS" en Lila Oscuro -->
+    <path id="textArc" d="M 120,400 Q 256,460 392,400" fill="none"/>
+    <text text-anchor="middle" font-family="'Outfit', 'Segoe UI', Arial, sans-serif" font-weight="900" font-size="22" fill="#3b0764" letter-spacing="6">
+      <textPath href="#textArc" startOffset="50%">TINKUS WISTUS</textPath>
+    </text>
+
+    <!-- Accents -->
+    <circle cx="105" cy="256" r="4" fill="#3b0764"/>
+    <circle cx="407" cy="256" r="4" fill="#3b0764"/>
+  </g>
+</svg>

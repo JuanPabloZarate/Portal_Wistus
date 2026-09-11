@@ -1,0 +1,676 @@
+/* ===== SISTEMA DE DISEÑO MINIMALISTA Y FUNCIONAL - TINKUS WISTUS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    /* Paleta Principal Minimalista (Violeta Wistus + Neutrales Slate Claros) */
+    --brand-primary: #7c3aed;       /* Violeta Eléctrico Wistus */
+    --brand-hover: #6d28d9;         /* Violeta Profundo */
+    --brand-light: #8b5cf6;         /* Lavanda vibrante */
+    --brand-subtle: rgba(124, 58, 237, 0.08);
+
+    /* Superficies y Fondos Limpios (Light Minimalist) */
+    --bg-base: #f8fafc;             /* Fondo Canvas Principal (Slate 50) */
+    --bg-surface-1: #ffffff;        /* Tarjetas Blanco Puro (Level 1) */
+    --bg-surface-2: #f1f5f9;        /* Contenedores y Subsecciones (Slate 100) */
+    --bg-surface-3: #e2e8f0;        /* Hover de filas e elementos (Slate 200) */
+    --bg-input: #ffffff;            /* Fondo de inputs */
+
+    /* Bordes y Separadores Sutiles */
+    --border-subtle: #e2e8f0;       /* Separador refinado */
+    --border-card: rgba(15, 23, 42, 0.08); /* Borde sutil de tarjeta */
+    --border-focus: #7c3aed;
+
+    /* Jerarquía Tipográfica de Alto Contraste */
+    --text-primary: #0f172a;        /* Slate 900 */
+    --text-secondary: #334155;      /* Slate 700 - Alta legibilidad */
+    --text-muted: #475569;          /* Slate 600 - Nítido en fondos claros */
+    --text-accent: #7c3aed;         /* Violeta Acento Wistus */
+
+    /* Colores Semánticos Funcionales (Ámbar / Naranja de Alto Contraste) */
+    --success: #059669;
+    --success-subtle: rgba(5, 150, 105, 0.12);
+    --warning: #d97706;
+    --warning-subtle: rgba(217, 119, 6, 0.14);
+    --danger: #dc2626;
+    --danger-subtle: rgba(220, 38, 38, 0.12);
+    --info: #0284c7;
+    --info-subtle: rgba(2, 132, 199, 0.12);
+
+    /* Radios */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* Compatibilidad para variables inyectadas dinámicamente */
+    --primary-color: #7c3aed;
+    --primary-dark: #5b21b6;
+    --secondary-color: #8b5cf6;
+    --secondary-light: #ddd6fe;
+    --accent-color: #6366f1;
+    --dark-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-color: #0f172a;
+    --gold-text: #7c3aed;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image: 
+        radial-gradient(at 15% 10%, rgba(124, 58, 237, 0.08) 0px, transparent 45%),
+        radial-gradient(at 85% 90%, rgba(99, 102, 241, 0.06) 0px, transparent 45%);
+    background-attachment: fixed;
+}
+
+/* Scrollbar Minimalista */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-primary);
+}
+
+/* Tipografía de código / CI */
+.font-mono {
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Utilidades de Marca Wistus (Estilo Minimalista) */
+.text-gold, .text-brand {
+    color: var(--brand-primary) !important;
+}
+.bg-gold, .bg-brand {
+    background-color: var(--brand-primary) !important;
+    color: #ffffff !important;
+}
+.border-gold, .border-brand {
+    border-color: rgba(124, 58, 237, 0.3) !important;
+}
+.border-gold-subtle, .border-brand-subtle {
+    border-color: rgba(124, 58, 237, 0.15) !important;
+}
+.bg-gold-subtle, .bg-brand-subtle {
+    background-color: var(--brand-subtle) !important;
+    color: var(--brand-primary) !important;
+    border: 1px solid rgba(124, 58, 237, 0.15) !important;
+}
+.bg-card {
+    background-color: var(--bg-surface-1) !important;
+}
+.bg-surface-1 {
+    background-color: var(--bg-surface-1, #ffffff) !important;
+    color: var(--text-primary, #0f172a) !important;
+}
+.bg-surface-2 {
+    background-color: var(--bg-surface-2, #f1f5f9) !important;
+    color: var(--text-primary, #0f172a) !important;
+}
+.bg-surface-3 {
+    background-color: var(--bg-surface-3, #e2e8f0) !important;
+    color: var(--text-primary, #0f172a) !important;
+}
+
+/* Modales y Formularios Bootstrap Overrides */
+.modal-content {
+    background-color: var(--bg-surface-1, #ffffff) !important;
+    color: var(--text-primary, #0f172a) !important;
+    border: 1px solid var(--border-card, #e2e8f0) !important;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-subtle, #e2e8f0) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-subtle, #e2e8f0) !important;
+}
+
+.form-control, .form-select {
+    background-color: var(--bg-surface-1, #ffffff) !important;
+    color: var(--text-primary, #0f172a) !important;
+    border: 1px solid var(--border-subtle, #cbd5e1) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff !important;
+    color: var(--text-primary, #0f172a) !important;
+    border-color: var(--border-focus, #7c3aed) !important;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+}
+
+.form-control::placeholder {
+    color: var(--text-muted, #94a3b8) !important;
+    opacity: 1;
+}
+
+.modal-body label, .form-label {
+    color: var(--text-secondary, #475569) !important;
+    font-weight: 500;
+}
+
+
+/* Barra Superior de Demostración (Minimalista & Funcional) */
+.demo-quickbar {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    padding: 6px 18px;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.demo-pill {
+    background: #f1f5f9;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+.demo-pill:hover {
+    background: #e2e8f0;
+    color: var(--text-primary);
+    border-color: #cbd5e1;
+}
+.demo-pill.active {
+    background: var(--brand-subtle);
+    color: var(--brand-primary);
+    border-color: rgba(124, 58, 237, 0.3);
+}
+
+/* Tarjetas Limpias (Minimalist Card Design - Apple/Stripe Style) */
+.portal-card, .metric-card {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portal-card:hover, .metric-card:hover {
+    border-color: rgba(124, 58, 237, 0.3);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08);
+}
+
+.hover-scale-sm {
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.hover-scale-sm:hover {
+    transform: translateY(-2px);
+    border-color: rgba(124, 58, 237, 0.35) !important;
+}
+
+/* Pantalla de Login Minimalista */
+.login-wrapper {
+    min-height: calc(100vh - 42px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.login-card-main {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08), 0 0 30px rgba(124, 58, 237, 0.04);
+    max-width: 460px;
+    width: 100%;
+    padding: 38px 30px;
+    position: relative;
+}
+
+.login-logo {
+    max-width: 110px;
+    height: auto;
+    border-radius: 50%;
+    border: 3px solid rgba(251, 191, 36, 0.85);
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.5), 0 8px 24px rgba(46, 16, 101, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-logo:hover {
+    transform: scale(1.06) rotate(2deg);
+    box-shadow: 0 0 35px rgba(251, 191, 36, 0.8), 0 12px 30px rgba(91, 33, 182, 0.7);
+}
+
+.login-banner-title {
+    max-width: 320px;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+/* /* Pestañas de Acceso Minimalistas (Segmented Control) */
+.nav-pills-portal {
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.nav-pills-portal .nav-link {
+    color: var(--text-secondary);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.86rem;
+    padding: 8px 14px;
+    transition: all 0.15s ease;
+    border: none;
+}
+
+.nav-pills-portal .nav-link:hover {
+    color: var(--text-primary);
+}
+
+.nav-pills-portal .nav-link.active {
+    background: var(--brand-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+/* Inputs Minimalistas y Funcionales */
+.input-wrapper-portal {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 5px 14px;
+    display: flex;
+    align-items: center;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-wrapper-portal:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.input-wrapper-portal i {
+    color: var(--brand-primary);
+    font-size: 1.15rem;
+    margin-right: 10px;
+}
+
+.form-control-portal {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.98rem;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.form-control-portal:focus {
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+    color: var(--text-primary);
+}
+
+.form-control-portal::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Botones Minimalistas */
+.btn-portal-primary {
+    background: var(--brand-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+    transition: all 0.18s ease;
+    width: 100%;
+}
+
+.btn-portal-primary:hover {
+    background: var(--brand-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+}
+
+.btn-brand-subtle {
+    background: var(--brand-subtle);
+    color: var(--brand-primary);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.15s ease;
+}
+.btn-brand-subtle:hover {
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--brand-hover);
+    border-color: rgba(124, 58, 237, 0.4);
+}
+
+.btn-outline-gold {
+    background: transparent;
+    color: var(--brand-primary);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+.btn-outline-gold:hover {
+    background: var(--brand-subtle);
+    color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+/* Barra de Navegación del Portal Interno */
+.portal-navbar {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+}
+
+.portal-nav-pills .nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.portal-nav-pills .nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.portal-nav-pills .nav-link.active {
+    background: var(--brand-subtle);
+    color: var(--brand-primary);
+    border: 1px solid rgba(124, 58, 237, 0.25);
+    font-weight: 600;
+}
+
+/* Indicadores y Tarjetas de Métricas */
+.metric-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metric-card .icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* Badges / Chips de Estado */
+.chip {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.2px;
+}
+.chip-success {
+    background: var(--success-subtle);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.chip-warning {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid rgba(194, 65, 12, 0.35);
+}
+.chip-purple {
+    background: var(--brand-subtle);
+    color: var(--brand-primary);
+    border: 1px solid rgba(124, 58, 237, 0.25);
+}
+.chip-neutral {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.text-amber {
+    color: #c2410c !important;
+}
+.bg-amber-subtle {
+    background: #fff7ed !important;
+}
+.text-purple {
+    color: #7c3aed !important;
+}
+.bg-warning, .badge.bg-warning {
+    background-color: #c2410c !important;
+    color: #ffffff !important;
+}
+.text-warning {
+    color: #c2410c !important;
+}
+
+/* Tablas Minimalistas Claras */
+.table-minimal {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+.table-minimal th {
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.table-minimal td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+.table-minimal tr:last-child td {
+    border-bottom: none;
+}
+.table-minimal tr:hover td {
+    background: rgba(124, 58, 237, 0.03);
+}
+
+/* Escáner Retícula Minimalista */
+.scanner-viewport {
+    width: 100%;
+    max-width: 320px;
+    height: 240px;
+    margin: 0 auto;
+    background: #f8fafc;
+    border: 2px solid rgba(124, 58, 237, 0.4);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.scanner-laser {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #7c3aed, #a78bfa, #7c3aed, transparent);
+    box-shadow: 0 0 12px #7c3aed;
+    animation: scanAnim 2.5s infinite ease-in-out;
+}
+
+@keyframes scanAnim {
+    0% { top: 12%; opacity: 0.7; }
+    50% { top: 88%; opacity: 1; }
+    100% { top: 12%; opacity: 0.7; }
+}
+
+.scanner-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: var(--brand-primary);
+    border-style: solid;
+}
+.scanner-corner.tl { top: 12px; left: 12px; border-width: 2.5px 0 0 2.5px; }
+.scanner-corner.tr { top: 12px; right: 12px; border-width: 2.5px 2.5px 0 0; }
+.scanner-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2.5px 2.5px; }
+.scanner-corner.br { bottom: 12px; right: 12px; border-width: 0 2.5px 2.5px 0; }
+
+/* ===== CORRECCIÓN Y CONTROL RIGUROSO DE CONTRASTE (SIN TEXTO BLANCO EN SUPERFICIES) ===== */
+
+/* 1. Todos los textos en la aplicación se renderizan en tonos oscuros de alto contraste */
+.text-white, .text-light, .text-white-50 {
+    color: #0f172a !important; /* Slate 900 - Oscuro nítido */
+}
+
+.text-muted {
+    color: #475569 !important; /* Slate 600 - Oscuro legible */
+}
+
+.text-secondary {
+    color: #334155 !important; /* Slate 700 - Oscuro secundario */
+}
+
+/* Títulos y elementos de superficie */
+h1, h2, h3, h4, h5, h6, p, span, div, td, th, label {
+    color: #0f172a;
+}
+
+/* Excepciones exclusivas donde el texto DEBE ser blanco (Botones de color sólido y carnet PVC) */
+.btn-portal-primary,
+.bg-brand,
+.pvc-card, .pvc-card *,
+.toast-header.bg-brand, .toast-header.bg-brand *,
+.btn-primary, .btn-danger, .btn-success,
+.nav-pills-portal .nav-link.active {
+    color: #ffffff !important;
+}
+
+.pvc-card .text-muted, .pvc-card .small {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.bg-white, .bg-light, .bg-surface-1, .bg-surface-2, .metric-card, .modal-content, .card {
+    color: #0f172a !important;
+}
+
+/* Mapeo preventivo para que bg-dark y bg-dark-subtle se conviertan en superficies claras con texto oscuro nítido */
+.bg-dark, .bg-dark-subtle {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+.bg-dark *, .bg-dark-subtle * {
+    color: #0f172a;
+}
+
+.bg-white .text-white, 
+.bg-light .text-white,
+.bg-surface-1 .text-white,
+.bg-surface-2 .text-white,
+.metric-card .text-white,
+.modal-content .text-white,
+.card .text-white {
+    color: #0f172a !important;
+}
+
+.bg-white h1, .bg-white h2, .bg-white h3, .bg-white h4, .bg-white h5, .bg-white h6,
+.bg-white p, .bg-white span, .bg-white div, .bg-white td, .bg-white th, .bg-white label,
+.bg-light h1, .bg-light h2, .bg-light h3, .bg-light h4, .bg-light h5, .bg-light h6,
+.bg-light p, .bg-light span, .bg-light div, .bg-light td, .bg-light th, .bg-light label {
+    color: #0f172a !important;
+}
+
+.bg-white .form-control, .bg-light .form-control,
+.bg-white .form-select, .bg-light .form-select {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+.bg-white .form-control::placeholder, .bg-light .form-control::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* 2. Opciones de menús desplegables (select/option) */
+select option, 
+.form-select option {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 8px;
+}
+
+select option:hover, select option:focus, select option:checked,
+.form-select option:hover, .form-select option:focus, .form-select option:checked {
+    background-color: #7c3aed !important;
+    color: #ffffff !important;
+}
+
+/* 3. Indicador de selector de fecha (date input) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: none;
+    cursor: pointer;
+}
+
+/* 4. Autocompletado del navegador (chrome/edge) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-primary, #0f172a) !important;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+

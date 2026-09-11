@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Fraternal - Tinkus Wistus 2026</title>
+
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Favicon con Logo W Lila -->
+    <link rel="icon" type="image/svg+xml" href="assets/img/wistus-badge.svg">
+    <!-- Estilos de la Plataforma (Minimalistas y Funcionales) -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/credencial.css">
+</head>
+<body>
+
+    <!-- ===== BARRA SUPERIOR DE PRUEBA Y CONTROL DE DEMOSTRACIÓN (MINIMALISTA) ===== -->
+    <div class="demo-quickbar d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="chip chip-purple"><i class="bi bi-code-slash"></i> MODO DEMO</span>
+            <span class="text-secondary small d-none d-md-inline">Organización:</span>
+            <strong class="text-dark small" data-mb="name">Fraternidad Tinkus Wistus</strong>
+            <span class="chip chip-neutral small" data-mb="danza">Tinkus</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="text-secondary small me-1 d-none d-lg-inline">Simular Rol:</span>
+            <button class="demo-pill" id="quickSwitchMemberBase" title="Ingresar como Juan Pablo Quispe">
+                <i class="bi bi-person-fill text-brand"></i> Miembro (Juan Pablo)
+            </button>
+            <button class="demo-pill" id="quickSwitchMemberMigrated" title="Ingresar como Maria Elena Flores">
+                <i class="bi bi-person-check-fill text-info"></i> Miembro (Maria Elena)
+            </button>
+            <button class="demo-pill" id="quickSwitchControl" title="Ingresar con rol Directiva / Control">
+                <i class="bi bi-shield-lock-fill text-purple"></i> Control / Directiva
+            </button>
+            <button class="demo-pill" id="btnResetPortalData" title="Restablecer base de datos inicial">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VISTA 1: ACCESO / LOGIN MINIMALISTA (PESTAÑA DUAL)                        -->
+    <!-- ========================================================================= -->
+    <div id="view-login" class="app-view login-wrapper">
+        <div class="login-card-main animate__animated animate__fadeIn">
+            <!-- Logo oficial de Tinkus Wistus -->
+            <div class="text-center mb-3">
+                <img src="assets/img/wistus-badge.svg" alt="Insignia Wistus" class="login-logo" data-mb="escudo">
+            </div>
+
+            <div class="text-center mb-4">
+                <h4 class="fw-bold text-dark mb-1" data-mb="name">Fraternidad Tinkus Wistus</h4>
+                <div class="text-secondary small fw-medium text-uppercase letter-spacing-1" data-mb="motto">
+                    Los mejores Tinkus del país
+                </div>
+            </div>
+
+            <!-- Segmented Control de Pestañas de Acceso -->
+            <ul class="nav nav-pills nav-pills-portal nav-justified mb-4" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-fraterno-btn" data-bs-toggle="pill" data-bs-target="#tab-fraterno" type="button" role="tab">
+                        <i class="bi bi-person-badge me-1"></i> Acceso Fraterno (Por CI)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-control-btn" data-bs-toggle="pill" data-bs-target="#tab-control" type="button" role="tab">
+                        <i class="bi bi-shield-lock me-1"></i> Control / Directiva
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Pestaña Fraterno: Ingreso por CI para miembros base -->
+                <div class="tab-pane fade show active" id="tab-fraterno" role="tabpanel">
+                    <p class="text-secondary small mb-3">
+                        Ingresa tu número de CI registrado en el padrón oficial para consultar asistencias, cuotas y credencial digital.
+                    </p>
+
+                    <form id="formLoginFraterno">
+                        <div class="input-wrapper-portal mb-3">
+                            <i class="bi bi-person-badge"></i>
+                            <input type="text" class="form-control-portal" id="inputCI" name="ci" placeholder="Ingresa tu CI (ej: 4839201)" required autocomplete="off" autofocus>
+                        </div>
+
+                        <div id="alertFraternoLogin" class="alert alert-danger d-none border-0 py-2 px-3 rounded-3 mb-3 small" role="alert"></div>
+
+                        <button type="submit" class="btn btn-portal-primary mb-3">
+                            Ingresar al Portal <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+
+                        <div class="d-flex justify-content-between gap-2">
+                            <button type="button" class="btn btn-brand-subtle btn-sm flex-fill py-2" id="btnDemoCIBase">
+                                <i class="bi bi-person me-1"></i> CI 4839201 (Juan Pablo)
+                            </button>
+                            <button type="button" class="btn btn-brand-subtle btn-sm flex-fill py-2" id="btnDemoCIMigrated">
+                                <i class="bi bi-person-check me-1"></i> CI 6892341 (Maria Elena)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Pestaña Control: Ingreso con credenciales de supervisión / secretaría -->
+                <div class="tab-pane fade" id="tab-control" role="tabpanel">
+                    <p class="text-secondary small mb-3">
+                        Acceso reservado para la mesa directiva, secretaría de actas y encargados de control.
+                    </p>
+
+                    <form id="formLoginControl">
+                        <div class="input-wrapper-portal mb-3">
+                            <i class="bi bi-person"></i>
+                            <input type="text" class="form-control-portal" id="inputControlUser" placeholder="Usuario (ej: control)" required autocomplete="username">
+                        </div>
+
+                        <div class="input-wrapper-portal mb-3">
+                            <i class="bi bi-key"></i>
+                            <input type="password" class="form-control-portal" id="inputControlPass" placeholder="Contraseña de control" required autocomplete="current-password">
+                        </div>
+
+                        <div id="alertControlLogin" class="alert alert-danger d-none border-0 py-2 px-3 rounded-3 mb-3 small" role="alert"></div>
+
+                        <button type="submit" class="btn btn-portal-primary mb-3">
+                            Acceder al Panel de Control <i class="bi bi-shield-check ms-1"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-brand-subtle btn-sm w-100 py-2" id="btnDemoControl">
+                            <i class="bi bi-key me-1"></i> Usar credenciales demo (control / wistus2026)
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25 text-muted small">
+                &copy; <span data-mb="year">2026</span> <strong class="text-white" data-mb="name">Fraternidad Tinkus Wistus</strong> &bull; Entrada Universitaria La Paz
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VISTAS DE ROL FRATERNO / MIEMBRO                                          -->
+    <!-- ========================================================================= -->
+
+    <!-- BARRA DE NAVEGACIÓN FRATERNO (Visible cuando hay sesión de miembro) -->
+    <nav id="navMember" class="portal-navbar d-none">
+        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <img src="assets/img/wistus-badge.svg" width="36" height="36" alt="Logo" class="rounded-circle border border-secondary" data-mb="escudo">
+                <div>
+                    <h6 class="fw-bold mb-0 text-white" data-mb="short-name">Tinkus Wistus</h6>
+                    <span class="small text-secondary">Portal del Fraterno &bull; <span data-mb="year">2026</span></span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-1 flex-wrap portal-nav-pills">
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-dashboard">
+                    <i class="bi bi-grid-1x2"></i> <span>Inicio</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-pagos">
+                    <i class="bi bi-wallet2"></i> <span>1. Pagos & Cuotas</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-eventos">
+                    <i class="bi bi-calendar3"></i> <span>2. Calendario de Eventos</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-credencial">
+                    <i class="bi bi-qr-code"></i> <span>3. QR de Asistencia</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-asistencias">
+                    <i class="bi bi-calendar-check"></i> <span>Historial Asistencias</span>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-sm-block">
+                    <div class="fw-bold text-white small member-val-nombre">Fraterno</div>
+                    <div class="text-muted small member-val-bloque">Bloque</div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm rounded-3 btn-logout-action" title="Cerrar Sesión">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SUBPÁGINA 1: DASHBOARD FRATERNO -->
+    <div id="view-member-dashboard" class="app-view container py-4 d-none">
+        <!-- Saludo e información rápida -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h3 class="fw-bold text-white mb-1" id="dashMemberGreeting">¡Hola, Fraterno!</h3>
+                <div class="text-secondary small">
+                    <span class="text-brand fw-semibold" id="dashMemberBloque">Bloque</span> &bull; 
+                    <span id="dashMemberRol">Fraterno Titular</span> &bull; 
+                    <span class="font-mono member-val-ci">CI: ---</span>
+                </div>
+            </div>
+            <div id="memberHabilitacionStatus">
+                <!-- Chip de habilitación calculado dinámicamente -->
+            </div>
+        </div>
+
+        <!-- BANNER DE MIGRACIÓN: MIEMBRO BASE QUE NO ES USUARIO -> USUARIO COMPLETO -->
+        <div id="memberMigrationBanner"></div>
+
+        <!-- Tarjetas Resumen de Indicadores Clave (Minimalistas) -->
+        <div class="row g-3 mb-4">
+            <!-- Indicador 1: Asistencia a Ensayos -->
+            <div class="col-md-4">
+                <div class="metric-card h-100 hover-scale-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="text-secondary small text-uppercase fw-semibold">Asistencias</div>
+                            <div class="fs-2 fw-bold text-white mt-1" id="memberAttendancePct">0%</div>
+                        </div>
+                        <div class="icon-box bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-check2-circle"></i>
+                        </div>
+                    </div>
+                    <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.08);">
+                        <div id="memberAttendanceProgressBar" class="progress-bar bg-success" style="width: 0%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-secondary">
+                        <span>Requisito Entrada: 80%</span>
+                        <a href="#" class="nav-link-subpage text-brand text-decoration-none fw-semibold" data-subpage="member-asistencias">Ver registro &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador 2: Estado de Aportes y Cuotas -->
+            <div class="col-md-4">
+                <div class="metric-card h-100 hover-scale-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="text-secondary small text-uppercase fw-semibold">Aportes Cancelados</div>
+                            <div class="fs-2 fw-bold text-white mt-1" id="memberTotalAportado">Bs. 0</div>
+                        </div>
+                        <div class="icon-box bg-brand-subtle text-brand">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+                    </div>
+                    <div class="progress mb-2" style="height: 6px; background: rgba(255,255,255,0.08);">
+                        <div id="memberBarraPagos" class="progress-bar bg-brand" style="width: 0%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-secondary">
+                        <span>Saldo: <strong class="text-danger" id="memberSaldoPendiente">Bs. 0</strong></span>
+                        <a href="#" class="nav-link-subpage text-brand text-decoration-none fw-semibold" data-subpage="member-pagos">Pagar cuotas &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador 3: Acceso a Credencial Digital -->
+            <div class="col-md-4">
+                <div class="metric-card h-100 hover-scale-sm d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <div class="text-secondary small text-uppercase fw-semibold">Identificación</div>
+                            <h5 class="fw-bold text-white mt-1">Credencial Digital QR</h5>
+                        </div>
+                        <div class="icon-box bg-brand-subtle">
+                            <i class="bi bi-qr-code text-brand"></i>
+                        </div>
+                    </div>
+                    <p class="small text-secondary mb-3">
+                        Válido para el escaneo de asistencia en ensayos y la Entrada Universitaria La Paz 2026.
+                    </p>
+                    <button class="btn btn-brand-subtle btn-sm w-100 py-2 nav-link-subpage" data-subpage="member-credencial">
+                        <i class="bi bi-qr-code me-1"></i> Abrir Mi Credencial
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Próximo Evento y Comunicados -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3"><i class="bi bi-calendar-event text-brand me-2"></i>Próxima Convocatoria</h6>
+                <div id="dashNextEventCard"></div>
+            </div>
+            <div class="col-lg-6">
+                <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3"><i class="bi bi-megaphone text-brand me-2"></i>Avisos de la Directiva</h6>
+                <div id="dashAnnouncementsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 2: MIS ASISTENCIAS (FRATERNO) -->
+    <div id="view-member-asistencias" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-calendar-check text-brand me-2"></i>Historial de Asistencias</h4>
+                <p class="text-secondary small mb-0">Control de ensayos, recorridos y eventos solemnes de Tinkus Wistus.</p>
+            </div>
+            <div id="memberAttendanceCounts" class="p-2 px-3 rounded-3 bg-surface-1 border border-subtle small">
+                <!-- Conteo de presentes, atrasos, faltas -->
+            </div>
+        </div>
+
+        <!-- Lista de Asistencias por Evento -->
+        <div id="memberAttendancesList"></div>
+    </div>
+
+    <!-- SUBPÁGINA 3: CUOTAS Y PAGOS (FRATERNO) -->
+    <div id="view-member-pagos" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-wallet2 text-brand me-2"></i>Aportes y Cuotas Fraternales</h4>
+                <p class="text-secondary small mb-0">Estado de cuenta oficial y comprobantes de participación 2026.</p>
+            </div>
+            <div id="memberEstadoFinancieroBadge"></div>
+        </div>
+
+        <!-- Cuotas Requeridas -->
+        <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3">Cuotas Obligatorias 2026</h6>
+        <div class="row" id="memberCuotasCards"></div>
+
+        <!-- Historial de Recibos y Comprobantes -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-4 mt-4">
+            <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3"><i class="bi bi-receipt text-brand me-2"></i>Comprobantes y Recibos Digitales</h6>
+            <div class="table-responsive">
+                <table class="table-minimal">
+                    <thead>
+                        <tr>
+                            <th>Nro Recibo</th>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Fecha</th>
+                            <th>Forma de Pago</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberReceiptsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 4: CREDENCIAL DIGITAL OFICIAL (FRATERNO) -->
+    <div id="view-member-credencial" class="app-view container py-4 d-none">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold text-white mb-1">Credencial Oficial de Fraterno</h4>
+            <p class="text-secondary small">Documento digital intransferible con código QR de verificación para la Entrada Universitaria La Paz 2026.</p>
+        </div>
+
+        <div class="credencial-container mb-4">
+            <div class="pvc-card">
+                <div class="pvc-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="assets/img/wistus-badge.svg" width="40" height="40" alt="Insignia" id="credEscudo" class="rounded-circle border border-secondary">
+                        <div>
+                            <div class="fw-bold text-white small" id="credFratName">Tinkus Wistus</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;" id="credFratDanza">Tinkus</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="pvc-badge-hologram" id="credFratYear">ENTRADA UNIVERSITARIA LA PAZ 2026</span>
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-auto">
+                        <div class="pvc-avatar-frame">
+                            <img src="assets/img/avatar-default.svg" alt="Foto" id="credFoto" class="pvc-avatar-img">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h5 class="fw-bold text-white mb-1" id="credNombre">Juan Pablo Quispe</h5>
+                        <div class="text-brand font-mono fw-bold small mb-1" id="credCI">CI: 4839201 LP</div>
+                        <div class="chip chip-neutral mb-1" id="credBloque">Bloque Machas Wistus</div>
+                        <div class="small text-muted" id="credRol">Fraterno Titular</div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                    <div>
+                        <div class="small text-muted">Socio: <strong class="text-white font-mono" id="credCodigoSocio">SOC-2026</strong></div>
+                        <div class="small text-muted">Antigüedad: <strong class="text-brand" id="credAntiguedad">4 Años</strong></div>
+                        <div class="mt-2" id="credHabilitadoBadge">
+                            <span class="chip chip-success">HABILITADO</span>
+                        </div>
+                    </div>
+                    <div class="pvc-qr-box" id="credentialQRCode">
+                        <!-- Código QR SVG generado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-portal-primary rounded-3 px-4 me-2" style="width: auto;" onclick="window.PortalApp.printCredential()">
+                <i class="bi bi-printer me-2"></i> Imprimir Credencial
+            </button>
+            <button class="btn btn-brand-subtle rounded-3 px-4" onclick="window.PortalApp.showToast('Credencial lista para escaneo.')">
+                <i class="bi bi-download me-2"></i> Guardar Pase Digital
+            </button>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 5: CRONOGRAMA DE EVENTOS (FRATERNO) -->
+    <div id="view-member-eventos" class="app-view container py-4 d-none">
+        <div class="mb-4">
+            <h4 class="fw-bold text-white mb-1"><i class="bi bi-calendar3 text-brand me-2"></i>Cronograma Oficial Entrada Universitaria La Paz 2026</h4>
+            <p class="text-secondary small">Calendario completo de ensayos, recorridos, misa de promesa y entrada folklórica.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto" id="memberEventsTimeline"></div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VISTAS DE ROL CONTROL / DIRECTIVA                                         -->
+    <!-- ========================================================================= -->
+
+    <!-- BARRA DE NAVEGACIÓN CONTROL (Visible cuando hay sesión de control) -->
+    <nav id="navControl" class="portal-navbar d-none">
+        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <img src="assets/img/wistus-badge.svg" width="36" height="36" alt="Logo" class="rounded-circle border border-secondary" data-mb="escudo">
+                <div>
+                    <h6 class="fw-bold mb-0 text-white" data-mb="short-name">Tinkus Wistus</h6>
+                    <span class="chip chip-purple" style="font-size: 0.72rem;">
+                        <i class="bi bi-shield-check me-1"></i> Panel de Control
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-1 flex-wrap portal-nav-pills">
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-dashboard">
+                    <i class="bi bi-bar-chart-line"></i> <span>Métricas</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-asistencias">
+                    <i class="bi bi-qr-code-scan"></i> <span>Terminal Asistencias</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-pagos">
+                    <i class="bi bi-journal-text"></i> <span>Libro de Cuotas</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-directorio">
+                    <i class="bi bi-people"></i> <span>Cobros</span>
+                </a>
+                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-eventos">
+                    <i class="bi bi-calendar-event"></i> <span>Eventos</span>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-brand-subtle btn-sm rounded-3" onclick="document.getElementById('quickOpenMarcaBlanca').click()">
+                    <i class="bi bi-palette me-1"></i> Marca
+                </button>
+                <button class="btn btn-outline-danger btn-sm rounded-3 btn-logout-action">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SUBPÁGINA 6: DASHBOARD CONTROL (MÉTRICAS GLOBALES) -->
+    <div id="view-control-dashboard" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1">Panel de Control & Supervisión</h4>
+                <p class="text-secondary small mb-0">Gestión de la Fraternidad Tinkus Wistus para Entrada Universitaria La Paz 2026.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-portal-primary btn-sm rounded-3" style="width: auto;" onclick="window.Miembros.openNewMemberModal()">
+                    <i class="bi bi-person-plus me-1"></i> Registrar Fraterno
+                </button>
+                <button class="btn btn-brand-subtle btn-sm rounded-3" onclick="window.Miembros.exportDirectoryCSV()">
+                    <i class="bi bi-download me-1"></i> Exportar CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Tarjetas de Métricas Globales (Minimalistas) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Padrón Total</span>
+                        <div class="icon-box bg-brand-subtle text-brand"><i class="bi bi-people"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-white" id="ctrlMetricTotalFraternos">0</div>
+                    <div class="small text-muted mt-1">Fraternos inscritos</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Estado de Miembros</span>
+                        <div class="icon-box bg-info bg-opacity-10 text-info"><i class="bi bi-person-check"></i></div>
+                    </div>
+                    <div class="fs-4 fw-bold text-white" id="ctrlMetricMigrados">Activos</div>
+                    <div class="small text-muted mt-1"><span id="ctrlMetricSoloCI" class="text-brand fw-semibold">0</span> inactivos u observados</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Tasa Asistencia</span>
+                        <div class="icon-box bg-success bg-opacity-10 text-success"><i class="bi bi-pie-chart"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-success" id="ctrlMetricAsistenciaPct">0%</div>
+                    <div class="small text-muted mt-1" id="ctrlMetricAsistenciaDetalle">Último ensayo</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Recaudación Total</span>
+                        <div class="icon-box bg-brand-subtle text-brand"><i class="bi bi-cash-stack"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-white" id="controlFinRecaudado">Bs. 0</div>
+                    <div class="small text-muted mt-1">Meta: <span id="controlFinProyectado">Bs. 0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Directas y Resumen Operativo -->
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="portal-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-0"><i class="bi bi-qr-code-scan text-brand me-2"></i>Marcaje en Vivo</h6>
+                        <button class="btn btn-brand-subtle btn-sm rounded-3 nav-link-subpage" data-subpage="control-asistencias">
+                            Abrir Terminal &rarr;
+                        </button>
+                    </div>
+                    <p class="text-secondary small">
+                        Utiliza el escáner de credenciales QR para el control rápido en los puntos de concentración de la Entrada Universitaria La Paz.
+                    </p>
+                    <div class="text-center py-3">
+                        <button class="btn btn-portal-primary btn-lg rounded-3 px-4 fw-semibold nav-link-subpage" style="width: auto;" data-subpage="control-asistencias">
+                            <i class="bi bi-camera me-2"></i> Iniciar Terminal de Marcaje QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="portal-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-0"><i class="bi bi-wallet2 text-brand me-2"></i>Registro de Cobro</h6>
+                    </div>
+                    <p class="text-secondary small">Registra pagos de cuotas y emite comprobantes digitales correlativos al instante.</p>
+                    <button class="btn btn-brand-subtle btn-lg w-100 rounded-3 fw-semibold" onclick="window.Pagos.openRegisterPaymentModal()">
+                        <i class="bi bi-plus-circle me-2"></i> Registrar Pago de Cuota
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 7: TERMINAL DE ASISTENCIAS Y ESCÁNER QR (ROL CONTROL) -->
+    <div id="view-control-asistencias" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-qr-code-scan text-brand me-2"></i>Terminal de Asistencias</h4>
+                <p class="text-secondary small mb-0">Escaneo de credenciales QR y pase de lista manual por bloque.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="text-secondary small fw-semibold text-nowrap">Evento:</label>
+                <select id="selectControlEvent" class="form-select form-select-sm bg-surface-2 text-white border-subtle rounded-3"></select>
+            </div>
+        </div>
+
+        <!-- Barra de Estadísticas en Vivo del Evento -->
+        <div class="row g-2 mb-4" id="controlEventStatsBar"></div>
+
+        <!-- Pestañas: Escáner QR vs Pase de Lista Manual -->
+        <ul class="nav nav-pills nav-pills-portal nav-justified mb-4" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-scanner-btn" data-bs-toggle="pill" data-bs-target="#tab-scanner" type="button" role="tab">
+                    <i class="bi bi-camera me-1"></i> Simulador de Escáner QR
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-manual-btn" data-bs-toggle="pill" data-bs-target="#tab-manual" type="button" role="tab">
+                    <i class="bi bi-card-checklist me-1"></i> Pase de Lista Manual
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- PESTAÑA ESCÁNER QR -->
+            <div class="tab-pane fade show active" id="tab-scanner" role="tabpanel">
+                <div class="row g-4 align-items-center justify-content-center">
+                    <div class="col-lg-6 text-center">
+                        <div class="scanner-viewport mb-3">
+                            <div class="scanner-laser"></div>
+                            <div class="scanner-corner tl"></div>
+                            <div class="scanner-corner tr"></div>
+                            <div class="scanner-corner bl"></div>
+                            <div class="scanner-corner br"></div>
+                            <i class="bi bi-qr-code text-brand" style="font-size: 4rem; opacity: 0.25;"></i>
+                        </div>
+
+                        <div class="input-group mb-3 max-w-md mx-auto" style="max-width: 420px;">
+                            <select id="selectScannerTestMember" class="form-select bg-surface-2 text-white border-subtle rounded-start-3">
+                                <option value="">-- Seleccione fraterno para escanear --</option>
+                            </select>
+                            <button class="btn btn-portal-primary rounded-end-3" style="width: auto;" onclick="window.Asistencias.simulateQRScan()">
+                                <i class="bi bi-upc-scan me-1"></i> Validar QR
+                            </button>
+                        </div>
+                        <div class="small text-muted">
+                            Detecta la credencial digital, valida el CI y registra la asistencia inmediatamente.
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta de Confirmación de Asistencia Escaneada -->
+                    <div class="col-lg-5">
+                        <div id="scannerResultCard" class="card bg-surface-1 border-brand-subtle rounded-4 p-4 d-none shadow-lg">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="chip chip-success"><i class="bi bi-check2-circle me-1"></i> ¡ASISTENCIA REGISTRADA!</span>
+                                <span class="chip chip-neutral font-mono" id="scanResHora">Hora</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <img src="assets/img/avatar-default.svg" id="scanResFoto" width="60" height="60" class="rounded-3 border border-secondary" alt="Foto">
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1" id="scanResNombre">Nombre Fraterno</h5>
+                                    <div class="text-brand fw-bold font-mono small" id="scanResCI">CI: ---</div>
+                                    <div class="small text-secondary" id="scanResBloque">Bloque</div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-top border-subtle d-flex justify-content-between align-items-center">
+                                <span class="small text-secondary">Estado Cuotas:</span>
+                                <div id="scanResCuotas"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PESTAÑA PASE DE LISTA MANUAL -->
+            <div class="tab-pane fade" id="tab-manual" role="tabpanel">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-3">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="input-wrapper-portal py-1 px-3">
+                                <i class="bi bi-search text-brand"></i>
+                                <input type="text" id="searchManualPassMember" class="form-control-portal py-1 small" placeholder="Buscar por CI o nombre de fraterno..." oninput="window.Asistencias.renderManualPassList()">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select bg-surface-2 text-white border-subtle rounded-3" onchange="window.Asistencias.selectedBlockFilter = this.value; window.Asistencias.renderManualPassList();">
+                                <option value="all">-- Todos los Bloques --</option>
+                                <option value="machas">Bloque Machas Wistus</option>
+                                <option value="imillas">Bloque Imillas Wistus</option>
+                                <option value="mayores">Bloque Tinkus Wistus Mayores</option>
+                                <option value="choclos">Bloque Choclos</option>
+                                <option value="wanllis">Bloque Semillero Wanllis</option>
+                                <option value="directiva">Directiva</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 text-end text-muted small">
+                            Marcaje rápido de 1 clic
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-3">
+                    <div class="table-responsive">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>Fraterno</th>
+                                    <th>Bloque</th>
+                                    <th>Estado Asistencia</th>
+                                    <th class="text-end">Marcaje Rápido</th>
+                                </tr>
+                            </thead>
+                            <tbody id="controlManualPassTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 8: GESTIÓN DE CUOTAS Y COBROS (ROL CONTROL) -->
+    <div id="view-control-pagos" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-wallet2 text-brand me-2"></i>Libro Mayor de Cuotas</h4>
+                <p class="text-secondary small mb-0">Control de ingresos, saldos por bloque y emisión de recibos oficiales.</p>
+            </div>
+            <button class="btn btn-portal-primary rounded-3 px-4" style="width: auto;" onclick="window.Pagos.openRegisterPaymentModal()">
+                <i class="bi bi-plus-circle me-2"></i> Registrar Cobro de Cuota
+            </button>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="metric-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-secondary small text-uppercase fw-semibold">Fraternos al Día</div>
+                        <div class="fs-3 fw-bold text-success" id="controlFinAlDia">0 fraternos</div>
+                    </div>
+                    <i class="bi bi-check-circle text-success fs-2"></i>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="metric-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-secondary small text-uppercase fw-semibold">Fraternos con Saldo Pendiente</div>
+                        <div class="fs-3 fw-bold text-brand" id="controlFinMorosos">0 con saldo</div>
+                    </div>
+                    <i class="bi bi-clock-history text-brand fs-2"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nav Pills Pestañas Directiva -->
+        <ul class="nav nav-pills nav-pills-portal mb-4" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-control-pagos-btn" data-bs-toggle="pill" data-bs-target="#tab-control-pagos-confirmados" type="button" role="tab">
+                    <i class="bi bi-receipt me-1"></i> Historial de Pagos Confirmados
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-control-vouchers-btn" data-bs-toggle="pill" data-bs-target="#tab-control-vouchers-pendientes" type="button" role="tab">
+                    <i class="bi bi-clock-history me-1"></i> Vouchers Pendientes por Verificar
+                    <span class="badge bg-danger rounded-pill ms-1" id="badgePendingVouchersCount">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Pestaña 1: Historial Confirmado -->
+            <div class="tab-pane fade show active" id="tab-control-pagos-confirmados" role="tabpanel">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+                    <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3">Historial de Transacciones Confirmadas</h6>
+                    <div class="table-responsive">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>Nro Recibo</th>
+                                    <th>Fraterno / CI</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Fecha</th>
+                                    <th>Forma de Pago</th>
+                                    <th class="text-end">Comprobante</th>
+                                </tr>
+                            </thead>
+                            <tbody id="controlPaymentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 2: Vouchers Pendientes por Verificar -->
+            <div class="tab-pane fade" id="tab-control-vouchers-pendientes" role="tabpanel">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+                    <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-3"><i class="bi bi-patch-check text-brand me-2"></i>Comprobantes Enviados por Fraternos</h6>
+                    <div class="table-responsive">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>Fraterno / CI</th>
+                                    <th>Bloque</th>
+                                    <th>Concepto de Cuota</th>
+                                    <th>Monto Reportado</th>
+                                    <th>Fecha Envío</th>
+                                    <th>Voucher</th>
+                                    <th class="text-end">Acción Verificación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="controlVouchersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 9: PADRÓN OFICIAL DE MIEMBROS (ROL CONTROL) -->
+    <div id="view-control-directorio" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-people text-brand me-2"></i>Padrón General de Miembros</h4>
+                <p class="text-secondary small mb-0">Directorio oficial de fraternos registrados para la Entrada Universitaria La Paz 2026.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-portal-primary rounded-3" style="width: auto;" onclick="window.Miembros.openNewMemberModal()">
+                    <i class="bi bi-person-plus me-1"></i> Nuevo Fraterno
+                </button>
+                <button class="btn btn-brand-subtle rounded-3" onclick="window.Miembros.exportDirectoryCSV()">
+                    <i class="bi bi-download me-1"></i> Exportar CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtros y Contadores de Padrón -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-4">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-wrapper-portal py-1 px-3">
+                        <i class="bi bi-search text-brand"></i>
+                        <input type="text" id="searchDirectoryMember" class="form-control-portal py-1 small" placeholder="Buscar por CI, nombre o bloque..." oninput="window.Miembros.renderControlDirectory()">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select bg-surface-2 text-white border-subtle rounded-3" onchange="window.Miembros.selectedBlock = this.value; window.Miembros.renderControlDirectory();">
+                        <option value="all">-- Todos los Bloques --</option>
+                        <option value="machas">Bloque Machas Wistus</option>
+                        <option value="imillas">Bloque Imillas Wistus</option>
+                        <option value="mayores">Bloque Tinkus Wistus Mayores</option>
+                        <option value="choclos">Bloque Choclos</option>
+                        <option value="wanllis">Bloque Semillero Wanllis</option>
+                        <option value="directiva">Directiva</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-end">
+                    <span class="badge bg-brand text-dark px-3 py-2 rounded-pill fw-bold">
+                        Total: <span id="dirCountTotal">0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla del Padrón -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+            <div class="table-responsive">
+                <table class="table-minimal">
+                    <thead>
+                        <tr>
+                            <th>Fraterno</th>
+                            <th>CI</th>
+                            <th>Bloque & Rol</th>
+                            <th>% Asistencia</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="controlDirectoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 10: GESTIÓN DE EVENTOS (ROL CONTROL) -->
+    <div id="view-control-eventos" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-calendar-event text-brand me-2"></i>Gestión de Eventos y Ensayos</h4>
+                <p class="text-secondary small mb-0">Programación oficial de convocatorias para Entrada Universitaria La Paz 2026.</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-brand rounded-pill px-4" onclick="window.PortalApp.openEventModal()">
+                    <i class="bi bi-plus-lg me-1"></i> Crear Nuevo Evento
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto" id="controlEventsTimeline"></div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- MODALES DE LA APLICACIÓN                                                  -->
+    <!-- ========================================================================= -->
+
+    <!-- MODAL 2: CONFIGURACIÓN Y SERVICIOS ADICIONALES -->
+
+    <!-- MODAL 3: RECIBO / COMPROBANTE DIGITAL OFICIAL -->
+    <div class="modal fade" id="modalDigitalReceipt" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 text-white border border-subtle rounded-4 shadow-lg">
+                <div class="modal-body p-4">
+                    <div class="text-center pb-3 border-bottom border-subtle mb-3">
+                        <h6 class="fw-bold text-uppercase mb-1" id="reciboFraternidadHeader">FRATERNIDAD TINKUS WISTUS</h6>
+                        <div class="small text-secondary">COMPROBANTE OFICIAL DE INGRESO - ENTRADA UNIVERSITARIA LA PAZ 2026</div>
+                        <div class="chip chip-purple font-mono mt-2" id="reciboNroDoc">REC-00000</div>
+                    </div>
+
+                    <div class="row g-2 small mb-3">
+                        <div class="col-6"><span class="text-muted">Fecha:</span> <span id="reciboFecha">---</span></div>
+                        <div class="col-6 text-end"><span class="chip chip-success">Certificado</span></div>
+                        <div class="col-12"><span class="text-muted">Fraterno:</span> <strong class="text-white" id="reciboFraternoNombre">---</strong></div>
+                        <div class="col-6"><span class="text-muted">CI:</span> <span class="font-mono text-brand" id="reciboFraternoCI">---</span></div>
+                        <div class="col-6 text-end"><span class="text-muted">Bloque:</span> <span id="reciboBloque">---</span></div>
+                    </div>
+
+                    <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold text-white" id="reciboConcepto">Concepto</span>
+                            <span class="fs-5 fw-bold text-brand" id="reciboMonto">Bs. 0</span>
+                        </div>
+                        <div class="small text-muted">Método: <span id="reciboMetodo">Efectivo</span></div>
+                    </div>
+
+                    <div class="text-center text-muted small border-top border-subtle pt-2">
+                        Documento generado digitalmente &bull; La Paz, Bolivia
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle py-2">
+                    <button type="button" class="btn btn-brand-subtle btn-sm rounded-3" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-portal-primary btn-sm rounded-3" style="width: auto;" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Imprimir Recibo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: DATOS BANCARIOS Y QR DE TRANSFERENCIA -->
+    <div class="modal fade" id="modalBankQR" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-qr-code text-brand me-2"></i>Pago por Transferencia Bancaria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <h6 class="fw-bold text-white mb-1" id="bankQRFraternidad">Tinkus Wistus</h6>
+                    <div class="text-brand small mb-3" id="bankQRConcepto">Cuota</div>
+
+                    <div class="bg-white p-3 rounded-3 d-inline-block shadow mb-3 text-dark">
+                        <svg viewBox="0 0 100 100" width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" fill="#fff" />
+                            <rect x="10" y="10" width="25" height="25" fill="#000" />
+                            <rect x="15" y="15" width="15" height="15" fill="#fff" />
+                            <rect x="18" y="18" width="9" height="9" fill="#000" />
+                            <rect x="65" y="10" width="25" height="25" fill="#000" />
+                            <rect x="70" y="15" width="15" height="15" fill="#fff" />
+                            <rect x="73" y="18" width="9" height="9" fill="#000" />
+                            <rect x="10" y="65" width="25" height="25" fill="#000" />
+                            <rect x="15" y="70" width="15" height="15" fill="#fff" />
+                            <rect x="18" y="73" width="9" height="9" fill="#000" />
+                            <rect x="42" y="12" width="6" height="6" fill="#7c3aed" />
+                            <rect x="52" y="24" width="6" height="6" fill="#7c3aed" />
+                            <rect x="40" y="42" width="20" height="20" rx="3" fill="#7c3aed" />
+                            <text x="50" y="56" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">WISTUS</text>
+                            <rect x="68" y="42" width="6" height="6" fill="#000" />
+                            <rect x="80" y="55" width="6" height="6" fill="#000" />
+                            <rect x="42" y="70" width="6" height="6" fill="#000" />
+                            <rect x="55" y="80" width="6" height="6" fill="#000" />
+                            <rect x="70" y="75" width="15" height="15" fill="#000" />
+                        </svg>
+                    </div>
+
+                    <div class="text-white fw-bold fs-4 mb-2" id="bankQRMonto">Bs. 0</div>
+                    <div class="p-3 bg-surface-2 rounded-3 border border-subtle text-start small mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-secondary">Banco:</span>
+                            <strong class="text-white">Banco Nacional de Bolivia (BNB)</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-secondary">Cuenta Corriente:</span>
+                            <span class="font-mono text-brand fw-bold">150-1928374-2</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary">Titular:</span>
+                            <span class="text-white">Fraternidad Tinkus Wistus</span>
+                        </div>
+                        <button class="btn btn-brand-subtle btn-sm w-100 py-1" onclick="window.PortalApp.copyBankDetails('150-1928374-2')">
+                            <i class="bi bi-clipboard me-1"></i> Copiar Número de Cuenta
+                        </button>
+                    </div>
+
+                    <div class="chip chip-neutral small py-2 px-3">
+                        Envía tu comprobante de depósito por WhatsApp a Tesorería (+591 76543210)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: REGISTRAR COBRO RÁPIDO (ROL CONTROL) -->
+    <div class="modal fade" id="modalRegisterPayment" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-wallet2 text-brand me-2"></i>Registrar Cobro de Cuota</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Fraterno:</label>
+                        <select id="selectNewPaymentMember" class="form-select bg-surface-2 text-white border-subtle rounded-3" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Concepto de Cuota:</label>
+                        <select id="selectNewPaymentCuota" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                            <option value="cuota_1">Inscripción Entrada Universitaria La Paz 2026 (Bs. 250)</option>
+                            <option value="cuota_2">Banda Oficial y Acompañamiento (Bs. 350)</option>
+                            <option value="cuota_3">Confección Traje Oficial Tinku (Bs. 800)</option>
+                            <option value="cuota_4">Recepción Social y Diana (Bs. 200)</option>
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Monto Cobrado (Bs.):</label>
+                            <input type="number" id="inputNewPaymentMonto" class="form-control bg-surface-2 text-white border-subtle rounded-3" value="250" min="1" step="10">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Método de Pago:</label>
+                            <select id="selectNewPaymentMetodo" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="QR Simple / Banco">QR Simple / Banco</option>
+                                <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                                <option value="Depósito">Depósito en Cuenta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-portal-primary rounded-3 px-4" style="width: auto;" onclick="window.Pagos.submitNewPayment()">
+                        <i class="bi bi-check2 me-1"></i> Registrar y Emitir Recibo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: REGISTRAR NUEVO FRATERNO EN PADRÓN -->
+    <div class="modal fade" id="modalNewMember" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus text-brand me-2"></i>Registrar Fraterno en Padrón 2026</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-secondary small mb-3">
+                        El fraterno quedará registrado con su número de CI y podrá acceder de inmediato al portal sin necesidad de contraseña previa.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary">Número de CI:</label>
+                            <input type="text" id="newMemberCI" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="ej: 7654321" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary">Expedido:</label>
+                            <select id="newMemberExp" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                                <option value="LP">LP</option>
+                                <option value="CB">CB</option>
+                                <option value="SC">SC</option>
+                                <option value="OR">OR</option>
+                                <option value="PT">PT</option>
+                                <option value="CH">CH</option>
+                                <option value="TJ">TJ</option>
+                                <option value="BN">BN</option>
+                                <option value="PA">PA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Teléfono / WhatsApp:</label>
+                            <input type="text" id="newMemberTelefono" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="+591 ...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Nombres:</label>
+                            <input type="text" id="newMemberNombres" class="form-control bg-surface-2 text-white border-subtle rounded-3" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Apellidos:</label>
+                            <input type="text" id="newMemberApellidos" class="form-control bg-surface-2 text-white border-subtle rounded-3" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small text-secondary">Bloque / Tropa:</label>
+                            <select id="newMemberBloque" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                                <option value="machas">Bloque Machas Wistus</option>
+                                <option value="imillas">Bloque Imillas Wistus</option>
+                                <option value="mayores">Bloque Tinkus Wistus Mayores</option>
+                                <option value="choclos">Bloque Choclos</option>
+                                <option value="wanllis">Bloque Semillero Wanllis</option>
+                                <option value="directiva">Directiva</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary">Rol Fraternal:</label>
+                            <select id="newMemberRol" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                                <option value="Fraterno Titular">Fraterno Titular</option>
+                                <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                <option value="Guía de Fila">Guía de Fila</option>
+                                <option value="Fundador Honorario">Fundador Honorario</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-secondary">Antigüedad (Años):</label>
+                            <input type="number" id="newMemberAntiguedad" class="form-control bg-surface-2 text-white border-subtle rounded-3" value="1" min="1" max="50">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-portal-primary rounded-3 px-4" style="width: auto;" onclick="window.Miembros.submitNewMember()">
+                        <i class="bi bi-check2 me-1"></i> Guardar en Padrón
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: FICHA COMPLETA / KARDEX DE FRATERNO -->
+    <div class="modal fade" id="modalMemberKardex" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard text-brand me-2"></i>Ficha del Fraterno &bull; Kardex Oficial</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <img src="assets/img/avatar-default.svg" id="kardexFoto" width="65" height="65" class="rounded-3 border border-secondary" alt="Avatar">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1" id="kardexNombre">Nombre</h5>
+                            <div class="text-brand font-mono fw-semibold small" id="kardexCI">CI: ---</div>
+                            <div class="text-secondary small">
+                                <span id="kardexBloque">Bloque</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-brand small text-uppercase mb-2"><i class="bi bi-calendar-check me-1"></i> Historial de Asistencias</h6>
+                            <div class="p-3 bg-surface-2 rounded-3 border border-subtle" id="kardexAsistenciasList" style="max-height: 240px; overflow-y: auto;"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-brand small text-uppercase mb-2"><i class="bi bi-receipt me-1"></i> Historial de Pagos</h6>
+                            <div class="p-3 bg-surface-2 rounded-3 border border-subtle" id="kardexPagosList" style="max-height: 240px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 8: CARGAR / EDITAR VOUCHER DE PAGO (ROL FRATERNO) -->
+    <div class="modal fade" id="modalUploadVoucher" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-upload text-brand me-2"></i>Cargar Voucher de Pago</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="uploadVoucherCuotaId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Cuota a Abonar / Pagar:</label>
+                        <input type="text" id="uploadVoucherCuotaTitle" class="form-control bg-surface-2 text-white border-subtle rounded-3" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Monto Depositado (Bs.):</label>
+                        <input type="number" id="uploadVoucherMonto" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="ej: 150" min="1" step="5" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Foto o Imagen del Comprobante (Voucher):</label>
+                        <input type="file" id="uploadVoucherFotoInput" class="form-control bg-surface-2 text-white border-subtle rounded-3" accept="image/*" onchange="window.Pagos.handleVoucherFileSelect(event)">
+                        <div class="form-text text-secondary small">Selecciona una fotografía clara de la transferencia o depósito bancario.</div>
+                    </div>
+
+                    <div id="uploadVoucherPreviewContainer" class="text-center p-3 bg-surface-2 rounded-3 border border-subtle d-none">
+                        <div class="small text-secondary mb-2">Vista Previa del Comprobante:</div>
+                        <img id="uploadVoucherPreviewImg" src="" alt="Voucher Preview" class="img-fluid rounded-3 border border-subtle shadow-sm" style="max-height: 250px; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-portal-primary rounded-3 px-4" style="width: auto;" onclick="window.Pagos.submitVoucherForm()">
+                        <i class="bi bi-send me-1"></i> Enviar Comprobante
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 9: VISUALIZAR Y VERIFICAR VOUCHER (ROL DIRECTIVA Y FRATERNO) -->
+    <div class="modal fade" id="modalViewVoucherImage" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-image text-brand me-2"></i>Comprobante de Pago Cargado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
+                        <img id="viewVoucherImgSrc" src="" alt="Comprobante completo" class="img-fluid rounded-3 shadow" style="max-height: 400px; object-fit: contain;">
+                    </div>
+
+                    <div class="row g-2 text-start p-3 bg-surface-2 rounded-3 border border-subtle small mb-2">
+                        <div class="col-md-6">
+                            <span class="text-secondary">Fraterno:</span> <strong id="viewVoucherFraternoNombre" class="text-white">---</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-secondary">CI:</span> <span id="viewVoucherFraternoCI" class="text-brand font-mono fw-bold">---</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-secondary">Cuota:</span> <span id="viewVoucherCuota" class="text-white">---</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-secondary">Monto Reportado:</span> <strong id="viewVoucherMonto" class="text-success fs-6">Bs. 0</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle d-flex justify-content-between">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cerrar</button>
+                    <div id="viewVoucherDirectivaActions" class="d-none">
+                        <button type="button" class="btn btn-outline-danger rounded-3 me-2" onclick="window.Pagos.rejectCurrentVoucher()">
+                            <i class="bi bi-x-circle me-1"></i> Rechazar Comprobante
+                        </button>
+                        <button type="button" class="btn btn-success rounded-3 px-4" onclick="window.Pagos.confirmCurrentVoucher()">
+                            <i class="bi bi-check-circle me-1"></i> Confirmar Pago
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GESTOR DE EVENTO (CREAR Y EDITAR - DIRECTIVA) -->
+    <div class="modal fade" id="modalEventEditor" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 text-white border border-subtle rounded-4 shadow-lg">
+                <div class="modal-header border-subtle">
+                    <h5 class="modal-title fw-bold" id="modalEventEditorTitle">
+                        <i class="bi bi-calendar-plus text-brand me-2"></i>Nuevo Evento Oficial
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formEventEditor" onsubmit="window.PortalApp.saveEvent(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="eventEditId" value="">
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary">Título del Evento / Convocatoria</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditTitle" required placeholder="Ej: 4to Ensayo General de Pasos">
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary">Tipo de Convocatoria</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="eventEditTipo" required>
+                                    <option value="Ensayo">Ensayo</option>
+                                    <option value="Recorrido">Recorrido</option>
+                                    <option value="Solemne">Solemne</option>
+                                    <option value="Entrada">Entrada</option>
+                                    <option value="Elección">Elección</option>
+                                    <option value="Confraternización">Confraternización</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary">Estado del Evento</label>
+                                <select class="form-select bg-dark text-white border-secondary" id="eventEditEstado" required>
+                                    <option value="proximo">Próximo</option>
+                                    <option value="activo">En Curso Hoy (Activo)</option>
+                                    <option value="finalizado">Finalizado / Realizado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary">Fecha</label>
+                                <input type="date" class="form-control bg-dark text-white border-secondary" id="eventEditFecha" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary">Horario</label>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditHora" placeholder="Ej: 15:00 - 19:00" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary">Lugar / Ubicación de Encuentro</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditLugar" placeholder="Ej: Sede Social Tinkus Wistus" required>
+                        </div>
+
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary">Puntos de Asistencia</label>
+                                <input type="number" min="0" max="100" class="form-control bg-dark text-white border-secondary" id="eventEditPuntos" value="10" required>
+                            </div>
+                            <div class="col-md-6 pt-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="eventEditObligatorio" checked>
+                                    <label class="form-check-label small text-white" for="eventEditObligatorio">Convocatoria Obligatoria</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-subtle">
+                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-brand rounded-pill px-4">
+                            <i class="bi bi-check-lg me-1"></i> Guardar Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TOAST FLOTANTE -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div id="toastNotification" class="toast align-items-center border-0 rounded-3 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-brand text-white border-0 rounded-top-3">
+                <i class="bi bi-bell-fill me-2"></i>
+                <strong class="me-auto text-white">Portal Fraternal</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body bg-surface-1 text-dark rounded-bottom-3 border-top border-subtle" id="toastMessage">
+                Acción completada.
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Módulos de la Aplicación -->
+    <script src="js/data.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/asistencias.js"></script>
+    <script src="js/pagos.js"></script>
+    <script src="js/miembros.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Actualizar visibilidad de navbars según el rol de la sesión activa
+        window.PortalState.subscribe((state) => {
+            const session = window.PortalState.getSession();
+            const navMember = document.getElementById('navMember');
+            const navControl = document.getElementById('navControl');
+
+            if (!session) {
+                if (navMember) navMember.classList.add('d-none');
+                if (navControl) navControl.classList.add('d-none');
+                return;
+            }
+
+            if (session.role === 'miembro') {
+                if (navMember) navMember.classList.remove('d-none');
+                if (navControl) navControl.classList.add('d-none');
+            } else if (session.role === 'control') {
+                if (navMember) navMember.classList.add('d-none');
+                if (navControl) navControl.classList.remove('d-none');
+            }
+        });
+    </script>
+</body>
+</html>

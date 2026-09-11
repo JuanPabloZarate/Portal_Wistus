@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120">
+  <defs>
+    <linearGradient id="textLilacGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#f5f3ff"/>
+      <stop offset="60%" stop-color="#c084fc"/>
+      <stop offset="85%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#e9d5ff"/>
+    </linearGradient>
+    <filter id="bannerShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#3b0764" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+  <g filter="url(#bannerShadow)">
+    <text x="300" y="36" text-anchor="middle" font-family="'Outfit', sans-serif" font-size="15" font-weight="800" fill="#c084fc" letter-spacing="6">FRATERNIDAD</text>
+    <text x="300" y="92" text-anchor="middle" font-family="'Outfit', sans-serif" font-size="52" font-weight="900" fill="url(#textLilacGrad)" letter-spacing="4">TINKUS WISTUS</text>
+  </g>
+</svg>
