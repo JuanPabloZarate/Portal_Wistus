@@ -5,14 +5,15 @@
  */
 
 const WistusFirebase = {
-    // Configuración base por defecto (Reemplazable desde la UI o cargada desde LocalStorage)
+    // Configuración oficial Firebase de producción (portal-wistus)
     defaultConfig: {
-        apiKey: "AIzaSyDummyKeyForPortalWistus2026-DemoOnly",
-        authDomain: "portal-tinkus-wistus.firebaseapp.com",
-        projectId: "portal-tinkus-wistus",
-        storageBucket: "portal-tinkus-wistus.appspot.com",
-        messagingSenderId: "102938475610",
-        appId: "1:102938475610:web:abcdef1234567890"
+        apiKey: "AIzaSyAcpWgQGE5oCZRQ3WF_YY9NDOUIK3XhN2k",
+        authDomain: "portal-wistus.firebaseapp.com",
+        projectId: "portal-wistus",
+        storageBucket: "portal-wistus.firebasestorage.app",
+        messagingSenderId: "659987268347",
+        appId: "1:659987268347:web:e03e6f622e54c87890e65e",
+        measurementId: "G-59FNR1RQ0R"
     },
 
     app: null,
