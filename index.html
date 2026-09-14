@@ -30,6 +30,9 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span id="cloudStatusBadge" class="chip chip-neutral small" style="cursor: pointer;" title="Configuración de Firebase / Cloud Firestore" data-bs-toggle="modal" data-bs-target="#modalFirebaseConfig">
+                <i class="bi bi-cloud-check-fill text-success"></i> <span id="cloudStatusText">Firebase</span>
+            </span>
             <span class="text-secondary small me-1 d-none d-lg-inline">Simular Rol:</span>
             <button class="demo-pill" id="quickSwitchMemberBase" title="Ingresar como Juan Pablo Quispe">
                 <i class="bi bi-person-fill text-brand"></i> Miembro (Juan Pablo)
@@ -1321,8 +1324,73 @@
         </div>
     </div>
 
+    <!-- MODAL: CONFIGURACIÓN FIREBASE CLOUD FIRESTORE -->
+    <div class="modal fade" id="modalFirebaseConfig" tabindex="-1" aria-labelledby="modalFirebaseConfigLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg bg-surface-1">
+                <div class="modal-header bg-brand text-white border-0 rounded-top-4">
+                    <h5 class="modal-title fw-bold" id="modalFirebaseConfigLabel">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i> Configuración Firebase Firestore
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-secondary small mb-3">
+                        Conecta el Portal Fraternal a tu propio proyecto de <strong>Google Firebase / Cloud Firestore</strong> para sincronización en tiempo real y base de datos multiusuario. Si no se configuran claves, el portal opera en modo local reactivo (LocalStorage + IndexedDB).
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Estado Actual</label>
+                        <div id="firebaseCurrentStatusInfo" class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-0">
+                            <i class="bi bi-info-circle-fill"></i> Sincronización activa
+                        </div>
+                    </div>
+
+                    <form id="formFirebaseConfig">
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold text-secondary">API Key</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="fbCfgApiKey" placeholder="AIzaSy...">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold text-secondary">Project ID</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="fbCfgProjectId" placeholder="mi-portal-wistus">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold text-secondary">Auth Domain</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="fbCfgAuthDomain" placeholder="mi-portal-wistus.firebaseapp.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary">App ID</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="fbCfgAppId" placeholder="1:123456789:web:abcdef">
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-subtle">
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" id="btnResetFbConfig">
+                                <i class="bi bi-trash me-1"></i> Restaurar Defecto
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-brand btn-sm rounded-pill px-3">
+                                    <i class="bi bi-check2 me-1"></i> Guardar y Conectar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase SDK v10 (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Configuración Cloud & Base de Datos -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/db-service.js"></script>
 
     <!-- Módulos de la Aplicación -->
     <script src="js/data.js"></script>
@@ -1352,6 +1420,69 @@
             } else if (session.role === 'control') {
                 if (navMember) navMember.classList.add('d-none');
                 if (navControl) navControl.classList.remove('d-none');
+            }
+        });
+
+        // Inicialización y actualización de DBService y UI de Conexión
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.DBService) {
+                window.DBService.onStatusChange(status => {
+                    const badge = document.getElementById('cloudStatusBadge');
+                    const text = document.getElementById('cloudStatusText');
+                    const infoAlert = document.getElementById('firebaseCurrentStatusInfo');
+
+                    if (badge && text) {
+                        if (status.isCloudActive) {
+                            badge.className = 'chip chip-purple small';
+                            badge.innerHTML = '<i class="bi bi-cloud-check-fill text-success"></i> <span>Nube Firebase</span>';
+                        } else {
+                            badge.className = 'chip chip-neutral small';
+                            badge.innerHTML = '<i class="bi bi-hdd-fill text-warning"></i> <span>Modo Local</span>';
+                        }
+                    }
+
+                    if (infoAlert) {
+                        infoAlert.innerHTML = `<i class="bi bi-info-circle-fill"></i> ${status.provider} (${status.isOnline ? 'Online' : 'Offline'})`;
+                    }
+                });
+
+                await window.DBService.init();
+            }
+
+            // Gestión del formulario modal de Firebase
+            const formFb = document.getElementById('formFirebaseConfig');
+            const btnResetFb = document.getElementById('btnResetFbConfig');
+            if (window.WistusFirebase) {
+                const currentCfg = window.WistusFirebase.getConfig();
+                if (document.getElementById('fbCfgApiKey')) document.getElementById('fbCfgApiKey').value = currentCfg.apiKey || '';
+                if (document.getElementById('fbCfgProjectId')) document.getElementById('fbCfgProjectId').value = currentCfg.projectId || '';
+                if (document.getElementById('fbCfgAuthDomain')) document.getElementById('fbCfgAuthDomain').value = currentCfg.authDomain || '';
+                if (document.getElementById('fbCfgAppId')) document.getElementById('fbCfgAppId').value = currentCfg.appId || '';
+            }
+
+            if (formFb) {
+                formFb.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newCfg = {
+                        apiKey: document.getElementById('fbCfgApiKey').value.trim(),
+                        projectId: document.getElementById('fbCfgProjectId').value.trim(),
+                        authDomain: document.getElementById('fbCfgAuthDomain').value.trim(),
+                        appId: document.getElementById('fbCfgAppId').value.trim(),
+                    };
+                    if (window.WistusFirebase) {
+                        window.WistusFirebase.saveCustomConfig(newCfg);
+                    }
+                });
+            }
+
+            if (btnResetFb) {
+                btnResetFb.addEventListener('click', () => {
+                    if (confirm('¿Deseas restaurar la configuración predeterminada de Firebase?')) {
+                        if (window.WistusFirebase) {
+                            window.WistusFirebase.resetConfig();
+                        }
+                    }
+                });
             }
         });
     </script>

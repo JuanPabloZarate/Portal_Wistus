@@ -126,6 +126,11 @@ class PortalStateManager {
         };
         this.state.miembros.push(newMember);
         this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.saveFraterno(newMember).catch(err => console.warn(err));
+        }
+
         return newMember;
     }
 
@@ -134,6 +139,11 @@ class PortalStateManager {
         if (!member) throw new Error('Miembro no encontrado');
         Object.assign(member, updates);
         this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.saveFraterno(member).catch(err => console.warn(err));
+        }
+
         return member;
     }
 
@@ -155,6 +165,18 @@ class PortalStateManager {
         };
 
         this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.saveAsistencia({
+                ci: String(ci),
+                eventoId: String(eventId),
+                estado: estado,
+                hora: horaStr,
+                marcado_por: marcadoPor,
+                timestamp: now.toISOString()
+            }).catch(err => console.warn(err));
+        }
+
         return member.asistencias[eventId];
     }
 
@@ -210,6 +232,14 @@ class PortalStateManager {
 
         member.pagos.unshift(newPayment);
         this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.savePago({
+                ...newPayment,
+                ci: String(ci)
+            }).catch(err => console.warn(err));
+        }
+
         return newPayment;
     }
 
@@ -321,6 +351,11 @@ class PortalStateManager {
         };
         this.state.eventos.push(newEvent);
         this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.saveEvento(newEvent).catch(err => console.warn(err));
+        }
+
         return newEvent;
     }
 
@@ -339,6 +374,11 @@ class PortalStateManager {
                 puntos_asistencia: eventData.puntos_asistencia !== undefined ? parseInt(eventData.puntos_asistencia, 10) : this.state.eventos[index].puntos_asistencia
             };
             this.saveState();
+
+            if (window.DBService && window.DBService.isCloudActive) {
+                window.DBService.saveEvento(this.state.eventos[index]).catch(err => console.warn(err));
+            }
+
             return this.state.eventos[index];
         }
         return null;
@@ -354,7 +394,92 @@ class PortalStateManager {
         }
         return false;
     }
+
+    // --- MÉTODOS DE SINCRONIZACIÓN REALTIME / DBSERVICE ---
+    setPadron(miembros, notifyState = true) {
+        if (Array.isArray(miembros)) {
+            this.state.miembros = miembros;
+            if (notifyState) this.saveState();
+            else this.notify();
+        }
+    }
+
+    setEventos(eventos, notifyState = true) {
+        if (Array.isArray(eventos)) {
+            this.state.eventos = eventos;
+            if (notifyState) this.saveState();
+            else this.notify();
+        }
+    }
+
+    setAvisos(avisos, notifyState = true) {
+        if (Array.isArray(avisos)) {
+            this.state.avisos = avisos;
+            if (notifyState) this.saveState();
+            else this.notify();
+        }
+    }
+
+    setPagos(pagos, notifyState = true) {
+        if (Array.isArray(pagos)) {
+            // Mapear pagos a miembros según CI
+            pagos.forEach(p => {
+                if (p.ci) {
+                    const m = this.getMemberByCI(p.ci);
+                    if (m) {
+                        if (!m.pagos) m.pagos = [];
+                        const exists = m.pagos.some(mp => mp.id === p.id || (mp.cuota_id === p.cuota_id && mp.monto === p.monto));
+                        if (!exists) m.pagos.unshift(p);
+                    }
+                }
+            });
+            if (notifyState) this.saveState();
+            else this.notify();
+        }
+    }
+
+    setAsistencias(asistencias, notifyState = true) {
+        if (Array.isArray(asistencias)) {
+            asistencias.forEach(a => {
+                if (a.ci && a.eventoId) {
+                    const m = this.getMemberByCI(a.ci);
+                    if (m) {
+                        if (!m.asistencias) m.asistencias = {};
+                        m.asistencias[a.eventoId] = a;
+                    }
+                }
+            });
+            if (notifyState) this.saveState();
+            else this.notify();
+        }
+    }
+
+    addOrUpdateFraterno(fraterno) {
+        const existing = this.getMemberByCI(fraterno.ci);
+        if (existing) {
+            return this.updateMember(fraterno.ci, fraterno);
+        } else {
+            return this.addMember(fraterno);
+        }
+    }
+
+    addAsistencia(registro) {
+        return this.markAttendance(registro.ci, registro.eventoId, registro.estado, registro.marcado_por);
+    }
+
+    addPago(pago) {
+        return this.registerPayment(pago.ci, pago);
+    }
+
+    addAviso(aviso) {
+        if (!this.state.avisos) this.state.avisos = [];
+        this.state.avisos.unshift(aviso);
+        this.saveState();
+        return aviso;
+    }
 }
 
-// Instancia global
+// Instancia global accesible como PortalState y StateManager
 window.PortalState = new PortalStateManager();
+window.StateManager = window.PortalState;
+
