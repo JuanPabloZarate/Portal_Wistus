@@ -1,0 +1,9 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Almacenamiento para fotos de perfil y comprobantes de pago / vouchers
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
