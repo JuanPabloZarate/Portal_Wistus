@@ -147,49 +147,161 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VISTAS DE ROL FRATERNO / MIEMBRO                                          -->
+    <!-- SHELL PRINCIPAL AUTENTICADO: SIDEBAR + TOPBAR + VISTAS + BOTTOM NAV       -->
     <!-- ========================================================================= -->
+    <!-- Elementos invisibles para compatibilidad retroactiva -->
+    <nav id="navMember" class="d-none"></nav>
+    <nav id="navControl" class="d-none"></nav>
 
-    <!-- BARRA DE NAVEGACIÓN FRATERNO (Visible cuando hay sesión de miembro) -->
-    <nav id="navMember" class="portal-navbar d-none">
-        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div class="d-flex align-items-center gap-3">
-                <img src="assets/img/wistus-badge.svg" width="36" height="36" alt="Logo" class="rounded-circle border border-secondary" data-mb="escudo">
-                <div>
-                    <h6 class="fw-bold mb-0 text-white" data-mb="short-name">Tinkus Wistus</h6>
-                    <span class="small text-secondary">Portal del Fraterno &bull; <span data-mb="year">2026</span></span>
-                </div>
-            </div>
+    <div id="appShell" class="portal-layout-wrapper d-none">
+        
+        <!-- Backdrop para Drawer Móvil -->
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
-            <div class="d-flex align-items-center gap-1 flex-wrap portal-nav-pills">
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-dashboard">
-                    <i class="bi bi-grid-1x2"></i> <span>Inicio</span>
+        <!-- PANEL LATERAL IZQUIERDO (SIDEBAR) -->
+        <aside id="appSidebar" class="portal-sidebar">
+            <!-- Cabecera del Sidebar con Logotipo y Marca -->
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-brand" onclick="window.PortalApp.navigateHome(); return false;">
+                    <img src="assets/img/wistus-badge.svg" alt="Logo Wistus" class="sidebar-brand-logo" data-mb="escudo">
+                    <div>
+                        <div class="sidebar-brand-name" data-mb="short-name">Tinkus Wistus</div>
+                        <div class="sidebar-brand-subtitle text-muted">Entrada Univ. <span data-mb="year">2026</span></div>
+                    </div>
                 </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-pagos">
-                    <i class="bi bi-wallet2"></i> <span>1. Pagos & Cuotas</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-eventos">
-                    <i class="bi bi-calendar3"></i> <span>2. Calendario de Eventos</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-credencial">
-                    <i class="bi bi-qr-code"></i> <span>3. QR de Asistencia</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="member-asistencias">
-                    <i class="bi bi-calendar-check"></i> <span>Historial Asistencias</span>
-                </a>
-            </div>
-
-            <div class="d-flex align-items-center gap-3">
-                <div class="text-end d-none d-sm-block">
-                    <div class="fw-bold text-white small member-val-nombre">Fraterno</div>
-                    <div class="text-muted small member-val-bloque">Bloque</div>
-                </div>
-                <button class="btn btn-outline-danger btn-sm rounded-3 btn-logout-action" title="Cerrar Sesión">
-                    <i class="bi bi-box-arrow-right"></i> Salir
+                <button class="btn btn-sm text-secondary d-none d-lg-flex align-items-center justify-content-center p-1" id="btnToggleSidebarCollapse" title="Colapsar panel lateral">
+                    <i class="bi bi-chevron-left" id="iconSidebarCollapse"></i>
                 </button>
             </div>
-        </div>
-    </nav>
+
+            <!-- Tarjeta Mini de Usuario Activo -->
+            <div class="sidebar-user-card">
+                <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="sidebarUserName">Cargando...</div>
+                    <div class="sidebar-user-sub" id="sidebarUserSub">Fraterno Titular</div>
+                </div>
+            </div>
+
+            <!-- Navegación Dinámica por Secciones -->
+            <div class="sidebar-nav">
+                <!-- SECCIÓN ROL FRATERNO -->
+                <div id="sidebarSectionMember" class="d-none">
+                    <span class="sidebar-category-label">Portal Fraterno</span>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="member-dashboard">
+                        <i class="bi bi-grid-1x2"></i>
+                        <span>Inicio</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="member-pagos">
+                        <i class="bi bi-wallet2"></i>
+                        <span>1. Pagos & Cuotas</span>
+                        <span class="sidebar-badge" id="sidebarBadgePagos" style="display:none;">Pendiente</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="member-eventos">
+                        <i class="bi bi-calendar3"></i>
+                        <span>2. Calendario Eventos</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="member-credencial">
+                        <i class="bi bi-qr-code"></i>
+                        <span>3. Mi Credencial QR</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="member-asistencias">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Historial Asistencias</span>
+                    </a>
+                </div>
+
+                <!-- SECCIÓN ROL CONTROL / DIRECTIVA -->
+                <div id="sidebarSectionControl" class="d-none">
+                    <span class="sidebar-category-label">Mesa Directiva</span>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-dashboard">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span>Métricas Globales</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-asistencias">
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span>Terminal Asistencias</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-pagos">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Libro de Cuotas</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-directorio">
+                        <i class="bi bi-people"></i>
+                        <span>Cobros & Padrón</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-eventos">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Gestión Eventos</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Pie del Sidebar -->
+            <div class="sidebar-footer">
+                <button class="sidebar-footer-btn d-none" id="btnSidebarMarca" onclick="document.getElementById('quickOpenMarcaBlanca').click()">
+                    <i class="bi bi-palette"></i>
+                    <span>Personalizar Marca</span>
+                </button>
+                <button class="sidebar-footer-btn btn-logout-sidebar btn-logout-action">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ÁREA PRINCIPAL DERECHA -->
+        <div class="portal-main-area">
+            <!-- BARRA SUPERIOR (TOP BAR) -->
+            <header class="portal-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Botón Hamburguesa Móvil -->
+                    <button class="btn btn-link text-dark p-1 d-lg-none" id="btnOpenSidebarMobile" title="Abrir menú lateral">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+
+                    <!-- Migas de Pan (Breadcrumbs) -->
+                    <div class="topbar-breadcrumbs" id="topbarBreadcrumbs">
+                        <span class="topbar-breadcrumb-item"><i class="bi bi-shield-shaded text-brand"></i> <span id="breadcrumbSection">Portal</span></span>
+                        <span class="topbar-breadcrumb-separator"><i class="bi bi-chevron-right"></i></span>
+                        <span class="topbar-breadcrumb-active" id="breadcrumbCurrentPage">Inicio</span>
+                    </div>
+                </div>
+
+                <!-- Buscador Command Palette Trigger -->
+                <button class="topbar-search-trigger" id="btnOpenCommandPalette" title="Búsqueda rápida (Ctrl + K)">
+                    <i class="bi bi-search"></i>
+                    <span>Buscar vista o fraterno...</span>
+                    <kbd class="kbd-shortcut">Ctrl K</kbd>
+                </button>
+
+                <!-- Acciones Rápidas Superior Derecha -->
+                <div class="d-flex align-items-center gap-2">
+                    <span id="cloudStatusBadgeTop" class="chip chip-neutral small d-none d-sm-inline-flex" style="cursor: pointer;" title="Configuración Cloud" data-bs-toggle="modal" data-bs-target="#modalFirebaseConfig">
+                        <i class="bi bi-cloud-check-fill text-success"></i> <span id="cloudStatusTextTop">Firebase</span>
+                    </span>
+
+                    <!-- Dropdown Simular Rol / Demo Discreto -->
+                    <div class="dropdown">
+                        <button class="btn btn-brand-subtle btn-sm rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-sliders me-1"></i> <span class="d-none d-md-inline">Simular Rol</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-subtle rounded-3 p-2">
+                            <li><h6 class="dropdown-header small text-uppercase">Cambiar Perfil de Prueba</h6></li>
+                            <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsMember('4839201'); return false;"><i class="bi bi-person-fill text-brand me-2"></i>Juan Pablo (Machas)</a></li>
+                            <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsMember('6892341'); return false;"><i class="bi bi-person-check-fill text-info me-2"></i>Maria Elena (Imillas)</a></li>
+                            <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsControl('control', 'wistus2026'); return false;"><i class="bi bi-shield-lock-fill text-purple me-2"></i>Directiva / Control</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded-2 small py-2 text-danger" href="#" onclick="document.getElementById('btnResetPortalData').click(); return false;"><i class="bi bi-arrow-counterclockwise me-2"></i>Restablecer Datos Demo</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENEDOR DE VISTAS DE PÁGINA -->
+            <div class="portal-content-body">
 
     <!-- SUBPÁGINA 1: DASHBOARD FRATERNO -->
     <div id="view-member-dashboard" class="app-view container py-4 d-none">
@@ -420,47 +532,6 @@
     <!-- VISTAS DE ROL CONTROL / DIRECTIVA                                         -->
     <!-- ========================================================================= -->
 
-    <!-- BARRA DE NAVEGACIÓN CONTROL (Visible cuando hay sesión de control) -->
-    <nav id="navControl" class="portal-navbar d-none">
-        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div class="d-flex align-items-center gap-3">
-                <img src="assets/img/wistus-badge.svg" width="36" height="36" alt="Logo" class="rounded-circle border border-secondary" data-mb="escudo">
-                <div>
-                    <h6 class="fw-bold mb-0 text-white" data-mb="short-name">Tinkus Wistus</h6>
-                    <span class="chip chip-purple" style="font-size: 0.72rem;">
-                        <i class="bi bi-shield-check me-1"></i> Panel de Control
-                    </span>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center gap-1 flex-wrap portal-nav-pills">
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-dashboard">
-                    <i class="bi bi-bar-chart-line"></i> <span>Métricas</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-asistencias">
-                    <i class="bi bi-qr-code-scan"></i> <span>Terminal Asistencias</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-pagos">
-                    <i class="bi bi-journal-text"></i> <span>Libro de Cuotas</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-directorio">
-                    <i class="bi bi-people"></i> <span>Cobros</span>
-                </a>
-                <a href="#" class="nav-link nav-link-subpage" data-subpage="control-eventos">
-                    <i class="bi bi-calendar-event"></i> <span>Eventos</span>
-                </a>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-brand-subtle btn-sm rounded-3" onclick="document.getElementById('quickOpenMarcaBlanca').click()">
-                    <i class="bi bi-palette me-1"></i> Marca
-                </button>
-                <button class="btn btn-outline-danger btn-sm rounded-3 btn-logout-action">
-                    <i class="bi bi-box-arrow-right"></i> Salir
-                </button>
-            </div>
-        </div>
-    </nav>
 
     <!-- SUBPÁGINA 6: DASHBOARD CONTROL (MÉTRICAS GLOBALES) -->
     <div id="view-control-dashboard" class="app-view container py-4 d-none">
@@ -870,10 +941,45 @@
         </div>
     </div>
 
+            </div> <!-- Fin .portal-content-body -->
+        </div> <!-- Fin .portal-main-area -->
+
+        <!-- BARRA INFERIOR FIJA PARA DISPOSITIVOS MÓVILES (BOTTOM NAV) -->
+        <nav class="mobile-bottom-nav" id="mobileBottomNav">
+            <!-- Pestañas inyectadas dinámicamente según rol -->
+        </nav>
+
+    </div> <!-- Fin #appShell -->
+
+
+    <!-- ========================================================================= -->
+    <!-- COMMAND PALETTE (CTRL + K) - BÚSQUEDA RÁPIDA GLOBAL                       -->
+    <!-- ========================================================================= -->
+    <div class="modal fade command-palette-modal" id="commandPaletteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content command-palette-card border-0">
+                <div class="command-palette-header">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="commandPaletteInput" class="command-palette-input" placeholder="Escribe para buscar (ej. Pagos, QR, o un Fraterno)..." autocomplete="off">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="command-palette-body" id="commandPaletteResults">
+                    <!-- Resultados cargados dinámicamente -->
+                </div>
+                <div class="command-palette-footer">
+                    <span><kbd class="kbd-shortcut">↑</kbd> <kbd class="kbd-shortcut">↓</kbd> navegar</span>
+                    <span><kbd class="kbd-shortcut">Enter</kbd> seleccionar</span>
+                    <span><kbd class="kbd-shortcut">Esc</kbd> cerrar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ========================================================================= -->
     <!-- MODALES DE LA APLICACIÓN                                                  -->
     <!-- ========================================================================= -->
+
 
     <!-- MODAL 2: CONFIGURACIÓN Y SERVICIOS ADICIONALES -->
 
@@ -1429,17 +1535,23 @@
                 window.DBService.onStatusChange(status => {
                     const badge = document.getElementById('cloudStatusBadge');
                     const text = document.getElementById('cloudStatusText');
+                    const badgeTop = document.getElementById('cloudStatusBadgeTop');
+                    const textTop = document.getElementById('cloudStatusTextTop');
                     const infoAlert = document.getElementById('firebaseCurrentStatusInfo');
 
-                    if (badge && text) {
+                    const updateBadgeEl = (b, t) => {
+                        if (!b || !t) return;
                         if (status.isCloudActive) {
-                            badge.className = 'chip chip-purple small';
-                            badge.innerHTML = '<i class="bi bi-cloud-check-fill text-success"></i> <span>Nube Firebase</span>';
+                            b.className = 'chip chip-purple small';
+                            b.innerHTML = '<i class="bi bi-cloud-check-fill text-success"></i> <span>Nube Firebase</span>';
                         } else {
-                            badge.className = 'chip chip-neutral small';
-                            badge.innerHTML = '<i class="bi bi-hdd-fill text-warning"></i> <span>Modo Local</span>';
+                            b.className = 'chip chip-neutral small';
+                            b.innerHTML = '<i class="bi bi-hdd-fill text-warning"></i> <span>Modo Local</span>';
                         }
-                    }
+                    };
+
+                    updateBadgeEl(badge, text);
+                    updateBadgeEl(badgeTop, textTop);
 
                     if (infoAlert) {
                         infoAlert.innerHTML = `<i class="bi bi-info-circle-fill"></i> ${status.provider} (${status.isOnline ? 'Online' : 'Offline'})`;

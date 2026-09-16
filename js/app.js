@@ -13,8 +13,16 @@ class PortalAppManager {
         document.addEventListener('DOMContentLoaded', () => {
             this.bindNavigationEvents();
             this.bindQuickBarEvents();
+            this.initLayoutEvents();
+            this.initCommandPalette();
+            this.checkInitialSidebarState();
+            if (window.PortalState) {
+                this.updateLayoutSession(window.PortalState.getSession());
+            }
         });
-        window.PortalState.subscribe(() => {
+        window.PortalState.subscribe((state) => {
+            const session = window.PortalState.getSession();
+            this.updateLayoutSession(session);
             if (this.currentView === 'member-eventos') this.renderEventsTimeline();
             if (this.currentView === 'control-eventos') this.renderEventsTimeline(true);
         });
@@ -36,14 +44,19 @@ class PortalAppManager {
             target.classList.add('animate__animated', 'animate__fadeIn');
         }
 
-        // Actualizar barra de navegación activa
-        document.querySelectorAll('.nav-link-subpage').forEach(link => {
+        // Actualizar elementos de navegación activos (Sidebar, Pills, BottomNav)
+        document.querySelectorAll('.nav-link-subpage, .sidebar-nav-item, .bottom-nav-item').forEach(link => {
             if (link.getAttribute('data-subpage') === viewName) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');
             }
         });
+
+        // Actualizar migas de pan y barra inferior móvil
+        this.updateBreadcrumbs(viewName);
+        this.updateMobileBottomNav(viewName);
+        this.closeMobileDrawer();
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -61,6 +74,17 @@ class PortalAppManager {
         if (viewName === 'control-eventos') this.renderEventsTimeline(true);
     }
 
+    navigateHome() {
+        const session = window.PortalState.getSession();
+        if (session && session.role === 'control') {
+            this.showView('control-dashboard');
+        } else if (session && session.role === 'miembro') {
+            this.showView('member-dashboard');
+        } else {
+            this.showView('login');
+        }
+    }
+
     navigateToDashboard(role) {
         if (role === 'miembro') {
             this.showView('member-dashboard');
@@ -68,6 +92,431 @@ class PortalAppManager {
             this.showView('control-dashboard');
         } else {
             this.showView('login');
+        }
+    }
+
+    updateBreadcrumbs(viewName) {
+        const breadcrumbSection = document.getElementById('breadcrumbSection');
+        const breadcrumbCurrentPage = document.getElementById('breadcrumbCurrentPage');
+        if (!breadcrumbSection || !breadcrumbCurrentPage) return;
+
+        const breadcrumbsMap = {
+            'login': { section: 'Acceso', title: 'Iniciar Sesión' },
+            'member-dashboard': { section: 'Portal Fraterno', title: 'Inicio' },
+            'member-pagos': { section: 'Portal Fraterno', title: '1. Pagos & Cuotas' },
+            'member-eventos': { section: 'Portal Fraterno', title: '2. Calendario de Eventos' },
+            'member-credencial': { section: 'Portal Fraterno', title: '3. Mi Credencial QR' },
+            'member-asistencias': { section: 'Portal Fraterno', title: 'Historial de Asistencias' },
+            'control-dashboard': { section: 'Panel de Control', title: 'Métricas Globales' },
+            'control-asistencias': { section: 'Panel de Control', title: 'Terminal de Asistencias' },
+            'control-pagos': { section: 'Panel de Control', title: 'Libro de Cuotas' },
+            'control-directorio': { section: 'Panel de Control', title: 'Cobros & Padrón' },
+            'control-eventos': { section: 'Panel de Control', title: 'Gestión de Eventos' }
+        };
+
+        const info = breadcrumbsMap[viewName] || { section: 'Portal', title: viewName };
+        breadcrumbSection.textContent = info.section;
+        breadcrumbCurrentPage.textContent = info.title;
+    }
+
+    updateLayoutSession(session) {
+        const appShell = document.getElementById('appShell');
+        const viewLogin = document.getElementById('view-login');
+        const sectionMember = document.getElementById('sidebarSectionMember');
+        const sectionControl = document.getElementById('sidebarSectionControl');
+        const btnMarca = document.getElementById('btnSidebarMarca');
+        const nameEl = document.getElementById('sidebarUserName');
+        const subEl = document.getElementById('sidebarUserSub');
+        const avatarEl = document.getElementById('sidebarUserAvatar');
+
+        if (!session || !session.role) {
+            if (appShell) appShell.classList.add('d-none');
+            if (viewLogin) viewLogin.classList.remove('d-none');
+            return;
+        }
+
+        // Sesión activa: mostrar shell maestro y ocultar pantalla de login
+        if (appShell) appShell.classList.remove('d-none');
+        if (viewLogin) viewLogin.classList.add('d-none');
+
+        // Actualizar mini perfil del usuario en el sidebar
+        if (nameEl) nameEl.textContent = session.nombre_completo || session.username || 'Fraterno';
+        if (subEl) {
+            subEl.textContent = session.role === 'control' 
+                ? 'Directiva & Control' 
+                : (session.bloque_nombre || 'Fraterno Titular');
+        }
+        if (avatarEl) {
+            const initial = (session.nombre_completo || session.username || 'W').charAt(0).toUpperCase();
+            avatarEl.textContent = initial;
+        }
+
+        // Conmutar secciones de menú según el rol
+        if (session.role === 'miembro') {
+            if (sectionMember) sectionMember.classList.remove('d-none');
+            if (sectionControl) sectionControl.classList.add('d-none');
+            if (btnMarca) btnMarca.classList.add('d-none');
+            this.renderMobileBottomNav('miembro');
+        } else if (session.role === 'control') {
+            if (sectionMember) sectionMember.classList.add('d-none');
+            if (sectionControl) sectionControl.classList.remove('d-none');
+            if (btnMarca) btnMarca.classList.remove('d-none');
+            this.renderMobileBottomNav('control');
+        }
+    }
+
+    renderMobileBottomNav(role) {
+        const nav = document.getElementById('mobileBottomNav');
+        if (!nav) return;
+
+        if (role === 'miembro') {
+            nav.innerHTML = `
+                <a href="#" class="bottom-nav-item ${this.currentView === 'member-dashboard' ? 'active' : ''}" data-subpage="member-dashboard">
+                    <i class="bi bi-house-door"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'member-pagos' ? 'active' : ''}" data-subpage="member-pagos">
+                    <i class="bi bi-wallet2"></i>
+                    <span>Cuotas</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'member-eventos' ? 'active' : ''}" data-subpage="member-eventos">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Eventos</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'member-credencial' ? 'active' : ''}" data-subpage="member-credencial">
+                    <i class="bi bi-qr-code"></i>
+                    <span>Mi QR</span>
+                </a>
+            `;
+        } else if (role === 'control') {
+            nav.innerHTML = `
+                <a href="#" class="bottom-nav-item ${this.currentView === 'control-dashboard' ? 'active' : ''}" data-subpage="control-dashboard">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Métricas</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'control-asistencias' ? 'active' : ''}" data-subpage="control-asistencias">
+                    <i class="bi bi-qr-code-scan"></i>
+                    <span>Terminal</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'control-pagos' ? 'active' : ''}" data-subpage="control-pagos">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Libro</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'control-directorio' ? 'active' : ''}" data-subpage="control-directorio">
+                    <i class="bi bi-people"></i>
+                    <span>Padrón</span>
+                </a>
+            `;
+        }
+    }
+
+    updateMobileBottomNav(viewName) {
+        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+            if (item.getAttribute('data-subpage') === viewName) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    initLayoutEvents() {
+        // Toggle Colapsar Sidebar en Escritorio
+        const btnCollapse = document.getElementById('btnToggleSidebarCollapse');
+        const sidebar = document.getElementById('appSidebar');
+        const iconCollapse = document.getElementById('iconSidebarCollapse');
+
+        if (btnCollapse && sidebar) {
+            btnCollapse.addEventListener('click', () => {
+                sidebar.classList.toggle('sidebar-collapsed');
+                const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                localStorage.setItem('portal_sidebar_collapsed', isCollapsed ? '1' : '0');
+                if (iconCollapse) {
+                    iconCollapse.className = isCollapsed ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+                }
+            });
+        }
+
+        // Toggle Drawer Móvil
+        const btnOpenMobile = document.getElementById('btnOpenSidebarMobile');
+        const backdrop = document.getElementById('sidebarBackdrop');
+
+        if (btnOpenMobile) {
+            btnOpenMobile.addEventListener('click', () => {
+                this.openMobileDrawer();
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', () => {
+                this.closeMobileDrawer();
+            });
+        }
+    }
+
+    openMobileDrawer() {
+        const sidebar = document.getElementById('appSidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        if (sidebar) sidebar.classList.add('sidebar-open-mobile');
+        if (backdrop) backdrop.classList.add('active');
+    }
+
+    closeMobileDrawer() {
+        const sidebar = document.getElementById('appSidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        if (sidebar) sidebar.classList.remove('sidebar-open-mobile');
+        if (backdrop) backdrop.classList.remove('active');
+    }
+
+    checkInitialSidebarState() {
+        const isCollapsed = localStorage.getItem('portal_sidebar_collapsed') === '1';
+        const sidebar = document.getElementById('appSidebar');
+        const iconCollapse = document.getElementById('iconSidebarCollapse');
+        if (isCollapsed && sidebar && window.innerWidth >= 992) {
+            sidebar.classList.add('sidebar-collapsed');
+            if (iconCollapse) iconCollapse.className = 'bi bi-chevron-right';
+        }
+    }
+
+    // --- COMMAND PALETTE (CTRL + K) ---
+    initCommandPalette() {
+        // Atajo de teclado global Ctrl+K o Cmd+K
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                this.openCommandPalette();
+            }
+        });
+
+        // Botón disparador en topbar
+        const triggerBtn = document.getElementById('btnOpenCommandPalette');
+        if (triggerBtn) {
+            triggerBtn.addEventListener('click', () => {
+                this.openCommandPalette();
+            });
+        }
+
+        // Búsqueda en tiempo real dentro del input
+        const searchInput = document.getElementById('commandPaletteInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.renderCommandPaletteResults(e.target.value.trim());
+            });
+
+            // Navegación con teclado (Arriba, Abajo, Enter)
+            searchInput.addEventListener('keydown', (e) => {
+                const resultsContainer = document.getElementById('commandPaletteResults');
+                if (!resultsContainer) return;
+
+                const items = Array.from(resultsContainer.querySelectorAll('.command-palette-item'));
+                if (items.length === 0) return;
+
+                const currentIndex = items.findIndex(item => item.classList.contains('active-item'));
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                    items.forEach((it, idx) => it.classList.toggle('active-item', idx === nextIndex));
+                    items[nextIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const prevIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                    items.forEach((it, idx) => it.classList.toggle('active-item', idx === prevIndex));
+                    items[prevIndex].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const activeItem = items[currentIndex >= 0 ? currentIndex : 0];
+                    if (activeItem) activeItem.click();
+                }
+            });
+        }
+
+        // Delegación de clic sobre elementos del command palette
+        const resultsEl = document.getElementById('commandPaletteResults');
+        if (resultsEl) {
+            resultsEl.addEventListener('click', (e) => {
+                const item = e.target.closest('.command-palette-item');
+                if (item) {
+                    const actionType = item.getAttribute('data-action-type');
+                    const actionVal = item.getAttribute('data-action-val');
+                    this.executeCommandPaletteAction(actionType, actionVal);
+                }
+            });
+        }
+    }
+
+    openCommandPalette() {
+        const modalEl = document.getElementById('commandPaletteModal');
+        if (!modalEl || !window.bootstrap) return;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+
+        setTimeout(() => {
+            const input = document.getElementById('commandPaletteInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            this.renderCommandPaletteResults('');
+        }, 150);
+    }
+
+    closeCommandPalette() {
+        const modalEl = document.getElementById('commandPaletteModal');
+        if (!modalEl || !window.bootstrap) return;
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
+
+    renderCommandPaletteResults(query = '') {
+        const container = document.getElementById('commandPaletteResults');
+        if (!container) return;
+
+        const q = query.toLowerCase();
+        const session = window.PortalState.getSession();
+        const isControl = session && session.role === 'control';
+
+        // 1. Catálogo de Vistas según rol
+        const viewsCatalog = isControl ? [
+            { id: 'control-dashboard', title: 'Métricas Globales', desc: 'Panel resumen de fraternos y recaudación', icon: 'bi-bar-chart-line', badge: 'Vista' },
+            { id: 'control-asistencias', title: 'Terminal de Asistencias', desc: 'Escáner QR y pase de lista por bloque', icon: 'bi-qr-code-scan', badge: 'Vista' },
+            { id: 'control-pagos', title: 'Libro de Cuotas', desc: 'Registro de aportes y cobro rápido', icon: 'bi-journal-text', badge: 'Vista' },
+            { id: 'control-directorio', title: 'Cobros & Directorio', desc: 'Padrón oficial y kardex individual', icon: 'bi-people', badge: 'Vista' },
+            { id: 'control-eventos', title: 'Gestión de Eventos', desc: 'Crear y programar ensayos y recorridos', icon: 'bi-calendar-event', badge: 'Vista' }
+        ] : [
+            { id: 'member-dashboard', title: 'Inicio / Mi Dashboard', desc: 'Estado general y resumen fraternal', icon: 'bi-grid-1x2', badge: 'Vista' },
+            { id: 'member-pagos', title: '1. Pagos & Cuotas', desc: 'Estado de cuenta, aportes y saldos', icon: 'bi-wallet2', badge: 'Vista' },
+            { id: 'member-eventos', title: '2. Calendario de Eventos', desc: 'Cronograma oficial de la Entrada 2026', icon: 'bi-calendar3', badge: 'Vista' },
+            { id: 'member-credencial', title: '3. Mi Credencial QR Oficial', desc: 'Credencial PVC digital para escaneo', icon: 'bi-qr-code', badge: 'Vista' },
+            { id: 'member-asistencias', title: 'Historial de Asistencias', desc: 'Registro de asistencias a ensayos', icon: 'bi-calendar-check', badge: 'Vista' }
+        ];
+
+        const matchedViews = viewsCatalog.filter(v => 
+            v.title.toLowerCase().includes(q) || v.desc.toLowerCase().includes(q)
+        );
+
+        // 2. Búsqueda de Fraternos en el Padrón (si escribe 2 o más caracteres)
+        let matchedMembers = [];
+        if (q.length >= 2 && window.PortalState) {
+            const allMembers = window.PortalState.getMembers() || [];
+            matchedMembers = allMembers.filter(m => 
+                m.ci.toLowerCase().includes(q) ||
+                m.nombres.toLowerCase().includes(q) ||
+                m.apellidos.toLowerCase().includes(q) ||
+                (m.bloque_nombre && m.bloque_nombre.toLowerCase().includes(q))
+            ).slice(0, 5); // Límite de 5 resultados
+        }
+
+        // 3. Acciones del sistema
+        const actionsCatalog = [
+            { type: 'action', val: 'sim-juan-pablo', title: 'Simular: Juan Pablo Quispe', desc: 'Ingresar como miembro de Bloque Machas (CI 4839201)', icon: 'bi-person-fill' },
+            { type: 'action', val: 'sim-maria-elena', title: 'Simular: Maria Elena Flores', desc: 'Ingresar como miembro de Bloque Imillas (CI 6892341)', icon: 'bi-person-check-fill' },
+            { type: 'action', val: 'sim-control', title: 'Simular: Control / Directiva', desc: 'Ingresar con perfil de secretaría y administración', icon: 'bi-shield-lock-fill' },
+            { type: 'action', val: 'logout', title: 'Cerrar Sesión', desc: 'Salir del portal y volver a la pantalla de acceso', icon: 'bi-box-arrow-right' }
+        ];
+
+        const matchedActions = actionsCatalog.filter(a => 
+            a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q)
+        );
+
+        let html = '';
+
+        // Render Vistas
+        if (matchedViews.length > 0) {
+            html += `<div class="command-palette-group-title">Navegación Rápida</div>`;
+            matchedViews.forEach((v, idx) => {
+                html += `
+                    <div class="command-palette-item ${idx === 0 && q === '' ? 'active-item' : ''}" data-action-type="view" data-action-val="${v.id}">
+                        <i class="bi ${v.icon}"></i>
+                        <div>
+                            <div class="item-title">${v.title}</div>
+                            <div class="item-sub">${v.desc}</div>
+                        </div>
+                        <span class="badge bg-purple-subtle text-purple item-badge">${v.badge}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Render Fraternos Encontrados
+        if (matchedMembers.length > 0) {
+            html += `<div class="command-palette-group-title">Fraternos en Padrón (${matchedMembers.length})</div>`;
+            matchedMembers.forEach(m => {
+                html += `
+                    <div class="command-palette-item" data-action-type="member" data-action-val="${m.ci}">
+                        <i class="bi bi-person-badge"></i>
+                        <div>
+                            <div class="item-title">${m.nombres} ${m.apellidos}</div>
+                            <div class="item-sub">CI: ${m.ci} &bull; Bloque: ${m.bloque_nombre}</div>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary item-badge font-mono">CI ${m.ci}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Render Acciones
+        if (matchedActions.length > 0 && q.length > 0) {
+            html += `<div class="command-palette-group-title">Acciones del Sistema</div>`;
+            matchedActions.forEach(a => {
+                html += `
+                    <div class="command-palette-item" data-action-type="action" data-action-val="${a.val}">
+                        <i class="bi ${a.icon}"></i>
+                        <div>
+                            <div class="item-title">${a.title}</div>
+                            <div class="item-sub">${a.desc}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (html === '') {
+            html = `
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-search fs-3 d-block mb-2 text-secondary"></i>
+                    No se encontraron resultados para "<strong>${q}</strong>".
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    executeCommandPaletteAction(actionType, actionVal) {
+        this.closeCommandPalette();
+
+        if (actionType === 'view') {
+            this.showView(actionVal);
+        } else if (actionType === 'member') {
+            const session = window.PortalState.getSession();
+            if (session && session.role === 'control') {
+                this.showView('control-directorio');
+                setTimeout(() => {
+                    if (window.Miembros && typeof window.Miembros.openMemberKardex === 'function') {
+                        window.Miembros.openMemberKardex(actionVal);
+                    }
+                }, 200);
+            } else {
+                // Si es fraterno, le permitimos simular o consultar
+                window.Auth.loginAsMember(actionVal);
+                this.showToast(`Visualizando kardex de CI ${actionVal}`, 'info');
+            }
+        } else if (actionType === 'action') {
+            if (actionVal === 'sim-juan-pablo') {
+                window.Auth.loginAsMember('4839201');
+                this.showToast('Cambiado a: Juan Pablo Quispe (Machas)');
+            } else if (actionVal === 'sim-maria-elena') {
+                window.Auth.loginAsMember('6892341');
+                this.showToast('Cambiado a: Maria Elena Flores (Imillas)');
+            } else if (actionVal === 'sim-control') {
+                window.Auth.loginAsControl('control', 'wistus2026');
+                this.showToast('Cambiado a: Control / Directiva');
+            } else if (actionVal === 'logout') {
+                window.Auth.logout();
+                this.showToast('Sesión cerrada.');
+            }
         }
     }
 
