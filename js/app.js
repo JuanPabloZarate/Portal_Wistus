@@ -179,13 +179,19 @@ class PortalAppManager {
                     <i class="bi bi-wallet2"></i>
                     <span>Cuotas</span>
                 </a>
+                <a href="#" class="bottom-nav-fab-wrap ${this.currentView === 'member-credencial' ? 'active' : ''}" data-subpage="member-credencial" title="Abrir mi Credencial QR">
+                    <div class="bottom-nav-fab">
+                        <i class="bi bi-qr-code"></i>
+                    </div>
+                    <span>Mi QR</span>
+                </a>
                 <a href="#" class="bottom-nav-item ${this.currentView === 'member-eventos' ? 'active' : ''}" data-subpage="member-eventos">
                     <i class="bi bi-calendar-event"></i>
                     <span>Eventos</span>
                 </a>
-                <a href="#" class="bottom-nav-item ${this.currentView === 'member-credencial' ? 'active' : ''}" data-subpage="member-credencial">
-                    <i class="bi bi-qr-code"></i>
-                    <span>Mi QR</span>
+                <a href="#" class="bottom-nav-item bottom-nav-more" id="btnBottomNavMore" title="Más opciones">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Más</span>
                 </a>
             `;
         } else if (role === 'control') {
@@ -194,24 +200,31 @@ class PortalAppManager {
                     <i class="bi bi-bar-chart-line"></i>
                     <span>Métricas</span>
                 </a>
-                <a href="#" class="bottom-nav-item ${this.currentView === 'control-asistencias' ? 'active' : ''}" data-subpage="control-asistencias">
-                    <i class="bi bi-qr-code-scan"></i>
-                    <span>Terminal</span>
-                </a>
                 <a href="#" class="bottom-nav-item ${this.currentView === 'control-pagos' ? 'active' : ''}" data-subpage="control-pagos">
                     <i class="bi bi-journal-text"></i>
                     <span>Libro</span>
                 </a>
+                <a href="#" class="bottom-nav-fab-wrap ${this.currentView === 'control-asistencias' ? 'active' : ''}" data-subpage="control-asistencias" title="Abrir Escáner QR">
+                    <div class="bottom-nav-fab">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </div>
+                    <span>Escáner</span>
+                </a>
                 <a href="#" class="bottom-nav-item ${this.currentView === 'control-directorio' ? 'active' : ''}" data-subpage="control-directorio">
                     <i class="bi bi-people"></i>
                     <span>Padrón</span>
+                </a>
+                <a href="#" class="bottom-nav-item bottom-nav-more" id="btnBottomNavMore" title="Más opciones">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Más</span>
                 </a>
             `;
         }
     }
 
     updateMobileBottomNav(viewName) {
-        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+        document.querySelectorAll('.bottom-nav-item, .bottom-nav-fab-wrap').forEach(item => {
+            if (item.classList.contains('bottom-nav-more')) return;
             if (item.getAttribute('data-subpage') === viewName) {
                 item.classList.add('active');
             } else {
@@ -521,13 +534,24 @@ class PortalAppManager {
     }
 
     bindNavigationEvents() {
-        // Enlaces de navegación interna
+        // Enlaces de navegación interna (Sidebar, Bottom Nav, Botones internos y FAB)
         document.addEventListener('click', (e) => {
-            const link = e.target.closest('.nav-link-subpage');
-            if (link) {
+            const moreBtn = e.target.closest('.bottom-nav-more, #btnBottomNavMore');
+            if (moreBtn) {
                 e.preventDefault();
+                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+                this.openMobileDrawer();
+                return;
+            }
+
+            const link = e.target.closest('.nav-link-subpage, .bottom-nav-item, .bottom-nav-fab-wrap');
+            if (link) {
                 const subpage = link.getAttribute('data-subpage');
-                if (subpage) this.showView(subpage);
+                if (subpage) {
+                    e.preventDefault();
+                    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+                    this.showView(subpage);
+                }
             }
         });
 

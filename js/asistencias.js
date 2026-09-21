@@ -284,6 +284,7 @@ class AsistenciasManager {
     }
 
     markQuick(ci, estado) {
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(20);
         window.PortalState.markAttendance(ci, this.currentEventId, estado, 'Control Manual');
         this.renderControlAttendances();
         window.PortalApp.showToast(`Asistencia de ${ci} actualizada a: ${estado.toUpperCase()}`);
@@ -311,6 +312,7 @@ class AsistenciasManager {
         }
 
         // Marcar asistencia como presente
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
         window.PortalState.markAttendance(ci, this.currentEventId, 'presente', 'Terminal QR');
 
         // Mostrar pantalla de confirmación tipo terminal con animación

@@ -1043,23 +1043,23 @@ input:-webkit-autofill:active {
     display: none;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
     .mobile-bottom-nav {
         display: flex;
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 62px;
-        background: rgba(255, 255, 255, 0.94);
+        height: 64px;
+        background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-top: 1px solid var(--border-subtle);
         align-items: center;
         justify-content: space-around;
-        z-index: 1030;
-        padding-bottom: env(safe-area-inset-bottom);
-        box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+        z-index: 1040;
+        padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.08);
     }
     
     .bottom-nav-item {
@@ -1071,15 +1071,18 @@ input:-webkit-autofill:active {
         color: #64748b;
         font-size: 0.68rem;
         font-weight: 500;
-        gap: 3px;
+        gap: 2px;
         flex: 1;
         height: 100%;
-        transition: all 0.15s ease;
-        padding: 4px 0;
+        transition: all 0.18s ease;
+        padding: 6px 0;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        position: relative;
     }
     .bottom-nav-item i {
         font-size: 1.25rem;
-        transition: transform 0.15s ease;
+        transition: transform 0.18s ease, color 0.18s ease;
     }
     .bottom-nav-item.active {
         color: #7c3aed !important;
@@ -1087,12 +1090,60 @@ input:-webkit-autofill:active {
     }
     .bottom-nav-item.active i {
         transform: translateY(-2px);
-        filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.4));
+        color: #7c3aed !important;
+        filter: drop-shadow(0 2px 8px rgba(124, 58, 237, 0.45));
+    }
+    .bottom-nav-item:active {
+        transform: scale(0.94);
+    }
+
+    /* Botón Flotante Central Destacado (FAB - QR / Escáner) */
+    .bottom-nav-fab-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        position: relative;
+        text-decoration: none;
+        color: #7c3aed;
+        font-size: 0.68rem;
+        font-weight: 600;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav-fab {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+        box-shadow: 0 8px 22px rgba(124, 58, 237, 0.48), 0 2px 6px rgba(0, 0, 0, 0.1);
+        border: 3px solid #ffffff;
+        color: #ffffff !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -26px;
+        margin-bottom: 2px;
+        font-size: 1.45rem;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .bottom-nav-fab:active {
+        transform: scale(0.90);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+    .bottom-nav-fab i {
+        color: #ffffff !important;
     }
     
     /* Espacio inferior para no tapar el contenido con el bottom nav */
     .portal-content-body {
-        padding-bottom: 80px !important;
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    /* Posición de notificaciones toast para no chocar con la bottom bar */
+    .position-fixed.bottom-0.end-0 {
+        bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     .topbar-search-trigger {
@@ -1102,6 +1153,38 @@ input:-webkit-autofill:active {
     .topbar-search-trigger span,
     .topbar-search-trigger .kbd-shortcut {
         display: none;
+    }
+
+    /* Adaptaciones de Tablas y Listados para Pantallas Móviles */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--radius-md);
+    }
+    .table-minimal th, .table-minimal td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Modal Centrado y Limpio en Smartphone */
+    .modal-dialog {
+        margin: 0.75rem auto;
+        max-width: calc(100% - 1.5rem);
+    }
+    .modal-content {
+        border-radius: var(--radius-lg) !important;
+    }
+    .modal-body {
+        padding: 1.25rem !important;
+    }
+
+    /* Quickbar de Demo Móvil Compacta */
+    .demo-quickbar {
+        padding: 6px 12px;
+        font-size: 0.78rem;
+    }
+    .demo-pill {
+        padding: 4px 8px;
+        font-size: 0.72rem;
     }
 }
 

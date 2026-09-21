@@ -3,6 +3,7 @@
 
 .credencial-container {
     max-width: 400px;
+    width: 100%;
     margin: 0 auto;
     perspective: 1000px;
 }
@@ -17,6 +18,21 @@
     color: #ffffff;
     padding: 22px;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+    width: 100%;
+}
+
+@media (max-width: 420px) {
+    .pvc-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    .pvc-avatar-frame {
+        width: 78px !important;
+        height: 78px !important;
+    }
+    .pvc-header h6 {
+        font-size: 0.92rem;
+    }
 }
 
 .pvc-card:hover {
