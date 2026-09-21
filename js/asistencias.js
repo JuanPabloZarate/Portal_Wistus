@@ -213,7 +213,6 @@ class AsistenciasManager {
         let html = '';
         filtered.forEach(m => {
             const reg = (m.asistencias && m.asistencias[this.currentEventId]) || { estado: 'pendiente' };
-            const isMigrated = m.has_user_account;
 
             html += `
             <tr class="align-middle">
@@ -224,9 +223,6 @@ class AsistenciasManager {
                             <div class="fw-bold text-dark">${m.nombres} ${m.apellidos}</div>
                             <div class="small text-secondary">
                                 CI: <span class="text-brand fw-semibold">${m.ci} ${m.ci_exp}</span>
-                                ${isMigrated 
-                                    ? '<span class="badge bg-info bg-opacity-25 text-info ms-1" title="Cuenta de usuario vinculada"><i class="bi bi-person-check-fill"></i> Usuario</span>' 
-                                    : '<span class="badge bg-secondary bg-opacity-25 text-secondary ms-1" title="Solo registro base por CI"><i class="bi bi-card-text"></i> Padrón CI</span>'}
                             </div>
                         </div>
                     </div>

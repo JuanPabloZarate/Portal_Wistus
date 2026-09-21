@@ -1,5 +1,5 @@
 /**
- * DATA BASE INICIAL - PORTAL FRATERNAL TINKUS WISTUS
+ * CONFIGURACIÓN INICIAL DEL PORTAL - TINKUS WISTUS 2026
  * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
  */
 
@@ -90,7 +90,7 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-04-12',
             hora: '18:00 - 22:30',
             lugar: 'Plaza Mayor de San Francisco a Plaza Eguino',
-            estado: 'activo', // Actualmente en control de asistencias
+            estado: 'activo',
             obligatorio: true,
             puntos_asistencia: 20
         },
@@ -148,174 +148,36 @@ const DEFAULT_PORTAL_CONFIG = {
     ],
     miembros: [
         {
-            ci: '4839201',
+            ci: '6998544',
             ci_exp: 'LP',
-            nombres: 'Juan Pablo',
-            apellidos: 'Quispe Mamani',
-            email: '',
+            nombres: 'Fraterno',
+            apellidos: 'Wistus Oficial',
+            email: 'fraterno6998544@tinkuswistus.bo',
             telefono: '+591 76543210',
             bloque_id: 'machas',
             bloque_nombre: 'Bloque Machas Wistus',
-            rol_fraternal: 'Fraterno Macha Titular',
-            antiguedad_anios: 4,
+            rol_fraternal: 'Fraterno Titular',
+            antiguedad_anios: 3,
             foto: 'assets/img/avatar-default.svg',
-            has_user_account: false, // Miembro base que NO es usuario todavía
-            user_account: null,
             estado_fraterno: 'activo',
             asistencias: {
                 'ev_1': { estado: 'presente', hora: '15:10', marcado_por: 'Secretaría Control' },
-                'ev_2': { estado: 'presente', hora: '15:45', marcado_por: 'Secretaría Control' },
+                'ev_2': { estado: 'presente', hora: '15:40', marcado_por: 'Secretaría Control' },
                 'ev_3': { estado: 'presente', hora: '15:15', marcado_por: 'Secretaría Control' },
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-101', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-10', metodo: 'QR Banco BNB', nro_recibo: 'REC-00104', estado: 'pagado' },
-                { id: 'PAG-102', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-05', metodo: 'Efectivo', nro_recibo: 'REC-00189', estado: 'pagado' },
-                { id: 'PAG-103', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku', monto: 500, fecha: '2026-03-21', metodo: 'Transferencia QR', nro_recibo: 'REC-00275', estado: 'parcial', saldo_pendiente: 300 }
-            ]
-        },
-        {
-            ci: '6892341',
-            ci_exp: 'LP',
-            nombres: 'Maria Elena',
-            apellidos: 'Flores Condori',
-            email: 'maria.flores@tinkuswistus.bo',
-            telefono: '+591 71239874',
-            bloque_id: 'imillas',
-            bloque_nombre: 'Bloque Imillas Wistus',
-            rol_fraternal: 'Guía de Fila Imilla',
-            antiguedad_anios: 7,
-            foto: 'assets/img/avatar-default.svg',
-            user_account: {
-                username: 'maria.flores',
-                password_hash: 'demo123'
-            },
-            estado_fraterno: 'activo',
-            asistencias: {
-                'ev_1': { estado: 'presente', hora: '15:02', marcado_por: 'Secretaría Control' },
-                'ev_2': { estado: 'presente', hora: '15:20', marcado_por: 'Secretaría Control' },
-                'ev_3': { estado: 'presente', hora: '15:05', marcado_por: 'Secretaría Control' },
-                'ev_4': { estado: 'presente', hora: '18:10', marcado_por: 'Terminal QR' }
-            },
-            pagos: [
-                { id: 'PAG-201', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-01-28', metodo: 'QR Banco FIE', nro_recibo: 'REC-00045', estado: 'pagado' },
-                { id: 'PAG-202', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-02-25', metodo: 'QR Banco BNB', nro_recibo: 'REC-00120', estado: 'pagado' },
-                { id: 'PAG-203', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku', monto: 800, fecha: '2026-03-15', metodo: 'QR Banco BNB', nro_recibo: 'REC-00210', estado: 'pagado' },
-                { id: 'PAG-204', cuota_id: 'cuota_4', concepto: 'Recepción Social y Diana', monto: 200, fecha: '2026-03-20', metodo: 'Efectivo', nro_recibo: 'REC-00290', estado: 'pagado' }
-            ]
-        },
-        {
-            ci: '3456782',
-            ci_exp: 'LP',
-            nombres: 'Carlos Hugo',
-            apellidos: 'Mendoza Torrez',
-            email: '',
-            telefono: '+591 79812345',
-            bloque_id: 'mayores',
-            bloque_nombre: "Bloque Tinkus Wistus Mayores",
-            rol_fraternal: 'Fundador Honorario',
-            antiguedad_anios: 15,
-            foto: 'assets/img/avatar-default.svg',
-            has_user_account: false,
-            user_account: null,
-            estado_fraterno: 'activo',
-            asistencias: {
-                'ev_1': { estado: 'presente', hora: '15:25', marcado_por: 'Secretaría Control' },
-                'ev_2': { estado: 'licencia', hora: null, motivo: 'Viaje de trabajo autorizado', marcado_por: 'Directiva' },
-                'ev_3': { estado: 'presente', hora: '15:30', marcado_por: 'Secretaría Control' },
-                'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
-            },
-            pagos: [
-                { id: 'PAG-301', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-05', metodo: 'Efectivo', nro_recibo: 'REC-00088', estado: 'pagado' },
-                { id: 'PAG-302', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-10', metodo: 'QR Banco BNB', nro_recibo: 'REC-00192', estado: 'pagado' }
-            ]
-        },
-        {
-            ci: '5901243',
-            ci_exp: 'LP',
-            nombres: 'Gabriela Andrea',
-            apellidos: 'Vargas Silva',
-            email: 'gaby.vargas@gmail.com',
-            telefono: '+591 67890123',
-            bloque_id: 'choclos',
-            bloque_nombre: "Bloque Choclos",
-            rol_fraternal: 'Fraterna Titular',
-            antiguedad_anios: 2,
-            foto: 'assets/img/avatar-default.svg',
-            user_account: {
-                username: 'gaby.vargas',
-                password_hash: 'demo123'
-            },
-            estado_fraterno: 'activo',
-            asistencias: {
-                'ev_1': { estado: 'presente', hora: '15:12', marcado_por: 'Secretaría Control' },
-                'ev_2': { estado: 'atraso', hora: '16:15', marcado_por: 'Secretaría Control' },
-                'ev_3': { estado: 'falta', hora: null, marcado_por: 'Sistema' },
-                'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
-            },
-            pagos: [
-                { id: 'PAG-401', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-18', metodo: 'QR Banco FIE', nro_recibo: 'REC-00130', estado: 'pagado' }
-            ]
-        },
-        {
-            ci: '7124589',
-            ci_exp: 'LP',
-            nombres: 'Rodrigo',
-            apellidos: 'Apaza Huanca',
-            email: '',
-            telefono: '+591 75432198',
-            bloque_id: 'machas',
-            bloque_nombre: 'Bloque Machas Wistus',
-            rol_fraternal: 'Fraterno Aspirante',
-            antiguedad_anios: 1,
-            foto: 'assets/img/avatar-default.svg',
-            user_account: null,
-            estado_fraterno: 'observado',
-            asistencias: {
-                'ev_1': { estado: 'falta', hora: null, marcado_por: 'Sistema' },
-                'ev_2': { estado: 'falta', hora: null, marcado_por: 'Sistema' },
-                'ev_3': { estado: 'presente', hora: '15:40', marcado_por: 'Secretaría Control' },
-                'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
-            },
-            pagos: []
-        },
-        {
-            ci: '2345678',
-            ci_exp: 'LP',
-            nombres: 'Lic. Roberto',
-            apellidos: 'Alarcón Peña',
-            email: 'control@tinkuswistus.bo',
-            telefono: '+591 70123456',
-            bloque_id: 'directiva',
-            bloque_nombre: 'Directiva y Pasantes 2026',
-            rol_fraternal: 'Secretario de Actas y Control',
-            antiguedad_anios: 12,
-            foto: 'assets/img/avatar-default.svg',
-            user_account: {
-                username: 'control',
-                password_hash: 'wistus2026',
-                is_admin: true
-            },
-            estado_fraterno: 'activo',
-            asistencias: {
-                'ev_1': { estado: 'presente', hora: '14:30', marcado_por: 'Mesa Directiva' },
-                'ev_2': { estado: 'presente', hora: '14:40', marcado_por: 'Mesa Directiva' },
-                'ev_3': { estado: 'presente', hora: '14:20', marcado_por: 'Mesa Directiva' },
-                'ev_4': { estado: 'presente', hora: '17:30', marcado_por: 'Mesa Directiva' }
-            },
-            pagos: [
-                { id: 'PAG-501', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-01-15', metodo: 'Depósito', nro_recibo: 'REC-00012', estado: 'pagado' },
-                { id: 'PAG-502', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-01-15', metodo: 'Depósito', nro_recibo: 'REC-00013', estado: 'pagado' },
-                { id: 'PAG-503', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku', monto: 800, fecha: '2026-01-15', metodo: 'Depósito', nro_recibo: 'REC-00014', estado: 'pagado' },
-                { id: 'PAG-504', cuota_id: 'cuota_4', concepto: 'Recepción Social y Diana', monto: 200, fecha: '2026-01-15', metodo: 'Depósito', nro_recibo: 'REC-00015', estado: 'pagado' }
+                { id: 'PAG-101', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-15', metodo: 'QR Banco BNB', nro_recibo: 'REC-00101', estado: 'pagado' },
+                { id: 'PAG-102', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-05', metodo: 'Efectivo', nro_recibo: 'REC-00185', estado: 'pagado' }
             ]
         }
     ],
     control_user: {
-        username: 'control',
-        password: 'wistus2026',
+        username: 'admi',
+        password: 'admi123',
         pin: '2026',
-        nombre: 'Secretaría de Control y Asistencia',
-        fraternidad: "Fraternidad Tinkus Wistus"
+        nombre: 'Mesa Directiva y Control',
+        fraternidad: "Fraternidad Tinkus Wistus",
+        allowed_users: ['admi', 'directiva', 'control']
     }
 };

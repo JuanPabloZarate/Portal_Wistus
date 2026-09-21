@@ -65,7 +65,7 @@
                     <form id="formLoginFraterno">
                         <div class="input-wrapper-portal mb-3">
                             <i class="bi bi-person-badge"></i>
-                            <input type="text" class="form-control-portal" id="inputCI" name="ci" placeholder="Ingresa tu CI (ej: 4839201)" required autocomplete="off" autofocus>
+                            <input type="text" class="form-control-portal" id="inputCI" name="ci" placeholder="Ingresa tu CI (ej: 6998544)" required autocomplete="off" autofocus>
                         </div>
 
                         <div id="alertFraternoLogin" class="alert alert-danger d-none border-0 py-2 px-3 rounded-3 mb-3 small" role="alert"></div>
@@ -73,15 +73,6 @@
                         <button type="submit" class="btn btn-portal-primary mb-3">
                             Ingresar al Portal <i class="bi bi-arrow-right ms-1"></i>
                         </button>
-
-                        <div class="d-flex justify-content-between gap-2">
-                            <button type="button" class="btn btn-brand-subtle btn-sm flex-fill py-2" id="btnDemoCIBase">
-                                <i class="bi bi-person me-1"></i> CI 4839201 (Juan Pablo)
-                            </button>
-                            <button type="button" class="btn btn-brand-subtle btn-sm flex-fill py-2" id="btnDemoCIMigrated">
-                                <i class="bi bi-person-check me-1"></i> CI 6892341 (Maria Elena)
-                            </button>
-                        </div>
                     </form>
                 </div>
 
@@ -94,7 +85,7 @@
                     <form id="formLoginControl">
                         <div class="input-wrapper-portal mb-3">
                             <i class="bi bi-person"></i>
-                            <input type="text" class="form-control-portal" id="inputControlUser" placeholder="Usuario (ej: control)" required autocomplete="username">
+                            <input type="text" class="form-control-portal" id="inputControlUser" placeholder="Usuario (ej: admi)" required autocomplete="username">
                         </div>
 
                         <div class="input-wrapper-portal mb-3">
@@ -106,10 +97,6 @@
 
                         <button type="submit" class="btn btn-portal-primary mb-3">
                             Acceder al Panel de Control <i class="bi bi-shield-check ms-1"></i>
-                        </button>
-
-                        <button type="button" class="btn btn-brand-subtle btn-sm w-100 py-2" id="btnDemoControl">
-                            <i class="bi bi-key me-1"></i> Usar credenciales demo (control / wistus2026)
                         </button>
                     </form>
                 </div>
@@ -124,10 +111,6 @@
     <!-- ========================================================================= -->
     <!-- SHELL PRINCIPAL AUTENTICADO: SIDEBAR + TOPBAR + VISTAS + BOTTOM NAV       -->
     <!-- ========================================================================= -->
-    <!-- Elementos invisibles para compatibilidad retroactiva -->
-    <nav id="navMember" class="d-none"></nav>
-    <nav id="navControl" class="d-none"></nav>
-
     <div id="appShell" class="portal-layout-wrapper d-none">
         
         <!-- Backdrop para Drawer Móvil -->
@@ -229,47 +212,45 @@
 
         <!-- ÁREA PRINCIPAL DERECHA -->
         <div class="portal-main-area">
-            <!-- BARRA SUPERIOR (TOP BAR) -->
+            <!-- BARRA SUPERIOR BÁSICA Y LIMPIA -->
             <header class="portal-topbar">
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Botón Hamburguesa Móvil -->
-                    <button class="btn btn-link text-dark p-1 d-lg-none" id="btnOpenSidebarMobile" title="Abrir menú lateral">
-                        <i class="bi bi-list fs-4"></i>
-                    </button>
-
-                    <!-- Migas de Pan (Breadcrumbs) -->
-                    <div class="topbar-breadcrumbs" id="topbarBreadcrumbs">
-                        <span class="topbar-breadcrumb-item"><i class="bi bi-shield-shaded text-brand"></i> <span id="breadcrumbSection">Portal</span></span>
-                        <span class="topbar-breadcrumb-separator"><i class="bi bi-chevron-right"></i></span>
-                        <span class="topbar-breadcrumb-active" id="breadcrumbCurrentPage">Inicio</span>
-                    </div>
+                <div class="topbar-brand-wrap">
+                    <a href="#" class="topbar-brand-link" onclick="window.PortalApp.navigateHome(); return false;">
+                        <img src="assets/img/wistus-badge.svg" alt="Escudo Wistus" class="topbar-brand-logo" data-mb="escudo">
+                        <div class="topbar-titles">
+                            <span class="topbar-app-name" data-mb="short-name">Tinkus Wistus</span>
+                            <span class="topbar-page-separator">/</span>
+                            <span class="topbar-page-title" id="headerPageTitle">Inicio</span>
+                        </div>
+                    </a>
                 </div>
 
-                <!-- Buscador Command Palette Trigger -->
-                <button class="topbar-search-trigger" id="btnOpenCommandPalette" title="Búsqueda rápida (Ctrl + K)">
-                    <i class="bi bi-search"></i>
-                    <span>Buscar vista o fraterno...</span>
-                    <kbd class="kbd-shortcut">Ctrl K</kbd>
-                </button>
-
-                <!-- Acciones Rápidas Superior Derecha -->
+                <!-- Perfil / Acciones Rápidas -->
                 <div class="d-flex align-items-center gap-2">
-                    <span id="cloudStatusBadgeTop" class="chip chip-neutral small d-none d-sm-inline-flex" style="cursor: pointer;" title="Configuración Cloud" data-bs-toggle="modal" data-bs-target="#modalFirebaseConfig">
-                        <i class="bi bi-cloud-check-fill text-success"></i> <span id="cloudStatusTextTop">Firebase</span>
-                    </span>
-
-                    <!-- Dropdown Simular Rol / Demo Discreto -->
-                    <div class="dropdown">
-                        <button class="btn btn-brand-subtle btn-sm rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-sliders me-1"></i> <span class="d-none d-md-inline">Simular Rol</span>
+                    <div class="dropdown" id="topbarUserDropdown">
+                        <button class="topbar-user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones de usuario">
+                            <div class="topbar-avatar" id="topbarUserAvatar">W</div>
+                            <div class="topbar-user-meta d-none d-sm-block text-start">
+                                <div class="topbar-user-name text-truncate" id="topbarUserName">Fraterno</div>
+                                <div class="topbar-user-role" id="topbarUserRole">Fraterno Titular</div>
+                            </div>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-subtle rounded-3 p-2">
-                            <li><h6 class="dropdown-header small text-uppercase">Cambiar Perfil de Prueba</h6></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-subtle rounded-3 p-2" style="min-width: 250px;">
+                            <li id="topbarMenuProfileItem">
+                                <a class="dropdown-item rounded-2 small py-2 fw-semibold text-brand d-flex align-items-center justify-content-between" href="#" onclick="window.PortalApp.showView('member-perfil'); return false;">
+                                    <span class="d-flex align-items-center"><i class="bi bi-person-gear fs-6 text-brand me-2"></i> Mi Perfil / Editar Datos</span>
+                                    <span class="badge bg-brand-subtle text-brand border border-subtle" id="topbarProfilePctBadge">0%</span>
+                                </a>
+                            </li>
+                            <li id="topbarMenuProfileDivider"><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header small text-uppercase">Cambiar Perfil / Rol</h6></li>
                             <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsMember('4839201'); return false;"><i class="bi bi-person-fill text-brand me-2"></i>Juan Pablo (Machas)</a></li>
                             <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsMember('6892341'); return false;"><i class="bi bi-person-check-fill text-info me-2"></i>Maria Elena (Imillas)</a></li>
                             <li><a class="dropdown-item rounded-2 small py-2" href="#" onclick="window.Auth.loginAsControl('control', 'wistus2026'); return false;"><i class="bi bi-shield-lock-fill text-purple me-2"></i>Directiva / Control</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item rounded-2 small py-2 text-danger" href="#" onclick="document.getElementById('btnResetPortalData').click(); return false;"><i class="bi bi-arrow-counterclockwise me-2"></i>Restablecer Datos Demo</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded-2 small py-2 text-danger btn-logout-action" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>
@@ -295,13 +276,10 @@
             </div>
         </div>
 
-        <!-- BANNER DE MIGRACIÓN: MIEMBRO BASE QUE NO ES USUARIO -> USUARIO COMPLETO -->
-        <div id="memberMigrationBanner"></div>
-
         <!-- Tarjetas Resumen de Indicadores Clave (Minimalistas) -->
         <div class="row g-3 mb-4">
             <!-- Indicador 1: Asistencia a Ensayos -->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="metric-card h-100 hover-scale-sm">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
@@ -323,7 +301,7 @@
             </div>
 
             <!-- Indicador 2: Estado de Aportes y Cuotas -->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="metric-card h-100 hover-scale-sm">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
@@ -341,27 +319,6 @@
                         <span>Saldo: <strong class="text-danger" id="memberSaldoPendiente">Bs. 0</strong></span>
                         <a href="#" class="nav-link-subpage text-brand text-decoration-none fw-semibold" data-subpage="member-pagos">Pagar cuotas &rarr;</a>
                     </div>
-                </div>
-            </div>
-
-            <!-- Indicador 3: Acceso a Credencial Digital -->
-            <div class="col-md-4">
-                <div class="metric-card h-100 hover-scale-sm d-flex flex-column justify-content-between">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <div class="text-secondary small text-uppercase fw-semibold">Identificación</div>
-                            <h5 class="fw-bold text-white mt-1">Credencial Digital QR</h5>
-                        </div>
-                        <div class="icon-box bg-brand-subtle">
-                            <i class="bi bi-qr-code text-brand"></i>
-                        </div>
-                    </div>
-                    <p class="small text-secondary mb-3">
-                        Válido para el escaneo de asistencia en ensayos y la Entrada Universitaria La Paz 2026.
-                    </p>
-                    <button class="btn btn-brand-subtle btn-sm w-100 py-2 nav-link-subpage" data-subpage="member-credencial">
-                        <i class="bi bi-qr-code me-1"></i> Abrir Mi Credencial
-                    </button>
                 </div>
             </div>
         </div>
@@ -433,25 +390,27 @@
     <!-- SUBPÁGINA 4: CREDENCIAL DIGITAL OFICIAL (FRATERNO) -->
     <div id="view-member-credencial" class="app-view container py-4 d-none">
         <div class="text-center mb-4">
-            <h4 class="fw-bold text-white mb-1">Credencial Oficial de Fraterno</h4>
-            <p class="text-secondary small">Documento digital intransferible con código QR de verificación para la Entrada Universitaria La Paz 2026.</p>
+            <h4 class="fw-bold text-dark mb-1">Credencial Oficial de Fraterno</h4>
+            <p class="text-secondary small">Pase digital con código QR de escaneo rápido para la Entrada Universitaria La Paz 2026.</p>
         </div>
 
         <div class="credencial-container mb-4">
-            <div class="pvc-card">
+            <div class="pvc-card" id="credencialCard">
+                <!-- Cabecera Institucional Sutil -->
                 <div class="pvc-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
-                        <img src="assets/img/wistus-badge.svg" width="40" height="40" alt="Insignia" id="credEscudo" class="rounded-circle border border-secondary">
+                        <img src="assets/img/wistus-badge.svg" width="34" height="34" alt="Insignia" id="credEscudo" class="rounded-circle border border-light">
                         <div>
-                            <div class="fw-bold text-white small" id="credFratName">Tinkus Wistus</div>
-                            <div class="text-secondary" style="font-size: 0.72rem;" id="credFratDanza">Tinkus</div>
+                            <div class="fw-bold text-dark small" id="credFratName">Tinkus Wistus</div>
+                            <div class="text-secondary" style="font-size: 0.7rem;" id="credFratDanza">Tinkus</div>
                         </div>
                     </div>
                     <div class="text-end">
-                        <span class="pvc-badge-hologram" id="credFratYear">ENTRADA UNIVERSITARIA LA PAZ 2026</span>
+                        <span class="pvc-badge-hologram" id="credFratYear">2026</span>
                     </div>
                 </div>
 
+                <!-- Datos Principales: Foto, Nombre y CI -->
                 <div class="row g-3 align-items-center mb-3">
                     <div class="col-auto">
                         <div class="pvc-avatar-frame">
@@ -459,34 +418,26 @@
                         </div>
                     </div>
                     <div class="col">
-                        <h5 class="fw-bold text-white mb-1" id="credNombre">Juan Pablo Quispe</h5>
-                        <div class="text-brand font-mono fw-bold small mb-1" id="credCI">CI: 4839201 LP</div>
-                        <div class="chip chip-neutral mb-1" id="credBloque">Bloque Machas Wistus</div>
-                        <div class="small text-muted" id="credRol">Fraterno Titular</div>
+                        <h4 class="fw-bold text-dark mb-1 text-break" id="credNombre">Juan Pablo Quispe</h4>
+                        <div class="text-brand font-mono fw-bold fs-6" id="credCI">CI: 4839201 LP</div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
-                    <div>
-                        <div class="small text-muted">Socio: <strong class="text-white font-mono" id="credCodigoSocio">SOC-2026</strong></div>
-                        <div class="small text-muted">Antigüedad: <strong class="text-brand" id="credAntiguedad">4 Años</strong></div>
-                        <div class="mt-2" id="credHabilitadoBadge">
-                            <span class="chip chip-success">HABILITADO</span>
-                        </div>
-                    </div>
+                <!-- Código QR Amplio y Centrado para Escaneo Rápido -->
+                <div class="text-center pt-3 border-top border-secondary border-opacity-10">
                     <div class="pvc-qr-box" id="credentialQRCode">
-                        <!-- Código QR SVG generado dinámicamente -->
+                        <!-- Código QR SVG / Canvas generado dinámicamente -->
+                    </div>
+                    <div class="text-secondary small mt-2" style="font-size: 0.75rem; letter-spacing: 0.4px;">
+                        <i class="bi bi-qr-code-scan me-1 text-brand"></i> Código QR Oficial de Control
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="text-center">
-            <button class="btn btn-portal-primary rounded-3 px-4 me-2" style="width: auto;" onclick="window.PortalApp.printCredential()">
-                <i class="bi bi-printer me-2"></i> Imprimir Credencial
-            </button>
-            <button class="btn btn-brand-subtle rounded-3 px-4" onclick="window.PortalApp.showToast('Credencial lista para escaneo.')">
-                <i class="bi bi-download me-2"></i> Guardar Pase Digital
+            <button class="btn btn-download-credencial" id="btnDownloadCred" onclick="window.PortalApp.downloadCredentialImage()">
+                <i class="bi bi-download me-2"></i> Descargar Credencial
             </button>
         </div>
     </div>
@@ -500,6 +451,214 @@
 
         <div class="row">
             <div class="col-lg-8 mx-auto" id="memberEventsTimeline"></div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA 6: MI PERFIL / EDITAR DATOS (FRATERNO) -->
+    <div id="view-member-perfil" class="app-view container py-4 d-none">
+        <!-- Cabecera de la Sección -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-person-gear text-brand me-2"></i>Mi Perfil Fraternal & Datos Personales</h4>
+                <p class="text-secondary small mb-0">Actualiza tus datos oficiales, fotografía de credencial y verifica el estado de tu ficha fraternal 2026.</p>
+            </div>
+            <div>
+                <button class="btn btn-brand-subtle btn-sm rounded-3" onclick="window.PortalApp.showView('member-dashboard')">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- COLUMNA IZQUIERDA: FOTO, RESUMEN & MEDIDOR DE COMPLETITUD -->
+            <div class="col-lg-4">
+                <!-- Tarjeta 1: Foto y Ficha Resumen -->
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4 text-center mb-4">
+                    <div class="profile-avatar-container mb-3" id="profileAvatarClickZone" title="Haz clic para subir o cambiar foto">
+                        <img src="assets/img/avatar-default.svg" alt="Foto de Perfil" id="profileAvatarImg" class="profile-avatar-img">
+                        <div class="profile-avatar-overlay">
+                            <i class="bi bi-camera-fill fs-5"></i>
+                            <span>Cambiar</span>
+                        </div>
+                    </div>
+                    <!-- Input de archivo oculto -->
+                    <input type="file" id="inputProfilePhotoFile" accept="image/png, image/jpeg, image/webp" class="d-none">
+
+                    <button type="button" class="btn btn-brand-subtle btn-sm w-100 mb-3" id="btnTriggerPhotoFile">
+                        <i class="bi bi-upload me-1"></i> Subir Foto de Perfil
+                    </button>
+                    <div class="text-muted small mb-3" style="font-size: 0.74rem;">
+                        Formatos permitidos: JPG, PNG, WebP (máx. 3 MB)
+                    </div>
+
+                    <div class="pt-3 border-top border-subtle text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary small">Documento CI:</span>
+                            <span class="fw-bold text-brand font-mono" id="profileInfoCI">---</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary small">Bloque:</span>
+                            <span class="badge bg-brand-subtle text-brand fw-semibold" id="profileInfoBloque">---</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary small">Rol Fraternal:</span>
+                            <span class="text-dark small fw-medium" id="profileInfoRol">---</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary small">Antigüedad:</span>
+                            <span class="text-muted small" id="profileInfoAntiguedad">---</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2: Porcentaje de Completitud de Perfil -->
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-dark text-uppercase small letter-spacing-1 mb-0">
+                            <i class="bi bi-pie-chart-fill text-brand me-1"></i> Completitud
+                        </h6>
+                        <span class="badge bg-brand text-white fw-bold" id="profileCompletionBadge">0%</span>
+                    </div>
+
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="fs-1 fw-bold text-brand" id="profileCompletionPercentage">0%</span>
+                        <span class="text-secondary small" id="profileCompletionStatusText">Incompleto</span>
+                    </div>
+
+                    <div class="progress mb-3" style="height: 8px; background: rgba(0,0,0,0.06);">
+                        <div id="profileCompletionProgressBar" class="progress-bar bg-brand" style="width: 0%"></div>
+                    </div>
+
+                    <p class="text-secondary small mb-3" id="profileCompletionMessage">
+                        Completa tus datos personales para habilitar al 100% tu credencial y ficha del padrón 2026.
+                    </p>
+
+                    <div class="profile-checklist" id="profileCompletionChecklist">
+                        <!-- Generado dinámicamente con checks -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: FORMULARIO DE EDICIÓN DE DATOS -->
+            <div class="col-lg-8">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+                    <div id="alertProfileEditSuccess" class="alert alert-success d-none border-0 py-2 px-3 rounded-3 mb-3 small" role="alert"></div>
+                    <div id="alertProfileEditError" class="alert alert-danger d-none border-0 py-2 px-3 rounded-3 mb-3 small" role="alert"></div>
+
+                    <form id="formMemberProfileEdit">
+                        <!-- SECCIÓN 1: DATOS PERSONALES -->
+                        <div class="profile-form-section-title">
+                            <i class="bi bi-person-lines-fill"></i> 1. Datos Personales Básicos
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="inputProfileNombres" class="form-label small fw-semibold">Nombres <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-portal" id="inputProfileNombres" name="nombres" placeholder="Tus nombres" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputProfileApellidos" class="form-label small fw-semibold">Apellidos <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-portal" id="inputProfileApellidos" name="apellidos" placeholder="Tus apellidos" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputProfileCI" class="form-label small fw-semibold">Cédula de Identidad (CI)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-portal bg-surface-2 text-muted" id="inputProfileCI" name="ci" readonly>
+                                    <select class="form-select form-select-portal" style="max-width: 90px;" id="selectProfileCIExp" name="ci_exp">
+                                        <option value="LP">LP</option>
+                                        <option value="CB">CB</option>
+                                        <option value="SC">SC</option>
+                                        <option value="OR">OR</option>
+                                        <option value="PT">PT</option>
+                                        <option value="TJ">TJ</option>
+                                        <option value="CH">CH</option>
+                                        <option value="BE">BE</option>
+                                        <option value="PA">PA</option>
+                                        <option value="EXT">EXT</option>
+                                    </select>
+                                </div>
+                                <span class="text-muted" style="font-size: 0.72rem;">El número de CI es el identificador oficial de tu padrón.</span>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputProfileFechaNac" class="form-label small fw-semibold">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control form-control-portal" id="inputProfileFechaNac" name="fecha_nacimiento">
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 2: CONTACTO & COMUNICACIÓN -->
+                        <div class="profile-form-section-title">
+                            <i class="bi bi-chat-left-dots"></i> 2. Contacto & Comunicación
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="inputProfileTelefono" class="form-label small fw-semibold">Teléfono / WhatsApp <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-surface-2 border-subtle text-secondary small"><i class="bi bi-whatsapp text-success"></i></span>
+                                    <input type="tel" class="form-control form-control-portal" id="inputProfileTelefono" name="telefono" placeholder="+591 7XXXXXXX" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputProfileEmail" class="form-label small fw-semibold">Correo Electrónico</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-surface-2 border-subtle text-secondary small"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control form-control-portal" id="inputProfileEmail" name="email" placeholder="ejemplo@correo.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 3: SEGURIDAD & EMERGENCIA -->
+                        <div class="profile-form-section-title">
+                            <i class="bi bi-shield-plus"></i> 3. Seguridad & Contacto de Emergencia
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="inputProfileContactoEmergencia" class="form-label small fw-semibold">Nombre de Contacto de Emergencia</label>
+                                <input type="text" class="form-control form-control-portal" id="inputProfileContactoEmergencia" name="contacto_emergencia" placeholder="Familiar o persona de referencia">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="inputProfileTelEmergencia" class="form-label small fw-semibold">Teléfono de Emergencia</label>
+                                <input type="tel" class="form-control form-control-portal" id="inputProfileTelEmergencia" name="telefono_emergencia" placeholder="+591 7XXXXXXX">
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 4: DATOS FRATERNALES & INDUMENTARIA -->
+                        <div class="profile-form-section-title">
+                            <i class="bi bi-person-badge"></i> 4. Ficha Fraternal & Tallas 2026
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="selectProfileTallaTraje" class="form-label small fw-semibold">Talla Polera / Chaleco</label>
+                                <select class="form-select form-select-portal" id="selectProfileTallaTraje" name="talla_traje">
+                                    <option value="">Seleccionar talla...</option>
+                                    <option value="XS">XS (Extra Small)</option>
+                                    <option value="S">S (Small / Pequeña)</option>
+                                    <option value="M">M (Medium / Mediana)</option>
+                                    <option value="L">L (Large / Grande)</option>
+                                    <option value="XL">XL (Extra Large)</option>
+                                    <option value="XXL">XXL (Doble Extra Large)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Bloque Oficial</label>
+                                <input type="text" class="form-control form-control-portal bg-surface-2 text-muted" id="inputProfileBloqueNombre" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Rol Fraternal</label>
+                                <input type="text" class="form-control form-control-portal bg-surface-2 text-muted" id="inputProfileRolNombre" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 border-top border-subtle">
+                            <button type="button" class="btn btn-brand-subtle px-3 py-2" onclick="window.PortalApp.showView('member-dashboard')">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-portal-primary px-4 py-2" id="btnSaveProfile">
+                                <i class="bi bi-check2-circle me-1"></i> Guardar Cambios del Perfil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -951,17 +1110,25 @@
     </div>
 
 
-    <!-- ========================================================================= -->
-    <!-- MODALES DE LA APLICACIÓN                                                  -->
-    <!-- ========================================================================= -->
-
-
-    <!-- MODAL 2: CONFIGURACIÓN Y SERVICIOS ADICIONALES -->
+    <!-- MODAL: MÁS OPCIONES (BOTTOM NAV) -->
+    <div class="modal fade" id="modalBottomNavMore" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content bg-surface-1 text-dark border border-subtle rounded-4 shadow-lg overflow-hidden">
+                <div class="modal-header border-bottom border-subtle py-3 px-4">
+                    <h6 class="modal-title fw-bold text-dark mb-0"><i class="bi bi-grid-fill text-brand me-2"></i>Más Opciones</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3" id="bottomNavMoreBody">
+                    <!-- Contenido dinámico según rol -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL 3: RECIBO / COMPROBANTE DIGITAL OFICIAL -->
     <div class="modal fade" id="modalDigitalReceipt" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-surface-1 text-white border border-subtle rounded-4 shadow-lg">
+            <div class="modal-content bg-surface-1 text-dark border border-subtle rounded-4 shadow-lg">
                 <div class="modal-body p-4">
                     <div class="text-center pb-3 border-bottom border-subtle mb-3">
                         <h6 class="fw-bold text-uppercase mb-1" id="reciboFraternidadHeader">FRATERNIDAD TINKUS WISTUS</h6>
@@ -972,14 +1139,14 @@
                     <div class="row g-2 small mb-3">
                         <div class="col-6"><span class="text-muted">Fecha:</span> <span id="reciboFecha">---</span></div>
                         <div class="col-6 text-end"><span class="chip chip-success">Certificado</span></div>
-                        <div class="col-12"><span class="text-muted">Fraterno:</span> <strong class="text-white" id="reciboFraternoNombre">---</strong></div>
+                        <div class="col-12"><span class="text-muted">Fraterno:</span> <strong class="text-dark" id="reciboFraternoNombre">---</strong></div>
                         <div class="col-6"><span class="text-muted">CI:</span> <span class="font-mono text-brand" id="reciboFraternoCI">---</span></div>
                         <div class="col-6 text-end"><span class="text-muted">Bloque:</span> <span id="reciboBloque">---</span></div>
                     </div>
 
                     <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-semibold text-white" id="reciboConcepto">Concepto</span>
+                            <span class="fw-semibold text-dark" id="reciboConcepto">Concepto</span>
                             <span class="fs-5 fw-bold text-brand" id="reciboMonto">Bs. 0</span>
                         </div>
                         <div class="small text-muted">Método: <span id="reciboMetodo">Efectivo</span></div>
@@ -1002,13 +1169,13 @@
     <!-- MODAL 4: DATOS BANCARIOS Y QR DE TRANSFERENCIA -->
     <div class="modal fade" id="modalBankQR" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-qr-code text-brand me-2"></i>Pago por Transferencia Bancaria</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-qr-code text-brand me-2"></i>Pago por Transferencia Bancaria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 text-center">
-                    <h6 class="fw-bold text-white mb-1" id="bankQRFraternidad">Tinkus Wistus</h6>
+                    <h6 class="fw-bold text-dark mb-1" id="bankQRFraternidad">Tinkus Wistus</h6>
                     <div class="text-brand small mb-3" id="bankQRConcepto">Cuota</div>
 
                     <div class="bg-white p-3 rounded-3 d-inline-block shadow mb-3 text-dark">
@@ -1035,11 +1202,11 @@
                         </svg>
                     </div>
 
-                    <div class="text-white fw-bold fs-4 mb-2" id="bankQRMonto">Bs. 0</div>
+                    <div class="text-dark fw-bold fs-4 mb-2" id="bankQRMonto">Bs. 0</div>
                     <div class="p-3 bg-surface-2 rounded-3 border border-subtle text-start small mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-secondary">Banco:</span>
-                            <strong class="text-white">Banco Nacional de Bolivia (BNB)</strong>
+                            <strong class="text-dark">Banco Nacional de Bolivia (BNB)</strong>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-secondary">Cuenta Corriente:</span>
@@ -1047,7 +1214,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-secondary">Titular:</span>
-                            <span class="text-white">Fraternidad Tinkus Wistus</span>
+                            <span class="text-dark">Fraternidad Tinkus Wistus</span>
                         </div>
                         <button class="btn btn-brand-subtle btn-sm w-100 py-1" onclick="window.PortalApp.copyBankDetails('150-1928374-2')">
                             <i class="bi bi-clipboard me-1"></i> Copiar Número de Cuenta
@@ -1065,19 +1232,19 @@
     <!-- MODAL 5: REGISTRAR COBRO RÁPIDO (ROL CONTROL) -->
     <div class="modal fade" id="modalRegisterPayment" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-wallet2 text-brand me-2"></i>Registrar Cobro de Cuota</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-wallet2 text-brand me-2"></i>Registrar Cobro de Cuota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label small text-secondary">Fraterno:</label>
-                        <select id="selectNewPaymentMember" class="form-select bg-surface-2 text-white border-subtle rounded-3" required></select>
+                        <select id="selectNewPaymentMember" class="form-select bg-surface-2 text-dark border-subtle rounded-3" required></select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label small text-secondary">Concepto de Cuota:</label>
-                        <select id="selectNewPaymentCuota" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                        <select id="selectNewPaymentCuota" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                             <option value="cuota_1">Inscripción Entrada Universitaria La Paz 2026 (Bs. 250)</option>
                             <option value="cuota_2">Banda Oficial y Acompañamiento (Bs. 350)</option>
                             <option value="cuota_3">Confección Traje Oficial Tinku (Bs. 800)</option>
@@ -1113,24 +1280,24 @@
     <!-- MODAL 6: REGISTRAR NUEVO FRATERNO EN PADRÓN -->
     <div class="modal fade" id="modalNewMember" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus text-brand me-2"></i>Registrar Fraterno en Padrón 2026</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-person-plus text-brand me-2"></i>Registrar Fraterno en Padrón 2026</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <p class="text-secondary small mb-3">
-                        El fraterno quedará registrado con su número de CI y podrá acceder de inmediato al portal sin necesidad de contraseña previa.
+                        El fraterno quedará registrado con su número de CI y podrá acceder de inmediato al portal oficial.
                     </p>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label small text-secondary">Número de CI:</label>
-                            <input type="text" id="newMemberCI" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="ej: 7654321" required>
+                            <input type="text" id="newMemberCI" class="form-control bg-surface-2 text-dark border-subtle rounded-3" placeholder="ej: 7654321" required>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label small text-secondary">Expedido:</label>
-                            <select id="newMemberExp" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                            <select id="newMemberExp" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="LP">LP</option>
                                 <option value="CB">CB</option>
                                 <option value="SC">SC</option>
@@ -1144,19 +1311,19 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">Teléfono / WhatsApp:</label>
-                            <input type="text" id="newMemberTelefono" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="+591 ...">
+                            <input type="text" id="newMemberTelefono" class="form-control bg-surface-2 text-dark border-subtle rounded-3" placeholder="+591 ...">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">Nombres:</label>
-                            <input type="text" id="newMemberNombres" class="form-control bg-surface-2 text-white border-subtle rounded-3" required>
+                            <input type="text" id="newMemberNombres" class="form-control bg-surface-2 text-dark border-subtle rounded-3" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">Apellidos:</label>
-                            <input type="text" id="newMemberApellidos" class="form-control bg-surface-2 text-white border-subtle rounded-3" required>
+                            <input type="text" id="newMemberApellidos" class="form-control bg-surface-2 text-dark border-subtle rounded-3" required>
                         </div>
                         <div class="col-md-5">
                             <label class="form-label small text-secondary">Bloque / Tropa:</label>
-                            <select id="newMemberBloque" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                            <select id="newMemberBloque" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="machas">Bloque Machas Wistus</option>
                                 <option value="imillas">Bloque Imillas Wistus</option>
                                 <option value="mayores">Bloque Tinkus Wistus Mayores</option>
@@ -1167,7 +1334,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small text-secondary">Rol Fraternal:</label>
-                            <select id="newMemberRol" class="form-select bg-surface-2 text-white border-subtle rounded-3">
+                            <select id="newMemberRol" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="Fraterno Titular">Fraterno Titular</option>
                                 <option value="Fraterno Aspirante">Fraterno Aspirante</option>
                                 <option value="Guía de Fila">Guía de Fila</option>
@@ -1176,7 +1343,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label small text-secondary">Antigüedad (Años):</label>
-                            <input type="number" id="newMemberAntiguedad" class="form-control bg-surface-2 text-white border-subtle rounded-3" value="1" min="1" max="50">
+                            <input type="number" id="newMemberAntiguedad" class="form-control bg-surface-2 text-dark border-subtle rounded-3" value="1" min="1" max="50">
                         </div>
                     </div>
                 </div>
@@ -1193,16 +1360,16 @@
     <!-- MODAL 7: FICHA COMPLETA / KARDEX DE FRATERNO -->
     <div class="modal fade" id="modalMemberKardex" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard text-brand me-2"></i>Ficha del Fraterno &bull; Kardex Oficial</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-person-vcard text-brand me-2"></i>Ficha del Fraterno &bull; Kardex Oficial</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <img src="assets/img/avatar-default.svg" id="kardexFoto" width="65" height="65" class="rounded-3 border border-secondary" alt="Avatar">
                         <div>
-                            <h5 class="fw-bold text-white mb-1" id="kardexNombre">Nombre</h5>
+                            <h5 class="fw-bold text-dark mb-1" id="kardexNombre">Nombre</h5>
                             <div class="text-brand font-mono fw-semibold small" id="kardexCI">CI: ---</div>
                             <div class="text-secondary small">
                                 <span id="kardexBloque">Bloque</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
@@ -1228,27 +1395,27 @@
     <!-- MODAL 8: CARGAR / EDITAR VOUCHER DE PAGO (ROL FRATERNO) -->
     <div class="modal fade" id="modalUploadVoucher" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-upload text-brand me-2"></i>Cargar Voucher de Pago</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-upload text-brand me-2"></i>Cargar Voucher de Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <input type="hidden" id="uploadVoucherCuotaId">
                     
                     <div class="mb-3">
                         <label class="form-label small text-secondary">Cuota a Abonar / Pagar:</label>
-                        <input type="text" id="uploadVoucherCuotaTitle" class="form-control bg-surface-2 text-white border-subtle rounded-3" readonly>
+                        <input type="text" id="uploadVoucherCuotaTitle" class="form-control bg-surface-2 text-dark border-subtle rounded-3" readonly>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label small text-secondary">Monto Depositado (Bs.):</label>
-                        <input type="number" id="uploadVoucherMonto" class="form-control bg-surface-2 text-white border-subtle rounded-3" placeholder="ej: 150" min="1" step="5" required>
+                        <input type="number" id="uploadVoucherMonto" class="form-control bg-surface-2 text-dark border-subtle rounded-3" placeholder="ej: 150" min="1" step="5" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label small text-secondary">Foto o Imagen del Comprobante (Voucher):</label>
-                        <input type="file" id="uploadVoucherFotoInput" class="form-control bg-surface-2 text-white border-subtle rounded-3" accept="image/*" onchange="window.Pagos.handleVoucherFileSelect(event)">
+                        <input type="file" id="uploadVoucherFotoInput" class="form-control bg-surface-2 text-dark border-subtle rounded-3" accept="image/*" onchange="window.Pagos.handleVoucherFileSelect(event)">
                         <div class="form-text text-secondary small">Selecciona una fotografía clara de la transferencia o depósito bancario.</div>
                     </div>
 
@@ -1270,10 +1437,10 @@
     <!-- MODAL 9: VISUALIZAR Y VERIFICAR VOUCHER (ROL DIRECTIVA Y FRATERNO) -->
     <div class="modal fade" id="modalViewVoucherImage" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-white">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-image text-brand me-2"></i>Comprobante de Pago Cargado</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-file-earmark-image text-brand me-2"></i>Comprobante de Pago Cargado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4 text-center">
                     <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
@@ -1282,13 +1449,13 @@
 
                     <div class="row g-2 text-start p-3 bg-surface-2 rounded-3 border border-subtle small mb-2">
                         <div class="col-md-6">
-                            <span class="text-secondary">Fraterno:</span> <strong id="viewVoucherFraternoNombre" class="text-white">---</strong>
+                            <span class="text-secondary">Fraterno:</span> <strong id="viewVoucherFraternoNombre" class="text-dark">---</strong>
                         </div>
                         <div class="col-md-6">
                             <span class="text-secondary">CI:</span> <span id="viewVoucherFraternoCI" class="text-brand font-mono fw-bold">---</span>
                         </div>
                         <div class="col-md-6">
-                            <span class="text-secondary">Cuota:</span> <span id="viewVoucherCuota" class="text-white">---</span>
+                            <span class="text-secondary">Cuota:</span> <span id="viewVoucherCuota" class="text-dark">---</span>
                         </div>
                         <div class="col-md-6">
                             <span class="text-secondary">Monto Reportado:</span> <strong id="viewVoucherMonto" class="text-success fs-6">Bs. 0</strong>
@@ -1313,12 +1480,12 @@
     <!-- MODAL: GESTOR DE EVENTO (CREAR Y EDITAR - DIRECTIVA) -->
     <div class="modal fade" id="modalEventEditor" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-surface-1 text-white border border-subtle rounded-4 shadow-lg">
+            <div class="modal-content bg-surface-1 text-dark border border-subtle rounded-4 shadow-lg">
                 <div class="modal-header border-subtle">
-                    <h5 class="modal-title fw-bold" id="modalEventEditorTitle">
+                    <h5 class="modal-title fw-bold text-dark" id="modalEventEditorTitle">
                         <i class="bi bi-calendar-plus text-brand me-2"></i>Nuevo Evento Oficial
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="formEventEditor" onsubmit="window.PortalApp.saveEvent(event)">
                     <div class="modal-body p-4">
@@ -1326,13 +1493,13 @@
                         
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-secondary">Título del Evento / Convocatoria</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditTitle" required placeholder="Ej: 4to Ensayo General de Pasos">
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="eventEditTitle" required placeholder="Ej: 4to Ensayo General de Pasos">
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-secondary">Tipo de Convocatoria</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="eventEditTipo" required>
+                                <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="eventEditTipo" required>
                                     <option value="Ensayo">Ensayo</option>
                                     <option value="Recorrido">Recorrido</option>
                                     <option value="Solemne">Solemne</option>
@@ -1343,7 +1510,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-secondary">Estado del Evento</label>
-                                <select class="form-select bg-dark text-white border-secondary" id="eventEditEstado" required>
+                                <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="eventEditEstado" required>
                                     <option value="proximo">Próximo</option>
                                     <option value="activo">En Curso Hoy (Activo)</option>
                                     <option value="finalizado">Finalizado / Realizado</option>
@@ -1354,35 +1521,35 @@
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-secondary">Fecha</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary" id="eventEditFecha" required>
+                                <input type="date" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="eventEditFecha" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-secondary">Horario</label>
-                                <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditHora" placeholder="Ej: 15:00 - 19:00" required>
+                                <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="eventEditHora" placeholder="Ej: 15:00 - 19:00" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-secondary">Lugar / Ubicación de Encuentro</label>
-                            <input type="text" class="form-control bg-dark text-white border-secondary" id="eventEditLugar" placeholder="Ej: Sede Social Tinkus Wistus" required>
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="eventEditLugar" placeholder="Ej: Sede Social Tinkus Wistus" required>
                         </div>
 
                         <div class="row g-3 align-items-center">
                             <div class="col-md-6">
                                 <label class="form-label small fw-semibold text-secondary">Puntos de Asistencia</label>
-                                <input type="number" min="0" max="100" class="form-control bg-dark text-white border-secondary" id="eventEditPuntos" value="10" required>
+                                <input type="number" min="0" max="100" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="eventEditPuntos" value="10" required>
                             </div>
                             <div class="col-md-6 pt-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="eventEditObligatorio" checked>
-                                    <label class="form-check-label small text-white" for="eventEditObligatorio">Convocatoria Obligatoria</label>
+                                    <label class="form-check-label small text-secondary" for="eventEditObligatorio">Convocatoria Obligatoria</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer border-subtle">
-                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-brand rounded-pill px-4">
+                        <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-portal-primary rounded-3 px-4" style="width: auto;">
                             <i class="bi bi-check-lg me-1"></i> Guardar Evento
                         </button>
                     </div>
@@ -1473,6 +1640,10 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/db-service.js"></script>
 
+    <!-- Librerías de Utilidad: Descarga de Imagen y Código QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <!-- Módulos de la Aplicación -->
     <script src="js/data.js"></script>
     <script src="js/state.js"></script>
@@ -1483,27 +1654,6 @@
     <script src="js/app.js"></script>
 
     <script>
-        // Actualizar visibilidad de navbars según el rol de la sesión activa
-        window.PortalState.subscribe((state) => {
-            const session = window.PortalState.getSession();
-            const navMember = document.getElementById('navMember');
-            const navControl = document.getElementById('navControl');
-
-            if (!session) {
-                if (navMember) navMember.classList.add('d-none');
-                if (navControl) navControl.classList.add('d-none');
-                return;
-            }
-
-            if (session.role === 'miembro') {
-                if (navMember) navMember.classList.remove('d-none');
-                if (navControl) navControl.classList.add('d-none');
-            } else if (session.role === 'control') {
-                if (navMember) navMember.classList.add('d-none');
-                if (navControl) navControl.classList.remove('d-none');
-            }
-        });
-
         // Inicialización y actualización de DBService y UI de Conexión
         document.addEventListener('DOMContentLoaded', async () => {
             if (window.DBService) {

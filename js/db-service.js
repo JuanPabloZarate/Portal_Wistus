@@ -1,7 +1,7 @@
 /**
  * js/db-service.js
  * Capa de Abstracción de Base de Datos y Sincronización en Tiempo Real
- * Conecta Firebase Firestore con el StateManager local y gestiona el Auto-Seeding.
+ * Conecta Firebase Firestore con el StateManager local y gestiona el flujo en la nube.
  */
 
 const DBService = {
@@ -45,12 +45,11 @@ const DBService = {
         const firebaseReady = await window.WistusFirebase.init();
         if (firebaseReady && window.WistusFirebase.db) {
             try {
-                // Probar acceso básico con Firestore
                 this.isCloudActive = true;
                 this.notifyStatus();
                 console.log("☁️ DBService: Conectado a Firestore Cloud.");
                 
-                // Iniciar sincronización en tiempo real y auto-seeding
+                // Iniciar sincronización en tiempo real y verificación inicial
                 await this.initRealtimeSync();
             } catch (err) {
                 console.warn("DBService: Error al acceder a Firestore, usando fallback local:", err);
@@ -72,25 +71,18 @@ const DBService = {
         if (!db) return;
 
         try {
-            // 1. Verificar si se requiere Auto-Seeding inicial
-            const padronSnapshot = await db.collection('fraternos').limit(1).get();
-            if (padronSnapshot.empty) {
-                console.log("🌱 Base de datos Firestore vacía. Ejecutando Auto-Seeding de datos iniciales...");
-                await this.seedInitialData();
-            }
-
-            // 2. Sincronización en tiempo real de Fraternos
+            // 1. Sincronización en tiempo real de Fraternos
             const unsubFraternos = db.collection('fraternos').onSnapshot(snapshot => {
                 if (!snapshot.empty) {
                     const fraternos = [];
                     snapshot.forEach(doc => fraternos.push({ ...doc.data(), id: doc.id }));
-                    StateManager.setPadron(fraternos, false); // false evita bucle
+                    StateManager.setPadron(fraternos, false);
                     window.dispatchEvent(new CustomEvent('wistus_data_synced', { detail: { collection: 'fraternos' } }));
                 }
             }, err => console.warn("Error en realtime fraternos:", err));
             this.listeners.push(unsubFraternos);
 
-            // 3. Sincronización en tiempo real de Asistencias
+            // 2. Sincronización en tiempo real de Asistencias
             const unsubAsistencias = db.collection('asistencias').onSnapshot(snapshot => {
                 if (!snapshot.empty) {
                     const asistencias = [];
@@ -101,7 +93,7 @@ const DBService = {
             }, err => console.warn("Error en realtime asistencias:", err));
             this.listeners.push(unsubAsistencias);
 
-            // 4. Sincronización en tiempo real de Pagos
+            // 3. Sincronización en tiempo real de Pagos
             const unsubPagos = db.collection('pagos').onSnapshot(snapshot => {
                 if (!snapshot.empty) {
                     const pagos = [];
@@ -112,7 +104,7 @@ const DBService = {
             }, err => console.warn("Error en realtime pagos:", err));
             this.listeners.push(unsubPagos);
 
-            // 5. Sincronización en tiempo real de Eventos
+            // 4. Sincronización en tiempo real de Eventos
             const unsubEventos = db.collection('eventos').onSnapshot(snapshot => {
                 if (!snapshot.empty) {
                     const eventos = [];
@@ -123,7 +115,7 @@ const DBService = {
             }, err => console.warn("Error en realtime eventos:", err));
             this.listeners.push(unsubEventos);
 
-            // 6. Sincronización en tiempo real de Avisos
+            // 5. Sincronización en tiempo real de Avisos
             const unsubAvisos = db.collection('avisos').onSnapshot(snapshot => {
                 if (!snapshot.empty) {
                     const avisos = [];
@@ -137,59 +129,6 @@ const DBService = {
         } catch (err) {
             console.warn("DBService: No se pudieron activar los listeners en tiempo real:", err);
         }
-    },
-
-    /**
-     * Carga el padrón, eventos, avisos y pagos iniciales de data.js a Firestore
-     */
-    async seedInitialData() {
-        const db = window.WistusFirebase.db;
-        if (!db) return;
-
-        const batch = db.batch();
-
-        // Fraternos iniciales
-        if (window.DATA_PADRON_BASE && Array.isArray(window.DATA_PADRON_BASE)) {
-            window.DATA_PADRON_BASE.forEach(f => {
-                const docRef = db.collection('fraternos').doc(String(f.ci));
-                batch.set(docRef, f);
-            });
-        }
-
-        // Eventos iniciales
-        if (window.DATA_EVENTOS_BASE && Array.isArray(window.DATA_EVENTOS_BASE)) {
-            window.DATA_EVENTOS_BASE.forEach(e => {
-                const docRef = db.collection('eventos').doc(String(e.id));
-                batch.set(docRef, e);
-            });
-        }
-
-        // Avisos iniciales
-        if (window.DATA_AVISOS_BASE && Array.isArray(window.DATA_AVISOS_BASE)) {
-            window.DATA_AVISOS_BASE.forEach(a => {
-                const docRef = db.collection('avisos').doc(String(a.id));
-                batch.set(docRef, a);
-            });
-        }
-
-        // Pagos iniciales
-        if (window.DATA_PAGOS_INICIALES && Array.isArray(window.DATA_PAGOS_INICIALES)) {
-            window.DATA_PAGOS_INICIALES.forEach(p => {
-                const docRef = db.collection('pagos').doc(String(p.id || (p.ci + '_' + p.concepto)));
-                batch.set(docRef, p);
-            });
-        }
-
-        // Asistencias iniciales
-        if (window.DATA_ASISTENCIAS_INICIALES && Array.isArray(window.DATA_ASISTENCIAS_INICIALES)) {
-            window.DATA_ASISTENCIAS_INICIALES.forEach(asist => {
-                const docRef = db.collection('asistencias').doc(String(asist.id || (asist.ci + '_' + asist.eventoId)));
-                batch.set(docRef, asist);
-            });
-        }
-
-        await batch.commit();
-        console.log("✅ Auto-Seeding de Firestore completado con éxito.");
     },
 
     /**

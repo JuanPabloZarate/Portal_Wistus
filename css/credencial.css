@@ -1,59 +1,59 @@
 /* ===== ESTILOS CREDENCIAL DIGITAL MINIMALISTA - TINKUS WISTUS ===== */
-/* ESTÉTICA DIGITAL PASS / FINTECH (SIN DORADO) */
+/* ENFOQUE EN ESCANEO RÁPIDO DE QR: FOTO, NOMBRE, CI Y QR AMPLIO */
 
 .credencial-container {
-    max-width: 400px;
+    max-width: 380px;
     width: 100%;
     margin: 0 auto;
-    perspective: 1000px;
 }
 
 .pvc-card {
-    background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #ffffff;
+    border: 1.5px solid rgba(124, 58, 237, 0.2);
+    border-top: 5px solid #7c3aed;
     border-radius: 20px;
-    box-shadow: 0 16px 36px rgba(124, 58, 237, 0.25), 0 4px 12px rgba(15, 23, 42, 0.1);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(124, 58, 237, 0.04);
     position: relative;
     overflow: hidden;
-    color: #ffffff;
-    padding: 22px;
+    color: #0f172a;
+    padding: 20px;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     width: 100%;
 }
 
-@media (max-width: 420px) {
-    .pvc-card {
-        padding: 16px;
-        border-radius: 16px;
-    }
-    .pvc-avatar-frame {
-        width: 78px !important;
-        height: 78px !important;
-    }
-    .pvc-header h6 {
-        font-size: 0.92rem;
-    }
-}
-
 .pvc-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 42px rgba(124, 58, 237, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(124, 58, 237, 0.14);
 }
 
 .pvc-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 12px;
-    margin-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+.pvc-badge-hologram {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
 }
 
 .pvc-avatar-frame {
-    width: 96px;
-    height: 96px;
-    border: 2px solid rgba(255, 255, 255, 0.6);
+    width: 82px;
+    height: 82px;
+    border: 2px solid #ddd6fe;
     border-radius: 16px;
     padding: 3px;
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    background: #f8fafc;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+    flex-shrink: 0;
 }
 
 .pvc-avatar-img {
@@ -63,27 +63,115 @@
     border-radius: 11px;
 }
 
+#credNombre {
+    font-size: 1.22rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+#credCI {
+    font-size: 0.98rem;
+    color: #6d28d9;
+    font-weight: 700;
+}
+
 .pvc-qr-box {
     background: #ffffff;
-    padding: 6px;
-    border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-    display: inline-block;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
-.pvc-badge-hologram {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    font-weight: 700;
-    font-size: 0.72rem;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 6px;
+.pvc-qr-box svg, .pvc-qr-box canvas, .pvc-qr-box img {
+    display: block;
+    width: 180px;
+    height: 180px;
+    max-width: 100%;
+    height: auto;
 }
 
-/* Modo Impresión de Carnet y Comprobantes */
+/* Botón Único de Descarga */
+.btn-download-credencial {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: #ffffff !important;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 12px 28px;
+    border-radius: 9999px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-download-credencial:hover {
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(124, 58, 237, 0.38);
+}
+
+.btn-download-credencial:active {
+    transform: translateY(0);
+}
+
+/* Ajustes Responsive (Celular y PC) */
+@media (max-width: 480px) {
+    .credencial-container {
+        padding: 0 6px;
+    }
+    .pvc-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    .pvc-avatar-frame {
+        width: 72px;
+        height: 72px;
+    }
+    #credNombre {
+        font-size: 1.1rem;
+    }
+    #credCI {
+        font-size: 0.92rem;
+    }
+    .pvc-qr-box svg, .pvc-qr-box canvas, .pvc-qr-box img {
+        width: 165px;
+        height: 165px;
+    }
+}
+
+@media (max-width: 360px) {
+    .pvc-avatar-frame {
+        width: 64px;
+        height: 64px;
+    }
+    .pvc-card {
+        padding: 12px;
+    }
+    #credNombre {
+        font-size: 1rem;
+    }
+    .pvc-qr-box svg, .pvc-qr-box canvas, .pvc-qr-box img {
+        width: 145px;
+        height: 145px;
+    }
+    .btn-download-credencial {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 0.88rem;
+    }
+}
+
+/* Modo Impresión */
 @media print {
     * {
         -webkit-print-color-adjust: exact !important;
@@ -91,13 +179,12 @@
     }
     body {
         background: #ffffff !important;
-        color: #0a0b10 !important;
+        color: #0f172a !important;
     }
     body * {
         visibility: hidden;
     }
-    .credencial-container, .credencial-container *,
-    .modal-content, .modal-content * {
+    .credencial-container, .credencial-container * {
         visibility: visible;
     }
     .credencial-container {
@@ -109,40 +196,12 @@
         max-width: 380px;
     }
     .pvc-card {
-        background: #141622 !important;
-        color: #ffffff !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
         border: 2px solid #7c3aed !important;
         box-shadow: none !important;
     }
-    .pvc-card .text-white, .pvc-card h5, .pvc-card strong {
-        color: #ffffff !important;
-    }
-    .pvc-card .text-secondary, .pvc-card .text-muted {
-        color: #94a3b8 !important;
-    }
-    /* Estilos de impresión para modal de recibos */
-    .modal-dialog {
-        margin: 0 !important;
-        max-width: 100% !important;
-    }
-    .modal-content {
-        background: #ffffff !important;
-        color: #0a0b10 !important;
-        border: 1px solid #cbd5e1 !important;
-        box-shadow: none !important;
-    }
-    .modal-content .text-white, .modal-content .fw-bold, .modal-content h6, .modal-content strong {
-        color: #0a0b10 !important;
-    }
-    .modal-content .text-secondary, .modal-content .text-muted {
-        color: #475569 !important;
-    }
-    .modal-content .bg-surface-2 {
-        background: #f1f5f9 !important;
-        border: 1px solid #cbd5e1 !important;
-    }
-    .demo-quickbar, .portal-navbar, .btn, .modal-header .btn-close, .modal-footer {
+    .btn-download-credencial, .portal-sidebar, .portal-topbar, .portal-bottom-nav, .btn {
         display: none !important;
     }
 }
-

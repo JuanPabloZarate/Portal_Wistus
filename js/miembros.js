@@ -39,16 +39,6 @@ class MiembrosManager {
         document.querySelectorAll('.member-val-foto').forEach(el => {
             if (el.tagName === 'IMG') el.src = member.foto || 'assets/img/avatar-default.svg';
         });
-
-        // Limpiar banner de migración si existe
-        const migrationBanner = document.getElementById('memberMigrationBanner');
-        if (migrationBanner) {
-            migrationBanner.innerHTML = '';
-        }
-    }
-
-    renderMemberProfileAndMigration() {
-        this.renderMemberProfile();
     }
 
     // --- VISTA CONTROL: DIRECTORIO GENERAL Y ACCIONES ---

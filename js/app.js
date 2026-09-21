@@ -12,9 +12,9 @@ class PortalAppManager {
     init() {
         document.addEventListener('DOMContentLoaded', () => {
             this.bindNavigationEvents();
-            this.bindQuickBarEvents();
             this.initLayoutEvents();
             this.initCommandPalette();
+            this.bindProfileEvents();
             this.checkInitialSidebarState();
             if (window.PortalState) {
                 this.updateLayoutSession(window.PortalState.getSession());
@@ -25,6 +25,7 @@ class PortalAppManager {
             this.updateLayoutSession(session);
             if (this.currentView === 'member-eventos') this.renderEventsTimeline();
             if (this.currentView === 'control-eventos') this.renderEventsTimeline(true);
+            if (this.currentView === 'member-perfil') this.renderMemberProfileEdit();
         });
     }
 
@@ -66,6 +67,7 @@ class PortalAppManager {
         if (viewName === 'member-pagos') window.Pagos.renderMemberPayments();
         if (viewName === 'member-credencial') this.renderDigitalCredential();
         if (viewName === 'member-eventos') this.renderEventsTimeline();
+        if (viewName === 'member-perfil') this.renderMemberProfileEdit();
 
         if (viewName === 'control-dashboard') this.renderControlDashboard();
         if (viewName === 'control-asistencias') window.Asistencias.renderControlAttendances();
@@ -96,27 +98,31 @@ class PortalAppManager {
     }
 
     updateBreadcrumbs(viewName) {
-        const breadcrumbSection = document.getElementById('breadcrumbSection');
-        const breadcrumbCurrentPage = document.getElementById('breadcrumbCurrentPage');
-        if (!breadcrumbSection || !breadcrumbCurrentPage) return;
-
+        const headerPageTitle = document.getElementById('headerPageTitle');
         const breadcrumbsMap = {
-            'login': { section: 'Acceso', title: 'Iniciar Sesión' },
-            'member-dashboard': { section: 'Portal Fraterno', title: 'Inicio' },
-            'member-pagos': { section: 'Portal Fraterno', title: '1. Pagos & Cuotas' },
-            'member-eventos': { section: 'Portal Fraterno', title: '2. Calendario de Eventos' },
-            'member-credencial': { section: 'Portal Fraterno', title: '3. Mi Credencial QR' },
-            'member-asistencias': { section: 'Portal Fraterno', title: 'Historial de Asistencias' },
-            'control-dashboard': { section: 'Panel de Control', title: 'Métricas Globales' },
-            'control-asistencias': { section: 'Panel de Control', title: 'Terminal de Asistencias' },
-            'control-pagos': { section: 'Panel de Control', title: 'Libro de Cuotas' },
-            'control-directorio': { section: 'Panel de Control', title: 'Cobros & Padrón' },
-            'control-eventos': { section: 'Panel de Control', title: 'Gestión de Eventos' }
+            'login': 'Iniciar Sesión',
+            'member-dashboard': 'Inicio',
+            'member-pagos': 'Pagos & Cuotas',
+            'member-eventos': 'Calendario de Eventos',
+            'member-credencial': 'Mi Credencial QR',
+            'member-asistencias': 'Historial de Asistencias',
+            'member-perfil': 'Mi Perfil & Datos Personales',
+            'control-dashboard': 'Métricas Globales',
+            'control-asistencias': 'Terminal de Asistencias',
+            'control-pagos': 'Libro de Cuotas',
+            'control-directorio': 'Cobros & Padrón',
+            'control-eventos': 'Gestión de Eventos'
         };
 
-        const info = breadcrumbsMap[viewName] || { section: 'Portal', title: viewName };
-        breadcrumbSection.textContent = info.section;
-        breadcrumbCurrentPage.textContent = info.title;
+        const title = breadcrumbsMap[viewName] || viewName;
+        if (headerPageTitle) {
+            headerPageTitle.textContent = title;
+        }
+
+        const breadcrumbSection = document.getElementById('breadcrumbSection');
+        const breadcrumbCurrentPage = document.getElementById('breadcrumbCurrentPage');
+        if (breadcrumbCurrentPage) breadcrumbCurrentPage.textContent = title;
+        if (breadcrumbSection) breadcrumbSection.textContent = 'Portal';
     }
 
     updateLayoutSession(session) {
@@ -129,6 +135,14 @@ class PortalAppManager {
         const subEl = document.getElementById('sidebarUserSub');
         const avatarEl = document.getElementById('sidebarUserAvatar');
 
+        const topbarName = document.getElementById('topbarUserName');
+        const topbarRole = document.getElementById('topbarUserRole');
+        const topbarAvatar = document.getElementById('topbarUserAvatar');
+
+        const topbarMenuProfileItem = document.getElementById('topbarMenuProfileItem');
+        const topbarMenuProfileDivider = document.getElementById('topbarMenuProfileDivider');
+        const topbarProfilePctBadge = document.getElementById('topbarProfilePctBadge');
+
         if (!session || !session.role) {
             if (appShell) appShell.classList.add('d-none');
             if (viewLogin) viewLogin.classList.remove('d-none');
@@ -139,16 +153,32 @@ class PortalAppManager {
         if (appShell) appShell.classList.remove('d-none');
         if (viewLogin) viewLogin.classList.add('d-none');
 
-        // Actualizar mini perfil del usuario en el sidebar
-        if (nameEl) nameEl.textContent = session.nombre_completo || session.username || 'Fraterno';
-        if (subEl) {
-            subEl.textContent = session.role === 'control' 
-                ? 'Directiva & Control' 
-                : (session.bloque_nombre || 'Fraterno Titular');
+        const displayName = session.nombre_completo || session.username || 'Fraterno';
+        const displayRole = session.role === 'control' 
+            ? 'Directiva & Control' 
+            : (session.bloque_nombre || 'Fraterno Titular');
+        const initial = (session.nombre_completo || session.username || 'W').charAt(0).toUpperCase();
+
+        // Actualizar datos de usuario en la barra superior básica
+        if (topbarName) topbarName.textContent = displayName;
+        if (topbarRole) topbarRole.textContent = displayRole;
+        if (topbarAvatar) {
+            if (session.foto && session.foto !== 'assets/img/avatar-default.svg' && !session.foto.includes('avatar-default.svg')) {
+                topbarAvatar.innerHTML = `<img src="${session.foto}" alt="Avatar">`;
+            } else {
+                topbarAvatar.textContent = initial;
+            }
         }
+
+        // Actualizar mini perfil del usuario en el sidebar (para compatibilidad)
+        if (nameEl) nameEl.textContent = displayName;
+        if (subEl) subEl.textContent = displayRole;
         if (avatarEl) {
-            const initial = (session.nombre_completo || session.username || 'W').charAt(0).toUpperCase();
-            avatarEl.textContent = initial;
+            if (session.foto && session.foto !== 'assets/img/avatar-default.svg' && !session.foto.includes('avatar-default.svg')) {
+                avatarEl.innerHTML = `<img src="${session.foto}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+            } else {
+                avatarEl.textContent = initial;
+            }
         }
 
         // Conmutar secciones de menú según el rol
@@ -156,11 +186,27 @@ class PortalAppManager {
             if (sectionMember) sectionMember.classList.remove('d-none');
             if (sectionControl) sectionControl.classList.add('d-none');
             if (btnMarca) btnMarca.classList.add('d-none');
+            if (topbarMenuProfileItem) topbarMenuProfileItem.classList.remove('d-none');
+            if (topbarMenuProfileDivider) topbarMenuProfileDivider.classList.remove('d-none');
+
+            const member = window.PortalState.getMemberByCI(session.ci);
+            if (member && topbarProfilePctBadge) {
+                const completion = window.PortalState.calculateProfileCompletion(member);
+                topbarProfilePctBadge.textContent = `${completion.percentage}%`;
+                if (completion.percentage >= 100) {
+                    topbarProfilePctBadge.className = 'badge bg-success-subtle text-success border border-success border-opacity-25';
+                } else {
+                    topbarProfilePctBadge.className = 'badge bg-brand-subtle text-brand border border-subtle';
+                }
+            }
+
             this.renderMobileBottomNav('miembro');
         } else if (session.role === 'control') {
             if (sectionMember) sectionMember.classList.add('d-none');
             if (sectionControl) sectionControl.classList.remove('d-none');
             if (btnMarca) btnMarca.classList.remove('d-none');
+            if (topbarMenuProfileItem) topbarMenuProfileItem.classList.add('d-none');
+            if (topbarMenuProfileDivider) topbarMenuProfileDivider.classList.add('d-none');
             this.renderMobileBottomNav('control');
         }
     }
@@ -399,6 +445,7 @@ class PortalAppManager {
             { id: 'control-eventos', title: 'Gestión de Eventos', desc: 'Crear y programar ensayos y recorridos', icon: 'bi-calendar-event', badge: 'Vista' }
         ] : [
             { id: 'member-dashboard', title: 'Inicio / Mi Dashboard', desc: 'Estado general y resumen fraternal', icon: 'bi-grid-1x2', badge: 'Vista' },
+            { id: 'member-perfil', title: 'Mi Perfil & Datos Personales', desc: 'Editar fotografía, datos personales y verificar completitud', icon: 'bi-person-gear', badge: 'Vista' },
             { id: 'member-pagos', title: '1. Pagos & Cuotas', desc: 'Estado de cuenta, aportes y saldos', icon: 'bi-wallet2', badge: 'Vista' },
             { id: 'member-eventos', title: '2. Calendario de Eventos', desc: 'Cronograma oficial de la Entrada 2026', icon: 'bi-calendar3', badge: 'Vista' },
             { id: 'member-credencial', title: '3. Mi Credencial QR Oficial', desc: 'Credencial PVC digital para escaneo', icon: 'bi-qr-code', badge: 'Vista' },
@@ -533,6 +580,128 @@ class PortalAppManager {
         }
     }
 
+    openBottomNavMoreModal() {
+        const session = window.PortalState.getSession();
+        const role = session ? session.role : 'miembro';
+        const body = document.getElementById('bottomNavMoreBody');
+        if (!body) return;
+
+        if (role === 'miembro') {
+            body.innerHTML = `
+                <button class="more-option-item btn-more-nav-action" data-target="member-asistencias">
+                    <div class="more-option-icon"><i class="bi bi-calendar-check"></i></div>
+                    <div>
+                        <div class="more-option-title">Historial de Asistencias</div>
+                        <div class="more-option-sub">Ver registro de ensayos asistidos</div>
+                    </div>
+                </button>
+                <button class="more-option-item" id="btnMoreSimularRolFraterno">
+                    <div class="more-option-icon"><i class="bi bi-person-lines-fill"></i></div>
+                    <div>
+                        <div class="more-option-title">Simular Rol / Perfil</div>
+                        <div class="more-option-sub">Cambiar de usuario de prueba</div>
+                    </div>
+                </button>
+                <hr class="border-subtle my-2">
+                <button class="more-option-item text-danger btn-logout-action">
+                    <div class="more-option-icon bg-danger bg-opacity-20 text-danger"><i class="bi bi-box-arrow-right text-danger"></i></div>
+                    <div>
+                        <div class="more-option-title text-danger">Cerrar Sesión</div>
+                        <div class="more-option-sub text-muted">Salir de mi portal</div>
+                    </div>
+                </button>
+            `;
+        } else {
+            body.innerHTML = `
+                <button class="more-option-item btn-more-nav-action" data-target="control-eventos">
+                    <div class="more-option-icon"><i class="bi bi-calendar-event"></i></div>
+                    <div>
+                        <div class="more-option-title">Gestión de Eventos</div>
+                        <div class="more-option-sub">Crear ensayos y presentaciones</div>
+                    </div>
+                </button>
+                <button class="more-option-item" id="btnMorePersonalizarMarca">
+                    <div class="more-option-icon"><i class="bi bi-palette"></i></div>
+                    <div>
+                        <div class="more-option-title">Personalizar Marca</div>
+                        <div class="more-option-sub">Colores, escudo y nombre</div>
+                    </div>
+                </button>
+                <button class="more-option-item" id="btnMoreResetDemoData">
+                    <div class="more-option-icon bg-warning bg-opacity-20 text-warning"><i class="bi bi-arrow-counterclockwise text-warning"></i></div>
+                    <div>
+                        <div class="more-option-title text-warning">Restablecer Datos Demo</div>
+                        <div class="more-option-sub text-muted">Reiniciar datos de prueba</div>
+                    </div>
+                </button>
+                <hr class="border-subtle my-2">
+                <button class="more-option-item text-danger btn-logout-action">
+                    <div class="more-option-icon bg-danger bg-opacity-20 text-danger"><i class="bi bi-box-arrow-right text-danger"></i></div>
+                    <div>
+                        <div class="more-option-title text-danger">Cerrar Sesión</div>
+                        <div class="more-option-sub text-muted">Salir del panel de control</div>
+                    </div>
+                </button>
+            `;
+        }
+
+        const modalEl = document.getElementById('modalBottomNavMore');
+        if (modalEl) {
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            
+            // Subpage buttons inside modal
+            body.querySelectorAll('.btn-more-nav-action').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const subpage = btn.getAttribute('data-target');
+                    bsModal.hide();
+                    if (subpage) {
+                        this.showView(subpage);
+                    }
+                });
+            });
+
+            // Personalizar marca
+            const btnMarca = body.querySelector('#btnMorePersonalizarMarca');
+            if (btnMarca) {
+                btnMarca.addEventListener('click', () => {
+                    bsModal.hide();
+                    const trigger = document.getElementById('quickOpenMarcaBlanca');
+                    if (trigger) trigger.click();
+                });
+            }
+
+            // Simular rol
+            const btnSim = body.querySelector('#btnMoreSimularRolFraterno');
+            if (btnSim) {
+                btnSim.addEventListener('click', () => {
+                    bsModal.hide();
+                    const dropdownBtn = document.querySelector('#topbarUserDropdown .dropdown-toggle');
+                    if (dropdownBtn) dropdownBtn.click();
+                });
+            }
+
+            // Reset demo
+            const btnReset = body.querySelector('#btnMoreResetDemoData');
+            if (btnReset) {
+                btnReset.addEventListener('click', () => {
+                    bsModal.hide();
+                    const resetBtn = document.getElementById('btnResetPortalData');
+                    if (resetBtn) resetBtn.click();
+                });
+            }
+
+            // Logout action in modal
+            body.querySelectorAll('.btn-logout-action').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    bsModal.hide();
+                    window.Auth.logout();
+                });
+            });
+
+            bsModal.show();
+        }
+    }
+
     bindNavigationEvents() {
         // Enlaces de navegación interna (Sidebar, Bottom Nav, Botones internos y FAB)
         document.addEventListener('click', (e) => {
@@ -540,7 +709,7 @@ class PortalAppManager {
             if (moreBtn) {
                 e.preventDefault();
                 if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
-                this.openMobileDrawer();
+                this.openBottomNavMoreModal();
                 return;
             }
 
@@ -564,36 +733,6 @@ class PortalAppManager {
                     this.showToast('Datos demo restablecidos a su estado inicial.');
                     location.reload();
                 }
-            });
-        }
-    }
-
-    bindQuickBarEvents() {
-        // Accesos rápidos desde la barra superior de demo
-        const qMemberBase = document.getElementById('quickSwitchMemberBase');
-        if (qMemberBase) {
-            qMemberBase.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.Auth.loginAsMember('4839201');
-                this.showToast('Cambiado a: Fraterno (Juan Pablo Quispe)');
-            });
-        }
-
-        const qMemberMigrated = document.getElementById('quickSwitchMemberMigrated');
-        if (qMemberMigrated) {
-            qMemberMigrated.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.Auth.loginAsMember('6892341');
-                this.showToast('Cambiado a: Fraterna (Maria Elena Flores)');
-            });
-        }
-
-        const qControl = document.getElementById('quickSwitchControl');
-        if (qControl) {
-            qControl.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.Auth.loginAsControl('control', 'wistus2026');
-                this.showToast('Cambiado a: Rol Control / Directiva');
             });
         }
     }
@@ -718,115 +857,185 @@ class PortalAppManager {
 
         const theme = window.PortalState.getCurrentTheme();
 
-        // Generar código QR dinámico mediante SVG directo
+        // 1. Cabecera Institucional Sutil
+        const credFratName = document.getElementById('credFratName');
+        if (credFratName) credFratName.textContent = theme.name || 'Fraternidad Tinkus Wistus';
+
+        const credFratDanza = document.getElementById('credFratDanza');
+        if (credFratDanza) credFratDanza.textContent = theme.danza || 'Tinkus';
+
+        const credFratYear = document.getElementById('credFratYear');
+        if (credFratYear) credFratYear.textContent = `${theme.year || '2026'}`;
+
+        const credEscudo = document.getElementById('credEscudo');
+        if (credEscudo) credEscudo.src = theme.escudo_url || 'assets/img/wistus-badge.svg';
+
+        // 2. Datos Principales Requeridos: Foto, Nombre Completo y CI
+        const credFoto = document.getElementById('credFoto');
+        if (credFoto) credFoto.src = member.foto || 'assets/img/avatar-default.svg';
+
+        const credNombre = document.getElementById('credNombre');
+        if (credNombre) credNombre.textContent = `${member.nombres} ${member.apellidos}`;
+
+        const credCI = document.getElementById('credCI');
+        if (credCI) credCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
+
+        // 3. Código QR Amplio y Centrado para Escaneo Rápido (180px)
         const qrContainer = document.getElementById('credentialQRCode');
         if (qrContainer) {
-            const verifyPayload = `https://entradauniversitarialapaz2026.bo/verificar?ci=${member.ci}&frat=${encodeURIComponent(theme.short_name)}&t=${Date.now()}`;
-            qrContainer.innerHTML = this.generateSVGQRCode(member.ci, theme.short_name);
-        }
-
-        document.getElementById('credFratName').textContent = theme.name;
-        document.getElementById('credFratDanza').textContent = theme.danza;
-        document.getElementById('credFratYear').textContent = `ENTRADA UNIVERSITARIA LA PAZ ${theme.year}`;
-        document.getElementById('credEscudo').src = theme.escudo_url;
-        document.getElementById('credFoto').src = member.foto || 'assets/img/avatar-default.svg';
-        document.getElementById('credNombre').textContent = `${member.nombres} ${member.apellidos}`;
-        document.getElementById('credCI').textContent = `CI: ${member.ci} ${member.ci_exp}`;
-        document.getElementById('credBloque').textContent = member.bloque_nombre;
-        document.getElementById('credRol').textContent = member.rol_fraternal;
-        document.getElementById('credAntiguedad').textContent = `${member.antiguedad_anios} Años`;
-        document.getElementById('credCodigoSocio').textContent = `SOC-2026-${member.ci.slice(-4)}`;
-
-        // Estado de habilitación en la credencial
-        const totalEvents = window.PortalState.getEvents().length;
-        let attended = 0;
-        if (member.asistencias) {
-            Object.values(member.asistencias).forEach(a => { if (a.estado === 'presente') attended++; });
-        }
-        const pct = totalEvents > 0 ? Math.round((attended / totalEvents) * 100) : 100;
-        const cuotasPagadas = (member.pagos || []).length >= 3;
-
-        const credBadge = document.getElementById('credHabilitadoBadge');
-        if (credBadge) {
-            if (pct >= 75 && cuotasPagadas) {
-                credBadge.className = 'badge bg-success px-3 py-1 rounded-pill';
-                credBadge.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i> FRATERNO HABILITADO';
+            qrContainer.innerHTML = '';
+            const verifyPayload = `https://entradauniversitarialapaz2026.bo/verificar?ci=${member.ci}&frat=${encodeURIComponent(theme.short_name || 'Wistus')}`;
+            
+            if (typeof QRCode !== 'undefined') {
+                try {
+                    new QRCode(qrContainer, {
+                        text: verifyPayload,
+                        width: 180,
+                        height: 180,
+                        colorDark: "#0f172a",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } catch (e) {
+                    qrContainer.innerHTML = this.generateBasicSVGQRCode(member.ci);
+                }
             } else {
-                credBadge.className = 'chip-warning px-3 py-1 rounded-pill';
-                credBadge.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> REVISIÓN PENDIENTE';
+                qrContainer.innerHTML = this.generateBasicSVGQRCode(member.ci);
             }
         }
     }
 
-    generateSVGQRCode(ci, fratName) {
-        // Generador de matriz de puntos QR estilizada y visualmente idéntica a un QR oficial
+    generateBasicSVGQRCode(ci) {
+        // Matriz estándar básica de QR con módulos de alto contraste sobre fondo blanco
         return `
-        <svg viewBox="0 0 100 100" width="130" height="130" xmlns="http://www.w3.org/2000/svg" class="bg-white p-2 rounded-3 shadow">
-            <!-- Esquinas guía QR -->
-            <rect x="5" y="5" width="26" height="26" rx="4" fill="#000" />
-            <rect x="9" y="9" width="18" height="18" rx="2" fill="#fff" />
-            <rect x="13" y="13" width="10" height="10" rx="1" fill="#7c3aed" />
+        <svg viewBox="0 0 100 100" width="180" height="180" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border-radius:8px;">
+            <!-- Guías de posición estándar QR (3 esquinas) -->
+            <rect x="6" y="6" width="28" height="28" rx="2" fill="#0f172a" />
+            <rect x="10" y="10" width="20" height="20" rx="1" fill="#ffffff" />
+            <rect x="14" y="14" width="12" height="12" fill="#0f172a" />
 
-            <rect x="69" y="5" width="26" height="26" rx="4" fill="#000" />
-            <rect x="73" y="9" width="18" height="18" rx="2" fill="#fff" />
-            <rect x="77" y="13" width="10" height="10" rx="1" fill="#7c3aed" />
+            <rect x="66" y="6" width="28" height="28" rx="2" fill="#0f172a" />
+            <rect x="70" y="10" width="20" height="20" rx="1" fill="#ffffff" />
+            <rect x="74" y="14" width="12" height="12" fill="#0f172a" />
 
-            <rect x="5" y="69" width="26" height="26" rx="4" fill="#000" />
-            <rect x="9" y="73" width="18" height="18" rx="2" fill="#fff" />
-            <rect x="13" y="77" width="10" height="10" rx="1" fill="#7c3aed" />
+            <rect x="6" y="66" width="28" height="28" rx="2" fill="#0f172a" />
+            <rect x="10" y="70" width="20" height="20" rx="1" fill="#ffffff" />
+            <rect x="14" y="74" width="12" height="12" fill="#0f172a" />
 
-            <!-- Matriz de datos simulada y estilizada -->
-            <g fill="#1a1a1a">
-                <rect x="36" y="8" width="5" height="5" />
-                <rect x="44" y="8" width="5" height="5" />
-                <rect x="56" y="8" width="5" height="5" />
-                <rect x="36" y="18" width="5" height="5" />
-                <rect x="50" y="18" width="5" height="5" />
-                <rect x="60" y="18" width="5" height="5" />
-                <rect x="8" y="36" width="5" height="5" />
-                <rect x="18" y="36" width="5" height="5" />
-                <rect x="26" y="36" width="5" height="5" />
-                <rect x="36" y="36" width="6" height="6" fill="#7c3aed" />
-                <rect x="46" y="36" width="5" height="5" />
-                <rect x="58" y="36" width="5" height="5" />
-                <rect x="68" y="36" width="5" height="5" />
-                <rect x="80" y="36" width="5" height="5" />
-                <rect x="88" y="36" width="5" height="5" />
-                <rect x="14" y="46" width="5" height="5" />
-                <rect x="24" y="46" width="5" height="5" />
-                <rect x="36" y="46" width="5" height="5" />
-                <rect x="46" y="46" width="8" height="8" rx="2" fill="#7c3aed" />
-                <rect x="60" y="46" width="5" height="5" />
-                <rect x="74" y="46" width="5" height="5" />
-                <rect x="84" y="46" width="5" height="5" />
-                <rect x="8" y="58" width="5" height="5" />
-                <rect x="22" y="58" width="5" height="5" />
-                <rect x="36" y="58" width="5" height="5" />
-                <rect x="48" y="58" width="5" height="5" />
-                <rect x="62" y="58" width="5" height="5" />
-                <rect x="76" y="58" width="5" height="5" />
-                <rect x="86" y="58" width="5" height="5" />
-                <rect x="36" y="68" width="5" height="5" />
-                <rect x="46" y="68" width="5" height="5" />
-                <rect x="56" y="68" width="5" height="5" />
+            <!-- Líneas de sincronización estándar -->
+            <g fill="#0f172a">
+                <rect x="38" y="18" width="4" height="4" />
+                <rect x="46" y="18" width="4" height="4" />
+                <rect x="54" y="18" width="4" height="4" />
+                <rect x="18" y="38" width="4" height="4" />
+                <rect x="18" y="46" width="4" height="4" />
+                <rect x="18" y="54" width="4" height="4" />
+
+                <!-- Módulos de datos estándar -->
+                <rect x="38" y="6" width="4" height="4" />
+                <rect x="46" y="10" width="4" height="4" />
+                <rect x="54" y="6" width="4" height="4" />
+                <rect x="38" y="28" width="4" height="4" />
+                <rect x="46" y="28" width="4" height="4" />
+                <rect x="54" y="28" width="4" height="4" />
+                
+                <rect x="6" y="38" width="4" height="4" />
+                <rect x="10" y="46" width="4" height="4" />
+                <rect x="6" y="54" width="4" height="4" />
+                <rect x="28" y="38" width="4" height="4" />
+                <rect x="28" y="46" width="4" height="4" />
+                <rect x="28" y="54" width="4" height="4" />
+
+                <rect x="38" y="38" width="5" height="5" />
+                <rect x="48" y="38" width="4" height="4" />
+                <rect x="58" y="38" width="5" height="5" />
+                <rect x="68" y="38" width="4" height="4" />
+                <rect x="78" y="38" width="5" height="5" />
+                <rect x="88" y="38" width="4" height="4" />
+
+                <rect x="38" y="48" width="4" height="4" />
+                <rect x="48" y="48" width="5" height="5" />
+                <rect x="58" y="48" width="4" height="4" />
+                <rect x="68" y="48" width="5" height="5" />
+                <rect x="78" y="48" width="4" height="4" />
+                <rect x="88" y="48" width="5" height="5" />
+
+                <rect x="38" y="58" width="5" height="5" />
+                <rect x="48" y="58" width="4" height="4" />
+                <rect x="58" y="58" width="5" height="5" />
+                <rect x="68" y="58" width="4" height="4" />
+                <rect x="78" y="58" width="5" height="5" />
+                <rect x="88" y="58" width="4" height="4" />
+
+                <rect x="38" y="68" width="4" height="4" />
+                <rect x="48" y="68" width="4" height="4" />
+                <rect x="58" y="68" width="4" height="4" />
                 <rect x="68" y="68" width="5" height="5" />
-                <rect x="82" y="68" width="5" height="5" />
-                <rect x="36" y="80" width="5" height="5" />
-                <rect x="50" y="80" width="5" height="5" />
-                <rect x="62" y="80" width="5" height="5" />
-                <rect x="74" y="80" width="5" height="5" />
-                <rect x="86" y="80" width="5" height="5" />
-            </g>
+                <rect x="78" y="68" width="4" height="4" />
+                <rect x="88" y="68" width="5" height="5" />
 
-            <!-- Logo W central en el QR (Fondo amarillo y W en lila) -->
-            <circle cx="50" cy="50" r="11" fill="#fbbf24" stroke="#5b21b6" stroke-width="1.5" />
-            <text x="50" y="54" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="11" fill="#5b21b6">W</text>
-        </svg>
-        `;
+                <rect x="38" y="78" width="5" height="5" />
+                <rect x="48" y="78" width="5" height="5" />
+                <rect x="58" y="78" width="4" height="4" />
+                <rect x="68" y="78" width="4" height="4" />
+                <rect x="78" y="78" width="5" height="5" />
+                <rect x="88" y="78" width="4" height="4" />
+
+                <rect x="38" y="88" width="4" height="4" />
+                <rect x="48" y="88" width="4" height="4" />
+                <rect x="58" y="88" width="5" height="5" />
+                <rect x="68" y="88" width="5" height="5" />
+                <rect x="78" y="88" width="4" height="4" />
+                <rect x="88" y="88" width="5" height="5" />
+            </g>
+        </svg>`;
     }
 
-    printCredential() {
-        window.print();
+    async downloadCredentialImage() {
+        const card = document.getElementById('credencialCard');
+        const btn = document.getElementById('btnDownloadCred');
+        if (!card) return;
+
+        const session = window.PortalState.getSession();
+        const ci = session?.ci || 'fraterno';
+
+        const originalBtnHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Generando imagen...';
+        }
+
+        try {
+            if (typeof html2canvas === 'function') {
+                const canvas = await html2canvas(card, {
+                    scale: 3, // Calidad HD / Impresión
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                const imgUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `credencial_wistus_${ci}.png`;
+                link.href = imgUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                this.showToast('¡Credencial descargada exitosamente en formato imagen PNG!');
+            } else {
+                window.print();
+            }
+        } catch (error) {
+            console.error('Error al generar la imagen de credencial:', error);
+            this.showToast('No se pudo generar la imagen. Inténtelo nuevamente.');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+        }
     }
 
     // --- EVENTOS / CRONOGRAMA ---
@@ -1005,6 +1214,332 @@ class PortalAppManager {
             if (window.Asistencias && typeof window.Asistencias.renderControlAttendances === 'function') {
                 window.Asistencias.renderControlAttendances();
             }
+        }
+    }
+
+    // --- EDICIÓN DE PERFIL & DATOS PERSONALES ---
+    bindProfileEvents() {
+        const fileInput = document.getElementById('inputProfilePhotoFile');
+        const triggerBtn = document.getElementById('btnTriggerPhotoFile');
+        const clickZone = document.getElementById('profileAvatarClickZone');
+        const formEdit = document.getElementById('formMemberProfileEdit');
+
+        // Disparar selector de archivos
+        if (triggerBtn && fileInput) {
+            triggerBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                fileInput.click();
+            });
+        }
+        if (clickZone && fileInput) {
+            clickZone.addEventListener('click', (e) => {
+                e.preventDefault();
+                fileInput.click();
+            });
+        }
+
+        // Manejar subida de archivo de imagen local
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    this.showToast('Por favor selecciona un archivo de imagen válido (JPG, PNG, WebP).', 'warning');
+                    return;
+                }
+
+                if (file.size > 3.5 * 1024 * 1024) {
+                    this.showToast('La imagen es demasiado pesada (máx. 3.5 MB). Selecciona una de menor tamaño.', 'warning');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const base64Data = event.target.result;
+                    const previewImg = document.getElementById('profileAvatarImg');
+                    if (previewImg) previewImg.src = base64Data;
+
+                    const session = window.PortalState.getSession();
+                    if (session && session.role === 'miembro') {
+                        // Guardar foto de inmediato en el estado
+                        window.PortalState.updateMember(session.ci, { foto: base64Data });
+                        session.foto = base64Data;
+                        window.PortalState.setSession(session);
+
+                        const member = window.PortalState.getMemberByCI(session.ci);
+                        this.updateProfileCompletionUI(member);
+                        this.showToast('Foto de perfil actualizada correctamente.', 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Actualización dinámica en tiempo real del porcentaje de completitud al escribir
+        const inputFields = [
+            'inputProfileNombres',
+            'inputProfileApellidos',
+            'inputProfileTelefono',
+            'inputProfileEmail',
+            'inputProfileFechaNac',
+            'inputProfileContactoEmergencia',
+            'inputProfileTelEmergencia',
+            'selectProfileTallaTraje'
+        ];
+
+        inputFields.forEach(fieldId => {
+            const el = document.getElementById(fieldId);
+            if (el) {
+                el.addEventListener('input', () => {
+                    this.calculateLiveProfileCompletion();
+                });
+                el.addEventListener('change', () => {
+                    this.calculateLiveProfileCompletion();
+                });
+            }
+        });
+
+        // Formulario Guardar Cambios de Perfil
+        if (formEdit) {
+            formEdit.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const session = window.PortalState.getSession();
+                if (!session || session.role !== 'miembro') return;
+
+                const ci = session.ci;
+                const member = window.PortalState.getMemberByCI(ci);
+                if (!member) return;
+
+                const nombres = document.getElementById('inputProfileNombres').value.trim();
+                const apellidos = document.getElementById('inputProfileApellidos').value.trim();
+                const ciExp = document.getElementById('selectProfileCIExp').value;
+                const fechaNac = document.getElementById('inputProfileFechaNac').value;
+                const telefono = document.getElementById('inputProfileTelefono').value.trim();
+                const email = document.getElementById('inputProfileEmail').value.trim();
+                const contactoEmergencia = document.getElementById('inputProfileContactoEmergencia').value.trim();
+                const telEmergencia = document.getElementById('inputProfileTelEmergencia').value.trim();
+                const tallaTraje = document.getElementById('selectProfileTallaTraje').value;
+
+                if (!nombres || !apellidos) {
+                    this.showToast('Nombres y apellidos son requeridos.', 'warning');
+                    return;
+                }
+
+                if (!telefono) {
+                    this.showToast('El teléfono/WhatsApp es requerido.', 'warning');
+                    return;
+                }
+
+                const updates = {
+                    nombres,
+                    apellidos,
+                    ci_exp: ciExp,
+                    fecha_nacimiento: fechaNac,
+                    telefono,
+                    email,
+                    contacto_emergencia: contactoEmergencia,
+                    telefono_emergencia: telEmergencia,
+                    talla_traje: tallaTraje
+                };
+
+                const saveBtn = document.getElementById('btnSaveProfile');
+                const origText = saveBtn ? saveBtn.innerHTML : 'Guardar Cambios del Perfil';
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+                }
+
+                setTimeout(() => {
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = origText;
+                    }
+
+                    // Guardar en PortalState
+                    const updatedMember = window.PortalState.updateMember(ci, updates);
+
+                    // Actualizar sesión activa
+                    session.nombres = updatedMember.nombres;
+                    session.apellidos = updatedMember.apellidos;
+                    session.nombre_completo = `${updatedMember.nombres} ${updatedMember.apellidos}`;
+                    window.PortalState.setSession(session);
+
+                    // Mostrar mensaje de éxito
+                    const alertSuccess = document.getElementById('alertProfileEditSuccess');
+                    if (alertSuccess) {
+                        alertSuccess.textContent = '¡Tus datos de perfil han sido actualizados con éxito!';
+                        alertSuccess.classList.remove('d-none');
+                        setTimeout(() => alertSuccess.classList.add('d-none'), 5000);
+                    }
+
+                    this.showToast('¡Perfil fraternal actualizado exitosamente!', 'success');
+                    this.updateProfileCompletionUI(updatedMember);
+                }, 300);
+            });
+        }
+    }
+
+    renderMemberProfileEdit() {
+        const session = window.PortalState.getSession();
+        if (!session || session.role !== 'miembro') return;
+
+        const member = window.PortalState.getMemberByCI(session.ci);
+        if (!member) return;
+
+        // Foto preview
+        const avatarImg = document.getElementById('profileAvatarImg');
+        if (avatarImg) {
+            avatarImg.src = member.foto || 'assets/img/avatar-default.svg';
+        }
+
+        // Ficha Resumen
+        const infoCI = document.getElementById('profileInfoCI');
+        if (infoCI) infoCI.textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
+
+        const infoBloque = document.getElementById('profileInfoBloque');
+        if (infoBloque) infoBloque.textContent = member.bloque_nombre || 'Bloque Tinkus Wistus';
+
+        const infoRol = document.getElementById('profileInfoRol');
+        if (infoRol) infoRol.textContent = member.rol_fraternal || 'Fraterno Titular';
+
+        const infoAntiguedad = document.getElementById('profileInfoAntiguedad');
+        if (infoAntiguedad) infoAntiguedad.textContent = `${member.antiguedad_anios || 1} años`;
+
+        // Llenar Formulario
+        const inNombres = document.getElementById('inputProfileNombres');
+        if (inNombres) inNombres.value = member.nombres || '';
+
+        const inApellidos = document.getElementById('inputProfileApellidos');
+        if (inApellidos) inApellidos.value = member.apellidos || '';
+
+        const inCI = document.getElementById('inputProfileCI');
+        if (inCI) inCI.value = member.ci || '';
+
+        const selCIExp = document.getElementById('selectProfileCIExp');
+        if (selCIExp) selCIExp.value = member.ci_exp || 'LP';
+
+        const inFechaNac = document.getElementById('inputProfileFechaNac');
+        if (inFechaNac) inFechaNac.value = member.fecha_nacimiento || '';
+
+        const inTel = document.getElementById('inputProfileTelefono');
+        if (inTel) inTel.value = member.telefono || '';
+
+        const inEmail = document.getElementById('inputProfileEmail');
+        if (inEmail) inEmail.value = member.email || '';
+
+        const inContactoEmergencia = document.getElementById('inputProfileContactoEmergencia');
+        if (inContactoEmergencia) inContactoEmergencia.value = member.contacto_emergencia || '';
+
+        const inTelEmergencia = document.getElementById('inputProfileTelEmergencia');
+        if (inTelEmergencia) inTelEmergencia.value = member.telefono_emergencia || '';
+
+        const selTalla = document.getElementById('selectProfileTallaTraje');
+        if (selTalla) selTalla.value = member.talla_traje || '';
+
+        const inBloqueNombre = document.getElementById('inputProfileBloqueNombre');
+        if (inBloqueNombre) inBloqueNombre.value = member.bloque_nombre || '';
+
+        const inRolNombre = document.getElementById('inputProfileRolNombre');
+        if (inRolNombre) inRolNombre.value = member.rol_fraternal || '';
+
+        // Ocultar alertas
+        const alertSuccess = document.getElementById('alertProfileEditSuccess');
+        if (alertSuccess) alertSuccess.classList.add('d-none');
+        const alertError = document.getElementById('alertProfileEditError');
+        if (alertError) alertError.classList.add('d-none');
+
+        // Actualizar UI de Completitud
+        this.updateProfileCompletionUI(member);
+    }
+
+    calculateLiveProfileCompletion() {
+        const session = window.PortalState.getSession();
+        if (!session || session.role !== 'miembro') return;
+
+        const currentMember = window.PortalState.getMemberByCI(session.ci) || {};
+        const simulatedMember = {
+            ...currentMember,
+            nombres: document.getElementById('inputProfileNombres')?.value || '',
+            apellidos: document.getElementById('inputProfileApellidos')?.value || '',
+            telefono: document.getElementById('inputProfileTelefono')?.value || '',
+            email: document.getElementById('inputProfileEmail')?.value || '',
+            fecha_nacimiento: document.getElementById('inputProfileFechaNac')?.value || '',
+            contacto_emergencia: document.getElementById('inputProfileContactoEmergencia')?.value || '',
+            telefono_emergencia: document.getElementById('inputProfileTelEmergencia')?.value || '',
+            talla_traje: document.getElementById('selectProfileTallaTraje')?.value || '',
+        };
+
+        this.updateProfileCompletionUI(simulatedMember);
+    }
+
+    updateProfileCompletionUI(member) {
+        if (!member) return;
+
+        const completion = window.PortalState.calculateProfileCompletion(member);
+        const { percentage, statusText, criteria } = completion;
+
+        // Textos y Badges
+        const elPct = document.getElementById('profileCompletionPercentage');
+        if (elPct) elPct.textContent = `${percentage}%`;
+
+        const elBadge = document.getElementById('profileCompletionBadge');
+        if (elBadge) {
+            elBadge.textContent = `${percentage}%`;
+            elBadge.className = percentage >= 100 ? 'badge bg-success fw-bold' : 'badge bg-brand text-white fw-bold';
+        }
+
+        const elStatus = document.getElementById('profileCompletionStatusText');
+        if (elStatus) {
+            elStatus.textContent = statusText;
+            elStatus.className = `small fw-semibold ${percentage >= 100 ? 'text-success' : 'text-secondary'}`;
+        }
+
+        const elBar = document.getElementById('profileCompletionProgressBar');
+        if (elBar) {
+            elBar.style.width = `${percentage}%`;
+            elBar.className = `progress-bar ${percentage >= 100 ? 'bg-success' : 'bg-brand'}`;
+        }
+
+        // Actualizar badge en dropdown de la barra superior
+        const topbarProfilePctBadge = document.getElementById('topbarProfilePctBadge');
+        if (topbarProfilePctBadge) {
+            topbarProfilePctBadge.textContent = `${percentage}%`;
+            if (percentage >= 100) {
+                topbarProfilePctBadge.className = 'badge bg-success-subtle text-success border border-success border-opacity-25';
+            } else {
+                topbarProfilePctBadge.className = 'badge bg-brand-subtle text-brand border border-subtle';
+            }
+        }
+
+        // Mensaje orientador
+        const elMsg = document.getElementById('profileCompletionMessage');
+        if (elMsg) {
+            if (percentage >= 100) {
+                elMsg.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-shield-check me-1"></i>¡Excelente! Tu perfil fraternal se encuentra 100% completo y verificado.</span>';
+            } else {
+                elMsg.textContent = 'Completa tus datos personales para habilitar al 100% tu credencial y ficha del padrón 2026.';
+            }
+        }
+
+        // Renderizar Checklist
+        const checklistContainer = document.getElementById('profileCompletionChecklist');
+        if (checklistContainer) {
+            let html = '';
+            criteria.forEach(c => {
+                html += `
+                    <div class="profile-checklist-item ${c.completed ? 'completed' : 'pending'}">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi ${c.completed ? 'bi-check-circle-fill text-success' : 'bi-circle text-muted'}"></i>
+                            <span>${c.label}</span>
+                        </div>
+                        <span class="badge ${c.completed ? 'bg-success-subtle text-success' : 'bg-surface-2 text-muted'} small" style="font-size:0.72rem;">
+                            ${c.completed ? 'Listo (+ ' + c.weight + '%)' : '+ ' + c.weight + '%'}
+                        </span>
+                    </div>
+                `;
+            });
+            checklistContainer.innerHTML = html;
         }
     }
 

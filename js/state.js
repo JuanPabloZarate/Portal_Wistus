@@ -3,8 +3,8 @@
  * Gestiona la persistencia de datos, sesión activa, temas y operaciones de negocio.
  */
 
-const STORAGE_KEY = 'portal_fraternal_storage_v3';
-const SESSION_KEY = 'portal_fraternal_session_v3';
+const STORAGE_KEY = 'portal_fraternal_storage_v4';
+const SESSION_KEY = 'portal_fraternal_session_v4';
 
 class PortalStateManager {
     constructor() {
@@ -17,10 +17,21 @@ class PortalStateManager {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (raw) {
                 const parsed = JSON.parse(raw);
-                // Validación básica de integridad y migración a Tinkus Wistus
-                if (parsed.miembros) {
+                if (parsed && Array.isArray(parsed.miembros)) {
                     parsed.current_theme = 'wistus';
                     parsed.themes = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.themes));
+                    parsed.control_user = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.control_user));
+                    
+                    // Asegurar que el fraterno oficial esté disponible si no existe
+                    if (DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
+                        DEFAULT_PORTAL_CONFIG.miembros.forEach(defaultM => {
+                            const exists = parsed.miembros.some(m => String(m.ci).trim() === String(defaultM.ci).trim());
+                            if (!exists) {
+                                parsed.miembros.unshift(JSON.parse(JSON.stringify(defaultM)));
+                            }
+                        });
+                    }
+
                     this.saveState(parsed);
                     return parsed;
                 }
@@ -95,12 +106,33 @@ class PortalStateManager {
 
     // --- MIEMBROS & PADRÓN ---
     getMembers() {
-        return this.state.miembros || [];
+        return (this.state && Array.isArray(this.state.miembros)) ? this.state.miembros : (DEFAULT_PORTAL_CONFIG.miembros || []);
     }
 
     getMemberByCI(ci) {
-        const cleanCI = String(ci).trim();
-        return this.getMembers().find(m => String(m.ci).trim() === cleanCI);
+        if (!ci) return null;
+        const rawCI = String(ci).trim();
+        const cleanCI = rawCI.replace(/[^0-9]/g, '');
+
+        let member = this.getMembers().find(m => {
+            const mRaw = String(m.ci || '').trim();
+            const mClean = mRaw.replace(/[^0-9]/g, '');
+            return mRaw === rawCI || (cleanCI && mClean === cleanCI);
+        });
+
+        if (!member && DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
+            member = DEFAULT_PORTAL_CONFIG.miembros.find(m => {
+                const mRaw = String(m.ci || '').trim();
+                const mClean = mRaw.replace(/[^0-9]/g, '');
+                return mRaw === rawCI || (cleanCI && mClean === cleanCI);
+            });
+            if (member) {
+                if (!this.state.miembros) this.state.miembros = [];
+                this.state.miembros.push(JSON.parse(JSON.stringify(member)));
+                this.saveState();
+            }
+        }
+        return member;
     }
 
     addMember(memberData) {
@@ -145,6 +177,83 @@ class PortalStateManager {
         }
 
         return member;
+    }
+
+    calculateProfileCompletion(member) {
+        if (!member) return { percentage: 0, criteria: [], statusText: 'Incompleto', statusClass: 'text-danger' };
+
+        const criteria = [
+            {
+                id: 'foto',
+                label: 'Fotografía de Perfil',
+                completed: !!(member.foto && member.foto !== 'assets/img/avatar-default.svg' && !member.foto.includes('avatar-default.svg')),
+                weight: 15
+            },
+            {
+                id: 'nombres',
+                label: 'Nombres Registrados',
+                completed: !!(member.nombres && member.nombres.trim().length > 0),
+                weight: 15
+            },
+            {
+                id: 'apellidos',
+                label: 'Apellidos Registrados',
+                completed: !!(member.apellidos && member.apellidos.trim().length > 0),
+                weight: 15
+            },
+            {
+                id: 'telefono',
+                label: 'Teléfono / WhatsApp',
+                completed: !!(member.telefono && member.telefono.trim().length >= 7),
+                weight: 15
+            },
+            {
+                id: 'email',
+                label: 'Correo Electrónico',
+                completed: !!(member.email && member.email.trim().length > 4 && member.email.includes('@')),
+                weight: 15
+            },
+            {
+                id: 'fecha_nacimiento',
+                label: 'Fecha de Nacimiento',
+                completed: !!(member.fecha_nacimiento && member.fecha_nacimiento.trim().length > 0),
+                weight: 10
+            },
+            {
+                id: 'contacto_emergencia',
+                label: 'Contacto de Emergencia',
+                completed: !!((member.contacto_emergencia && member.contacto_emergencia.trim().length > 0) || (member.telefono_emergencia && member.telefono_emergencia.trim().length > 0)),
+                weight: 15
+            }
+        ];
+
+        let earned = 0;
+        criteria.forEach(c => {
+            if (c.completed) earned += c.weight;
+        });
+
+        const percentage = Math.min(100, earned);
+
+        let statusText = 'Incompleto';
+        let statusClass = 'text-danger';
+        if (percentage >= 100) {
+            statusText = '¡100% Completo!';
+            statusClass = 'text-success';
+        } else if (percentage >= 70) {
+            statusText = 'Casi Completo';
+            statusClass = 'text-primary';
+        } else if (percentage >= 40) {
+            statusText = 'En Progreso';
+            statusClass = 'text-warning';
+        }
+
+        return {
+            percentage,
+            earned,
+            statusText,
+            statusClass,
+            criteria
+        };
     }
 
     // --- ASISTENCIAS ---
