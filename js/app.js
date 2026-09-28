@@ -1062,7 +1062,7 @@ class PortalAppManager {
         events.forEach(ev => {
             let statusBadge = '';
             if (ev.estado === 'finalizado') statusBadge = '<span class="badge bg-secondary">Realizado</span>';
-            else if (ev.estado === 'activo') statusBadge = '<span class="badge bg-success animate__animated animate__pulse animate__infinite"><i class="bi bi-broadcast me-1"></i>En Curso Hoy</span>';
+            else if (ev.estado === 'activo') statusBadge = '<span class="badge bg-success animate__animated animate__pulse animate__infinite"><i class="bi bi-broadcast me-1"></i>Punto Activo Hoy</span>';
             else statusBadge = '<span class="badge bg-info text-dark">Próximo</span>';
 
             let controlActions = '';
@@ -1071,6 +1071,10 @@ class PortalAppManager {
                 <div class="d-flex align-items-center gap-2 mt-3 pt-3 border-top border-secondary border-opacity-25 flex-wrap">
                     <button type="button" class="btn btn-sm btn-outline-brand rounded-pill px-3" onclick="window.PortalApp.openEventModal('${ev.id}')">
                         <i class="bi bi-pencil me-1"></i> Editar
+                    </button>
+
+                    <button type="button" class="btn btn-sm ${ev.estado === 'activo' ? 'btn-success text-white' : 'btn-outline-success'} rounded-pill px-3" onclick="window.Asistencias.setActiveEvent('${ev.id}')" title="Abrir terminal de marcaje en este evento">
+                        <i class="bi bi-qr-code-scan me-1"></i> ${ev.estado === 'activo' ? 'Marcaje Activo' : 'Abrir Marcaje'}
                     </button>
                     
                     <div class="dropdown">
@@ -1097,15 +1101,16 @@ class PortalAppManager {
                         <div class="d-flex align-items-center gap-2">
                             ${statusBadge}
                             <span class="badge bg-surface-2 text-brand border border-subtle">${ev.tipo}</span>
-                            ${ev.obligatorio ? '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Obligatorio</span>' : ''}
+                            ${ev.obligatorio ? '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Obligatorio</span>' : '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25">Opcional</span>'}
                         </div>
-                        <span class="text-brand fw-bold small">+${ev.puntos_asistencia} Pts</span>
+                        <span class="text-secondary small font-monospace"><i class="bi bi-person-badge text-brand me-1"></i>${ev.responsable || 'Directiva'}</span>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">${ev.title}</h5>
                     <div class="row g-2 text-secondary small">
                         <div class="col-md-6"><i class="bi bi-calendar-event me-2 text-brand"></i>${ev.fecha} &bull; ${ev.hora}</div>
                         <div class="col-md-6"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>${ev.lugar}</div>
                     </div>
+                    ${ev.referencia_mapa ? `<div class="text-muted small mt-1"><i class="bi bi-pin-map me-1 text-primary"></i>${ev.referencia_mapa}</div>` : ''}
                     ${controlActions}
                 </div>
             </div>`;
@@ -1126,13 +1131,15 @@ class PortalAppManager {
         const inputFecha = document.getElementById('eventEditFecha');
         const inputHora = document.getElementById('eventEditHora');
         const inputLugar = document.getElementById('eventEditLugar');
-        const inputPuntos = document.getElementById('eventEditPuntos');
+        const inputResponsable = document.getElementById('eventEditResponsable');
+        const inputTolerancia = document.getElementById('eventEditTolerancia');
+        const inputReferencia = document.getElementById('eventEditReferencia');
         const inputObligatorio = document.getElementById('eventEditObligatorio');
 
         if (eventId) {
             const ev = window.PortalState.getEventById(eventId);
             if (!ev) return;
-            titleEl.innerHTML = '<i class="bi bi-pencil-square text-brand me-2"></i>Editar Evento Oficial';
+            titleEl.innerHTML = '<i class="bi bi-pencil-square text-brand me-2"></i>Editar Evento / Punto de Asistencia';
             inputId.value = ev.id;
             inputTitle.value = ev.title || '';
             inputTipo.value = ev.tipo || 'Ensayo';
@@ -1140,10 +1147,12 @@ class PortalAppManager {
             inputFecha.value = ev.fecha || '';
             inputHora.value = ev.hora || '';
             inputLugar.value = ev.lugar || '';
-            inputPuntos.value = ev.puntos_asistencia || 10;
+            if (inputResponsable) inputResponsable.value = ev.responsable || 'Mesa Directiva y Control';
+            if (inputTolerancia) inputTolerancia.value = ev.tolerancia_minutos || 15;
+            if (inputReferencia) inputReferencia.value = ev.referencia_mapa || '';
             inputObligatorio.checked = !!ev.obligatorio;
         } else {
-            titleEl.innerHTML = '<i class="bi bi-calendar-plus text-brand me-2"></i>Nuevo Evento Oficial';
+            titleEl.innerHTML = '<i class="bi bi-calendar-plus text-brand me-2"></i>Nuevo Evento / Punto de Asistencia';
             inputId.value = '';
             inputTitle.value = '';
             inputTipo.value = 'Ensayo';
@@ -1152,7 +1161,9 @@ class PortalAppManager {
             inputFecha.value = today;
             inputHora.value = '15:00 - 19:00';
             inputLugar.value = 'Sede Social Tinkus Wistus';
-            inputPuntos.value = 10;
+            if (inputResponsable) inputResponsable.value = 'Mesa Directiva y Control';
+            if (inputTolerancia) inputTolerancia.value = 15;
+            if (inputReferencia) inputReferencia.value = '';
             inputObligatorio.checked = true;
         }
 
@@ -1163,6 +1174,10 @@ class PortalAppManager {
     saveEvent(e) {
         e.preventDefault();
         const id = document.getElementById('eventEditId').value;
+        const inputResponsable = document.getElementById('eventEditResponsable');
+        const inputTolerancia = document.getElementById('eventEditTolerancia');
+        const inputReferencia = document.getElementById('eventEditReferencia');
+
         const eventData = {
             title: document.getElementById('eventEditTitle').value.trim(),
             tipo: document.getElementById('eventEditTipo').value,
@@ -1170,7 +1185,9 @@ class PortalAppManager {
             fecha: document.getElementById('eventEditFecha').value,
             hora: document.getElementById('eventEditHora').value.trim(),
             lugar: document.getElementById('eventEditLugar').value.trim(),
-            puntos_asistencia: parseInt(document.getElementById('eventEditPuntos').value, 10) || 10,
+            responsable: inputResponsable ? inputResponsable.value.trim() : 'Mesa Directiva y Control',
+            tolerancia_minutos: inputTolerancia ? (parseInt(inputTolerancia.value, 10) || 15) : 15,
+            referencia_mapa: inputReferencia ? inputReferencia.value.trim() : '',
             obligatorio: document.getElementById('eventEditObligatorio').checked
         };
 

@@ -50,6 +50,17 @@ const DEFAULT_PORTAL_CONFIG = {
         { id: 'cuota_3', title: 'Confección Traje Oficial Tinku (Montera y Chaleco)', monto: 800, vencimiento: '2026-04-30', obligatorio: true },
         { id: 'cuota_4', title: 'Recepción Social y Diana', monto: 200, vencimiento: '2026-05-15', obligatorio: true }
     ],
+    bancos_disponibles: [
+        { id: 'bnb', name: 'Banco Nacional de Bolivia (BNB)', cuenta: '150-1928374-2', titular: 'Fraternidad Tinkus Wistus', tipo: 'Cuenta Corriente', qr_habilitado: true },
+        { id: 'union', name: 'Banco Unión S.A.', cuenta: '10000034829102', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'bmsc', name: 'Banco Mercantil Santa Cruz (BMSC)', cuenta: '4010892341', titular: 'Fraternidad Tinkus Wistus', tipo: 'Cuenta Corriente', qr_habilitado: true },
+        { id: 'bisa', name: 'Banco BISA', cuenta: '601294821', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'fie', name: 'Banco FIE', cuenta: '809124712', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'sol', name: 'BancoSol', cuenta: '901284711', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'ganadero', name: 'Banco Ganadero', cuenta: '701294812', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'economico', name: 'Banco Económico', cuenta: '501294819', titular: 'Fraternidad Tinkus Wistus', tipo: 'Caja de Ahorro', qr_habilitado: true },
+        { id: 'otro', name: 'Otro Banco / Billetera Móvil (Tigo Money, etc.)', cuenta: '150-1928374-2', titular: 'Fraternidad Tinkus Wistus', tipo: 'Referencia', qr_habilitado: false }
+    ],
     eventos: [
         {
             id: 'ev_1',
@@ -58,9 +69,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-02-15',
             hora: '15:00 - 19:00',
             lugar: 'Sede Social Tinkus Wistus (Zona San Pedro, Calle Almirante Grau)',
+            responsable: 'Directiva Central y Mesa de Control',
+            tolerancia_minutos: 20,
             estado: 'finalizado',
-            obligatorio: true,
-            puntos_asistencia: 10
+            obligatorio: true
         },
         {
             id: 'ev_2',
@@ -69,9 +81,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-03-08',
             hora: '15:30 - 20:00',
             lugar: 'Cancha Polideportiva Munaypata',
+            responsable: 'Secretaría de Control y Guías',
+            tolerancia_minutos: 15,
             estado: 'finalizado',
-            obligatorio: true,
-            puntos_asistencia: 10
+            obligatorio: true
         },
         {
             id: 'ev_3',
@@ -80,9 +93,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-03-22',
             hora: '15:00 - 19:30',
             lugar: 'Av. Simón Bolívar (Monumento Busch)',
+            responsable: 'Secretaría de Control y Guías',
+            tolerancia_minutos: 15,
             estado: 'finalizado',
-            obligatorio: true,
-            puntos_asistencia: 10
+            obligatorio: true
         },
         {
             id: 'ev_4',
@@ -91,9 +105,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-04-12',
             hora: '18:00 - 22:30',
             lugar: 'Plaza Mayor de San Francisco a Plaza Eguino',
+            responsable: 'Mesa Directiva y Control General',
+            tolerancia_minutos: 15,
             estado: 'activo',
-            obligatorio: true,
-            puntos_asistencia: 20
+            obligatorio: true
         },
         {
             id: 'ev_5',
@@ -102,9 +117,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-05-03',
             hora: '09:00 - 13:00',
             lugar: 'Santuario de la Entrada Universitaria La Paz (Calle Antonio Gallardo)',
+            responsable: 'Comisión Religiosa y Directiva',
+            tolerancia_minutos: 15,
             estado: 'proximo',
-            obligatorio: true,
-            puntos_asistencia: 25
+            obligatorio: true
         },
         {
             id: 'ev_6',
@@ -113,9 +129,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-05-24',
             hora: '07:00 - 20:00',
             lugar: 'Ruta Oficial Entrada Universitaria La Paz (Av. Baptista hasta Estadio Hernando Siles)',
+            responsable: 'Directiva Central y Pasantes 2026',
+            tolerancia_minutos: 10,
             estado: 'proximo',
-            obligatorio: true,
-            puntos_asistencia: 50
+            obligatorio: true
         },
         {
             id: 'ev_7',
@@ -124,9 +141,10 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-05-25',
             hora: '13:00 - 23:00',
             lugar: 'Salón de Eventos "El Conquistador", La Paz',
+            responsable: 'Comisión de Festejos',
+            tolerancia_minutos: 30,
             estado: 'proximo',
-            obligatorio: false,
-            puntos_asistencia: 15
+            obligatorio: false
         }
     ],
     comunicados: [
@@ -642,3 +660,5 @@ class WistusDataGenerator {
 // Exportar globalmente
 window.DEFAULT_PORTAL_CONFIG = DEFAULT_PORTAL_CONFIG;
 window.WistusDataGenerator = WistusDataGenerator;
+window.BOLIVIAN_BANKS = DEFAULT_PORTAL_CONFIG.bancos_disponibles;
+

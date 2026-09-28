@@ -303,19 +303,26 @@ class PortalStateManager {
     }
 
     // --- ASISTENCIAS ---
-    markAttendance(ci, eventId, estado = 'presente', marcadoPor = 'Control') {
+    markAttendance(ci, eventId, estado = 'presente', marcadoPor = 'Control', extras = {}) {
         const member = this.getMemberByCI(ci);
         if (!member) throw new Error('Miembro no encontrado para marcar asistencia');
 
         if (!member.asistencias) member.asistencias = {};
 
+        const event = this.getEventById(eventId);
+        const eventLugar = event ? event.lugar : 'Punto de Concentración Tinkus Wistus';
+
         const now = new Date();
-        const horaStr = now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+        const horaStr = extras.hora || now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+        const fechaStr = extras.fecha || now.toISOString().substring(0, 10);
 
         member.asistencias[eventId] = {
             estado: estado, // 'presente', 'atraso', 'falta', 'licencia'
             hora: horaStr,
+            fecha: fechaStr,
             marcado_por: marcadoPor,
+            lugar: extras.lugar || eventLugar,
+            justificacion: extras.justificacion || '',
             timestamp: now.toISOString()
         };
 
@@ -327,7 +334,9 @@ class PortalStateManager {
                 eventoId: String(eventId),
                 estado: estado,
                 hora: horaStr,
+                fecha: fechaStr,
                 marcado_por: marcadoPor,
+                lugar: extras.lugar || eventLugar,
                 timestamp: now.toISOString()
             }, false).catch(err => console.warn(err));
         }
@@ -335,17 +344,80 @@ class PortalStateManager {
         return member.asistencias[eventId];
     }
 
+    clearAttendance(ci, eventId) {
+        const member = this.getMemberByCI(ci);
+        if (!member) return false;
+        if (member.asistencias && member.asistencias[eventId]) {
+            delete member.asistencias[eventId];
+            this.saveState();
+            return true;
+        }
+        return false;
+    }
+
+    markAllPendingAsFalta(eventId) {
+        const members = this.getMembers();
+        let updatedCount = 0;
+        members.forEach(m => {
+            const reg = m.asistencias ? m.asistencias[eventId] : null;
+            if (!reg || reg.estado === 'pendiente' || !reg.estado) {
+                this.markAttendance(m.ci, eventId, 'falta', 'Cierre de Lista Directiva');
+                updatedCount++;
+            }
+        });
+        return updatedCount;
+    }
+
+    markBlockAttendance(eventId, bloqueId, estado = 'presente', marcadoPor = 'Directiva de Bloque') {
+        const members = this.getMembers();
+        let updatedCount = 0;
+        members.forEach(m => {
+            if (bloqueId === 'all' || m.bloque_id === bloqueId) {
+                this.markAttendance(m.ci, eventId, estado, marcadoPor);
+                updatedCount++;
+            }
+        });
+        return updatedCount;
+    }
+
     getEventAttendanceStats(eventId) {
         const members = this.getMembers();
         let presentes = 0, atrasos = 0, faltas = 0, licencias = 0, pendientes = 0;
+        const blockBreakdown = {};
 
         members.forEach(m => {
+            const bId = m.bloque_id || 'general';
+            if (!blockBreakdown[bId]) {
+                blockBreakdown[bId] = {
+                    id: bId,
+                    name: m.bloque_nombre || bId,
+                    total: 0,
+                    presentes: 0,
+                    atrasos: 0,
+                    faltas: 0,
+                    licencias: 0,
+                    pendientes: 0
+                };
+            }
+            blockBreakdown[bId].total++;
+
             const reg = m.asistencias ? m.asistencias[eventId] : null;
-            if (!reg || reg.estado === 'pendiente') pendientes++;
-            else if (reg.estado === 'presente') presentes++;
-            else if (reg.estado === 'atraso') atrasos++;
-            else if (reg.estado === 'licencia') licencias++;
-            else if (reg.estado === 'falta') faltas++;
+            if (!reg || reg.estado === 'pendiente' || !reg.estado) {
+                pendientes++;
+                blockBreakdown[bId].pendientes++;
+            } else if (reg.estado === 'presente') {
+                presentes++;
+                blockBreakdown[bId].presentes++;
+            } else if (reg.estado === 'atraso') {
+                atrasos++;
+                blockBreakdown[bId].atrasos++;
+            } else if (reg.estado === 'licencia') {
+                licencias++;
+                blockBreakdown[bId].licencias++;
+            } else if (reg.estado === 'falta') {
+                faltas++;
+                blockBreakdown[bId].faltas++;
+            }
         });
 
         const total = members.length;
@@ -360,32 +432,124 @@ class PortalStateManager {
             licencias,
             pendientes,
             totalMarcados,
-            porcentajeEfectivo
+            porcentajeEfectivo,
+            blockBreakdown
         };
     }
 
-    // --- PAGOS & CUOTAS ---
+    // --- GESTIÓN DE CUOTAS Y TARIFAS DEFINIDAS ---
+    getCuotas() {
+        if (!this.state.cuotas_definidas || !Array.isArray(this.state.cuotas_definidas) || this.state.cuotas_definidas.length === 0) {
+            this.state.cuotas_definidas = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.cuotas_definidas || []));
+            this.saveState();
+        }
+        return this.state.cuotas_definidas;
+    }
+
+    getCuotaById(id) {
+        return this.getCuotas().find(c => c.id === id);
+    }
+
+    addCuota(cuotaData) {
+        if (!this.state.cuotas_definidas) this.state.cuotas_definidas = [];
+        const monto = parseFloat(cuotaData.monto) || 0;
+        if (!cuotaData.title || cuotaData.title.trim().length === 0) {
+            throw new Error('El título o concepto de la cuota es obligatorio');
+        }
+        if (monto <= 0) {
+            throw new Error('El monto de la cuota debe ser mayor a 0 Bs.');
+        }
+
+        const maxNum = this.state.cuotas_definidas.reduce((max, c) => {
+            const num = parseInt((c.id || '').replace('cuota_', ''), 10);
+            return !isNaN(num) && num > max ? num : max;
+        }, 0);
+
+        const newCuota = {
+            id: cuotaData.id || ('cuota_' + (maxNum + 1)),
+            title: cuotaData.title.trim(),
+            monto: monto,
+            vencimiento: cuotaData.vencimiento || new Date().toISOString().substring(0, 10),
+            obligatorio: cuotaData.obligatorio !== undefined ? !!cuotaData.obligatorio : true,
+            categoria: cuotaData.categoria || 'General'
+        };
+
+        this.state.cuotas_definidas.push(newCuota);
+        this.saveState();
+        return newCuota;
+    }
+
+    updateCuota(id, updates) {
+        const index = this.getCuotas().findIndex(c => c.id === id);
+        if (index === -1) throw new Error('Cuota no encontrada');
+
+        this.state.cuotas_definidas[index] = {
+            ...this.state.cuotas_definidas[index],
+            title: updates.title !== undefined ? updates.title.trim() : this.state.cuotas_definidas[index].title,
+            monto: updates.monto !== undefined ? (parseFloat(updates.monto) || 0) : this.state.cuotas_definidas[index].monto,
+            vencimiento: updates.vencimiento !== undefined ? updates.vencimiento : this.state.cuotas_definidas[index].vencimiento,
+            obligatorio: updates.obligatorio !== undefined ? !!updates.obligatorio : this.state.cuotas_definidas[index].obligatorio,
+            categoria: updates.categoria !== undefined ? updates.categoria : (this.state.cuotas_definidas[index].categoria || 'General')
+        };
+
+        this.saveState();
+        return this.state.cuotas_definidas[index];
+    }
+
+    deleteCuota(id) {
+        if (!this.state.cuotas_definidas) return false;
+        const initialLen = this.state.cuotas_definidas.length;
+        this.state.cuotas_definidas = this.state.cuotas_definidas.filter(c => c.id !== id);
+        if (this.state.cuotas_definidas.length !== initialLen) {
+            this.saveState();
+            return true;
+        }
+        return false;
+    }
+
+    // --- PAGOS, COMPROBANTES Y VOUCHERS ---
     registerPayment(ci, paymentData) {
         const member = this.getMemberByCI(ci);
         if (!member) throw new Error('Miembro no encontrado');
 
         if (!member.pagos) member.pagos = [];
 
-        const nroRecibo = paymentData.nro_recibo !== undefined ? paymentData.nro_recibo : ('REC-' + Math.floor(10000 + Math.random() * 90000));
+        const monto = parseFloat(paymentData.monto) || 0;
+        if (monto <= 0) throw new Error('El monto del pago debe ser mayor a 0');
+
+        const cuotaId = paymentData.cuota_id || 'cuota_general';
+        const cuota = this.getCuotaById(cuotaId);
+        const concepto = paymentData.concepto || (cuota ? cuota.title : 'Aporte Fraternal 2026');
+
+        const now = new Date();
+        const nroRecibo = paymentData.nro_recibo !== undefined && paymentData.nro_recibo !== '' 
+            ? paymentData.nro_recibo 
+            : ('REC-' + Math.floor(10000 + Math.random() * 90000));
+
         const newPayment = {
-            id: 'PAG-' + Date.now().toString().slice(-6),
-            cuota_id: paymentData.cuota_id,
-            concepto: paymentData.concepto,
-            monto: parseFloat(paymentData.monto),
-            fecha: paymentData.fecha || new Date().toISOString().substring(0, 10),
+            id: paymentData.id || ('PAG-' + Date.now().toString().slice(-6)),
+            cuota_id: cuotaId,
+            concepto: concepto,
+            monto: monto,
+            fecha: paymentData.fecha || now.toISOString().substring(0, 10),
+            hora: paymentData.hora || now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' }),
             metodo: paymentData.metodo || 'Efectivo',
+            banco_origen: paymentData.banco_origen || '',
+            nro_transaccion: paymentData.nro_transaccion || '',
             nro_recibo: nroRecibo,
             cajero: paymentData.cajero || 'Tesorería Wistus',
             estado: paymentData.estado || 'pagado',
-            saldo_pendiente: paymentData.saldo_pendiente || 0
+            saldo_pendiente: paymentData.saldo_pendiente !== undefined ? paymentData.saldo_pendiente : 0,
+            observaciones: paymentData.observaciones || ''
         };
 
         member.pagos.unshift(newPayment);
+
+        // Si había una observación de rechazo previa en esta cuota, limpiarla al registrar el pago
+        if (member.vouchers_rechazados && Array.isArray(member.vouchers_rechazados)) {
+            member.vouchers_rechazados = member.vouchers_rechazados.filter(vr => vr.cuota_id !== cuotaId);
+        }
+
         this.saveState();
 
         if (window.DBService && window.DBService.isCloudActive) {
@@ -404,14 +568,25 @@ class PortalStateManager {
 
         if (!member.vouchers_pendientes) member.vouchers_pendientes = [];
 
-        const existingIndex = member.vouchers_pendientes.findIndex(v => v.cuota_id === voucherData.cuota_id);
+        const monto = parseFloat(voucherData.monto) || 0;
+        if (monto <= 0) throw new Error('El monto reportado debe ser mayor a 0');
+
+        const cuotaId = voucherData.cuota_id;
+        const existingIndex = member.vouchers_pendientes.findIndex(v => v.cuota_id === cuotaId);
+        
+        const now = new Date();
         const voucherObj = {
-            id: existingIndex >= 0 ? member.vouchers_pendientes[existingIndex].id : 'VOUCH-' + Date.now().toString().slice(-6),
-            cuota_id: voucherData.cuota_id,
-            concepto: voucherData.concepto,
-            monto: parseFloat(voucherData.monto),
+            id: existingIndex >= 0 ? member.vouchers_pendientes[existingIndex].id : ('VOUCH-' + Date.now().toString().slice(-6)),
+            cuota_id: cuotaId,
+            concepto: voucherData.concepto || 'Cuota Fraternal',
+            monto: monto,
             foto_base64: voucherData.foto_base64,
-            fecha: voucherData.fecha || new Date().toISOString().substring(0, 10),
+            banco_origen: voucherData.banco_origen || 'Banco Nacional de Bolivia (BNB)',
+            nro_transaccion: voucherData.nro_transaccion || '',
+            fecha_transferencia: voucherData.fecha_transferencia || now.toISOString().substring(0, 10),
+            notas_fraterno: voucherData.notas_fraterno || '',
+            fecha: voucherData.fecha || now.toISOString().substring(0, 10),
+            hora: now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' }),
             estado: 'pendiente_verificacion'
         };
 
@@ -419,6 +594,11 @@ class PortalStateManager {
             member.vouchers_pendientes[existingIndex] = voucherObj;
         } else {
             member.vouchers_pendientes.unshift(voucherObj);
+        }
+
+        // Si se reenvía un voucher, limpiar advertencia de rechazo anterior para esa cuota
+        if (member.vouchers_rechazados && Array.isArray(member.vouchers_rechazados)) {
+            member.vouchers_rechazados = member.vouchers_rechazados.filter(vr => vr.cuota_id !== cuotaId);
         }
 
         this.saveState();
@@ -434,6 +614,8 @@ class PortalStateManager {
                     ...v,
                     member_ci: m.ci,
                     member_nombre: `${m.nombres} ${m.apellidos}`,
+                    member_telefono: m.telefono || '',
+                    bloque_id: m.bloque_id,
                     bloque_nombre: m.bloque_nombre
                 });
             });
@@ -442,7 +624,7 @@ class PortalStateManager {
         return pending;
     }
 
-    confirmVoucher(ci, voucherId) {
+    confirmVoucher(ci, voucherId, customAmount = null, directivaNotes = '') {
         const member = this.getMemberByCI(ci);
         if (!member) throw new Error('Miembro no encontrado');
 
@@ -454,29 +636,146 @@ class PortalStateManager {
         const voucher = member.vouchers_pendientes[idx];
         member.vouchers_pendientes.splice(idx, 1);
 
+        const montoFinal = (customAmount !== null && !isNaN(customAmount) && parseFloat(customAmount) > 0) 
+            ? parseFloat(customAmount) 
+            : voucher.monto;
+
+        const metodoTexto = voucher.banco_origen ? `Transferencia / ${voucher.banco_origen}` : 'Transferencia / QR (Voucher)';
+
         const payment = this.registerPayment(ci, {
             cuota_id: voucher.cuota_id,
             concepto: voucher.concepto,
-            monto: voucher.monto,
-            metodo: 'Transferencia / QR (Voucher)',
+            monto: montoFinal,
+            metodo: metodoTexto,
+            banco_origen: voucher.banco_origen || '',
+            nro_transaccion: voucher.nro_transaccion || '',
             cajero: 'Verificación Directiva',
-            nro_recibo: 'TRANSF-VERIFICADA'
+            observaciones: directivaNotes || (customAmount ? `Monto verificado ajustado a Bs. ${montoFinal}` : 'Verificado por Directiva')
         });
 
         this.saveState();
         return payment;
     }
 
-    rejectVoucher(ci, voucherId) {
+    rejectVoucher(ci, voucherId, motivo = 'Comprobante no válido o no legible') {
         const member = this.getMemberByCI(ci);
         if (!member) throw new Error('Miembro no encontrado');
 
-        if (member.vouchers_pendientes) {
-            member.vouchers_pendientes = member.vouchers_pendientes.filter(v => v.id !== voucherId);
+        if (!member.vouchers_pendientes) member.vouchers_pendientes = [];
+
+        const idx = member.vouchers_pendientes.findIndex(v => v.id === voucherId);
+        if (idx !== -1) {
+            const voucher = member.vouchers_pendientes[idx];
+            if (!member.vouchers_rechazados) member.vouchers_rechazados = [];
+            
+            member.vouchers_rechazados.unshift({
+                id: voucher.id,
+                cuota_id: voucher.cuota_id,
+                concepto: voucher.concepto,
+                monto: voucher.monto,
+                motivo: motivo || 'Comprobante observado por Tesorería',
+                fecha: new Date().toISOString().substring(0, 10)
+            });
+
+            member.vouchers_pendientes.splice(idx, 1);
             this.saveState();
+            return true;
         }
-        return true;
+        return false;
     }
+
+    confirmAllPendingVouchers() {
+        const pending = this.getPendingVouchers();
+        let confirmedCount = 0;
+        pending.forEach(v => {
+            try {
+                this.confirmVoucher(v.member_ci, v.id);
+                confirmedCount++;
+            } catch (e) {
+                console.warn('Error confirmando voucher por lote:', e);
+            }
+        });
+        return confirmedCount;
+    }
+
+    getFinancialSummary() {
+        const members = this.getMembers();
+        const cuotasDef = this.getCuotas();
+        let cuotaTotalIndividual = 0;
+        cuotasDef.forEach(c => cuotaTotalIndividual += (parseFloat(c.monto) || 0));
+
+        let totalRecaudado = 0;
+        let totalProyectado = cuotaTotalIndividual * members.length;
+        let fraternosAlDia = 0;
+        let fraternosConSaldo = 0;
+
+        const bloquesConfig = DEFAULT_PORTAL_CONFIG.bloques || [];
+        const bloquesMap = {};
+        bloquesConfig.forEach(b => {
+            bloquesMap[b.id] = {
+                id: b.id,
+                name: b.name,
+                color: b.color,
+                total_miembros: 0,
+                recaudado: 0,
+                proyectado: 0,
+                al_dia: 0,
+                con_saldo: 0
+            };
+        });
+
+        members.forEach(m => {
+            const bId = m.bloque_id || 'machas';
+            if (!bloquesMap[bId]) {
+                bloquesMap[bId] = {
+                    id: bId,
+                    name: m.bloque_nombre || bId,
+                    color: '#7c3aed',
+                    total_miembros: 0,
+                    recaudado: 0,
+                    proyectado: 0,
+                    al_dia: 0,
+                    con_saldo: 0
+                };
+            }
+
+            const mPagos = m.pagos || [];
+            const pagado = mPagos.reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
+            
+            totalRecaudado += pagado;
+            bloquesMap[bId].total_miembros++;
+            bloquesMap[bId].recaudado += pagado;
+            bloquesMap[bId].proyectado += cuotaTotalIndividual;
+
+            if (pagado >= cuotaTotalIndividual && cuotaTotalIndividual > 0) {
+                fraternosAlDia++;
+                bloquesMap[bId].al_dia++;
+            } else {
+                fraternosConSaldo++;
+                bloquesMap[bId].con_saldo++;
+            }
+        });
+
+        const pendingVouchers = this.getPendingVouchers();
+        const pendingMonto = pendingVouchers.reduce((acc, v) => acc + (parseFloat(v.monto) || 0), 0);
+
+        const porBloque = Object.values(bloquesMap).map(b => ({
+            ...b,
+            porcentaje: b.proyectado > 0 ? Math.round((b.recaudado / b.proyectado) * 100) : 100
+        }));
+
+        return {
+            totalRecaudado,
+            totalProyectado,
+            cuotaTotalIndividual,
+            fraternosAlDia,
+            fraternosConSaldo,
+            pendingVouchersCount: pendingVouchers.length,
+            pendingVouchersMonto: pendingMonto,
+            porBloque
+        };
+    }
+
 
     // --- EVENTOS ---
     getEvents() {
@@ -500,9 +799,11 @@ class PortalStateManager {
             fecha: eventData.fecha,
             hora: eventData.hora || '15:00 - 19:00',
             lugar: eventData.lugar || 'Sede Social Tinkus Wistus',
+            responsable: eventData.responsable || 'Mesa Directiva y Control',
+            tolerancia_minutos: parseInt(eventData.tolerancia_minutos, 10) || 15,
+            referencia_mapa: eventData.referencia_mapa || '',
             estado: eventData.estado || 'proximo',
-            obligatorio: eventData.obligatorio !== undefined ? !!eventData.obligatorio : true,
-            puntos_asistencia: parseInt(eventData.puntos_asistencia, 10) || 10
+            obligatorio: eventData.obligatorio !== undefined ? !!eventData.obligatorio : true
         };
         this.state.eventos.push(newEvent);
         this.saveState();
@@ -524,9 +825,11 @@ class PortalStateManager {
                 fecha: eventData.fecha !== undefined ? eventData.fecha : this.state.eventos[index].fecha,
                 hora: eventData.hora !== undefined ? eventData.hora : this.state.eventos[index].hora,
                 lugar: eventData.lugar !== undefined ? eventData.lugar : this.state.eventos[index].lugar,
+                responsable: eventData.responsable !== undefined ? eventData.responsable : (this.state.eventos[index].responsable || 'Mesa Directiva y Control'),
+                tolerancia_minutos: eventData.tolerancia_minutos !== undefined ? parseInt(eventData.tolerancia_minutos, 10) : (this.state.eventos[index].tolerancia_minutos || 15),
+                referencia_mapa: eventData.referencia_mapa !== undefined ? eventData.referencia_mapa : (this.state.eventos[index].referencia_mapa || ''),
                 estado: eventData.estado !== undefined ? eventData.estado : this.state.eventos[index].estado,
-                obligatorio: eventData.obligatorio !== undefined ? !!eventData.obligatorio : this.state.eventos[index].obligatorio,
-                puntos_asistencia: eventData.puntos_asistencia !== undefined ? parseInt(eventData.puntos_asistencia, 10) : this.state.eventos[index].puntos_asistencia
+                obligatorio: eventData.obligatorio !== undefined ? !!eventData.obligatorio : this.state.eventos[index].obligatorio
             };
             this.saveState();
 
