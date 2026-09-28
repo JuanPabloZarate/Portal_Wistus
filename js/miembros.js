@@ -127,6 +127,10 @@ class MiembrosManager {
         container.innerHTML = html;
     }
 
+    openMemberKardex(ci) {
+        return this.viewMemberDetails(ci);
+    }
+
     viewMemberDetails(ci) {
         const member = window.PortalState.getMemberByCI(ci);
         if (!member) return;
@@ -201,7 +205,7 @@ class MiembrosManager {
         }
 
         const bloqueObj = window.PortalState.state.bloques.find(b => b.id === bloqueId);
-        const bloqueNombre = bloqueObj ? bloqueObj.name : 'Bloque Galanes';
+        const bloqueNombre = bloqueObj ? bloqueObj.name : 'Bloque Machas Wistus';
 
         try {
             window.PortalState.addMember({
@@ -225,6 +229,16 @@ class MiembrosManager {
             window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en el Padrón 2026!`);
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
+        }
+    }
+
+    seedSampleFraternos(count = 10) {
+        const added = window.PortalState.seedSampleMembers(count);
+        if (added > 0) {
+            window.PortalApp.showToast(`¡Se generaron ${added} nuevos fraternos de prueba en el Padrón!`, 'success');
+            this.renderControlDirectory();
+        } else {
+            window.PortalApp.showToast('No se generaron nuevos fraternos.', 'info');
         }
     }
 

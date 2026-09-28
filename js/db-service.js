@@ -134,9 +134,11 @@ const DBService = {
     /**
      * Métodos de Persistencia Unificada (Cloud + Local)
      */
-    async saveFraterno(fraterno) {
-        StateManager.addOrUpdateFraterno(fraterno);
-        if (this.isCloudActive && window.WistusFirebase.db) {
+    async saveFraterno(fraterno, syncLocal = false) {
+        if (syncLocal && window.StateManager) {
+            StateManager.addOrUpdateFraterno(fraterno);
+        }
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
                 await window.WistusFirebase.db.collection('fraternos').doc(String(fraterno.ci)).set(fraterno, { merge: true });
             } catch (e) {
@@ -145,11 +147,13 @@ const DBService = {
         }
     },
 
-    async saveAsistencia(registro) {
-        StateManager.addAsistencia(registro);
-        if (this.isCloudActive && window.WistusFirebase.db) {
+    async saveAsistencia(registro, syncLocal = false) {
+        if (syncLocal && window.StateManager) {
+            StateManager.addAsistencia(registro);
+        }
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
-                const id = String(registro.id || (registro.ci + '_' + registro.eventoId + '_' + Date.now()));
+                const id = String(registro.id || (registro.ci + '_' + (registro.eventoId || registro.evento_id) + '_' + Date.now()));
                 await window.WistusFirebase.db.collection('asistencias').doc(id).set(registro, { merge: true });
             } catch (e) {
                 console.warn("Error guardando asistencia en Firestore:", e);
@@ -157,9 +161,11 @@ const DBService = {
         }
     },
 
-    async savePago(pago) {
-        StateManager.addPago(pago);
-        if (this.isCloudActive && window.WistusFirebase.db) {
+    async savePago(pago, syncLocal = false) {
+        if (syncLocal && window.StateManager) {
+            StateManager.addPago(pago);
+        }
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
                 const id = String(pago.id || (pago.ci + '_' + Date.now()));
                 await window.WistusFirebase.db.collection('pagos').doc(id).set(pago, { merge: true });
@@ -169,9 +175,15 @@ const DBService = {
         }
     },
 
-    async saveEvento(evento) {
-        StateManager.addEvento(evento);
-        if (this.isCloudActive && window.WistusFirebase.db) {
+    async saveEvento(evento, syncLocal = false) {
+        if (syncLocal && window.StateManager) {
+            if (typeof StateManager.addEvento === 'function') {
+                StateManager.addEvento(evento);
+            } else if (typeof StateManager.addEvent === 'function') {
+                StateManager.addEvent(evento);
+            }
+        }
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
                 const id = String(evento.id || Date.now());
                 await window.WistusFirebase.db.collection('eventos').doc(id).set(evento, { merge: true });
@@ -181,9 +193,11 @@ const DBService = {
         }
     },
 
-    async saveAviso(aviso) {
-        StateManager.addAviso(aviso);
-        if (this.isCloudActive && window.WistusFirebase.db) {
+    async saveAviso(aviso, syncLocal = false) {
+        if (syncLocal && window.StateManager) {
+            StateManager.addAviso(aviso);
+        }
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
                 const id = String(aviso.id || Date.now());
                 await window.WistusFirebase.db.collection('avisos').doc(id).set(aviso, { merge: true });

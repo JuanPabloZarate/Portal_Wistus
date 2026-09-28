@@ -1,6 +1,7 @@
 /**
  * STATE MANAGER - LOCALSTORAGE REACTIVO
  * Gestiona la persistencia de datos, sesión activa, temas y operaciones de negocio.
+ * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
  */
 
 const STORAGE_KEY = 'portal_fraternal_storage_v4';
@@ -22,14 +23,34 @@ class PortalStateManager {
                     parsed.themes = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.themes));
                     parsed.control_user = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.control_user));
                     
-                    // Asegurar que el fraterno oficial esté disponible si no existe
+                    // Asegurar que los miembros oficiales base estén sincronizados
                     if (DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
                         DEFAULT_PORTAL_CONFIG.miembros.forEach(defaultM => {
-                            const exists = parsed.miembros.some(m => String(m.ci).trim() === String(defaultM.ci).trim());
-                            if (!exists) {
+                            const idx = parsed.miembros.findIndex(m => String(m.ci).trim() === String(defaultM.ci).trim());
+                            if (idx === -1) {
                                 parsed.miembros.unshift(JSON.parse(JSON.stringify(defaultM)));
+                            } else {
+                                // Enriquecer con campos base si faltaran
+                                parsed.miembros[idx] = {
+                                    fecha_nacimiento: defaultM.fecha_nacimiento || '',
+                                    contacto_emergencia: defaultM.contacto_emergencia || '',
+                                    telefono_emergencia: defaultM.telefono_emergencia || '',
+                                    talla_traje: defaultM.talla_traje || 'M',
+                                    vouchers_pendientes: defaultM.vouchers_pendientes || [],
+                                    ...parsed.miembros[idx]
+                                };
                             }
                         });
+                    }
+
+                    if (!parsed.cuotas_definidas || parsed.cuotas_definidas.length === 0) {
+                        parsed.cuotas_definidas = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.cuotas_definidas));
+                    }
+                    if (!parsed.eventos || parsed.eventos.length === 0) {
+                        parsed.eventos = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.eventos));
+                    }
+                    if (!parsed.bloques || parsed.bloques.length === 0) {
+                        parsed.bloques = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.bloques));
                     }
 
                     this.saveState(parsed);
@@ -110,21 +131,21 @@ class PortalStateManager {
     }
 
     getMemberByCI(ci) {
-        if (!ci) return null;
+        if (!ci || !String(ci).trim()) return null;
         const rawCI = String(ci).trim();
         const cleanCI = rawCI.replace(/[^0-9]/g, '');
 
         let member = this.getMembers().find(m => {
             const mRaw = String(m.ci || '').trim();
             const mClean = mRaw.replace(/[^0-9]/g, '');
-            return mRaw === rawCI || (cleanCI && mClean === cleanCI);
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
         });
 
         if (!member && DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
             member = DEFAULT_PORTAL_CONFIG.miembros.find(m => {
                 const mRaw = String(m.ci || '').trim();
                 const mClean = mRaw.replace(/[^0-9]/g, '');
-                return mRaw === rawCI || (cleanCI && mClean === cleanCI);
+                return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
             });
             if (member) {
                 if (!this.state.miembros) this.state.miembros = [];
@@ -136,6 +157,7 @@ class PortalStateManager {
     }
 
     addMember(memberData) {
+        if (!this.state.miembros) this.state.miembros = [];
         const existing = this.getMemberByCI(memberData.ci);
         if (existing) {
             throw new Error(`El CI ${memberData.ci} ya se encuentra registrado.`);
@@ -147,23 +169,47 @@ class PortalStateManager {
             apellidos: memberData.apellidos || '',
             email: memberData.email || '',
             telefono: memberData.telefono || '',
-            bloque_id: memberData.bloque_id || 'galanes',
-            bloque_nombre: memberData.bloque_nombre || 'Bloque Galanes',
+            fecha_nacimiento: memberData.fecha_nacimiento || '',
+            contacto_emergencia: memberData.contacto_emergencia || '',
+            telefono_emergencia: memberData.telefono_emergencia || '',
+            talla_traje: memberData.talla_traje || 'M',
+            bloque_id: memberData.bloque_id || 'machas',
+            bloque_nombre: memberData.bloque_nombre || 'Bloque Machas Wistus',
             rol_fraternal: memberData.rol_fraternal || 'Fraterno Titular',
             antiguedad_anios: parseInt(memberData.antiguedad_anios, 10) || 1,
             foto: memberData.foto || 'assets/img/avatar-default.svg',
-            estado_fraterno: 'activo',
-            asistencias: {},
-            pagos: []
+            estado_fraterno: memberData.estado_fraterno || 'activo',
+            asistencias: memberData.asistencias || {},
+            pagos: memberData.pagos || [],
+            vouchers_pendientes: memberData.vouchers_pendientes || []
         };
         this.state.miembros.push(newMember);
         this.saveState();
 
         if (window.DBService && window.DBService.isCloudActive) {
-            window.DBService.saveFraterno(newMember).catch(err => console.warn(err));
+            window.DBService.saveFraterno(newMember, false).catch(err => console.warn(err));
         }
 
         return newMember;
+    }
+
+    seedSampleMembers(count = 10) {
+        if (typeof WistusDataGenerator !== 'undefined') {
+            const genFn = WistusDataGenerator.generateSamplePadron || WistusDataGenerator.generateSamplePadrón;
+            const newMembers = typeof genFn === 'function' ? genFn.call(WistusDataGenerator, count) : [];
+            let added = 0;
+            if (!this.state.miembros) this.state.miembros = [];
+            newMembers.forEach(m => {
+                const exists = this.getMemberByCI(m.ci);
+                if (!exists) {
+                    this.state.miembros.push(m);
+                    added++;
+                }
+            });
+            if (added > 0) this.saveState();
+            return added;
+        }
+        return 0;
     }
 
     updateMember(ci, updates) {
@@ -173,7 +219,7 @@ class PortalStateManager {
         this.saveState();
 
         if (window.DBService && window.DBService.isCloudActive) {
-            window.DBService.saveFraterno(member).catch(err => console.warn(err));
+            window.DBService.saveFraterno(member, false).catch(err => console.warn(err));
         }
 
         return member;
@@ -283,7 +329,7 @@ class PortalStateManager {
                 hora: horaStr,
                 marcado_por: marcadoPor,
                 timestamp: now.toISOString()
-            }).catch(err => console.warn(err));
+            }, false).catch(err => console.warn(err));
         }
 
         return member.asistencias[eventId];
@@ -304,7 +350,7 @@ class PortalStateManager {
 
         const total = members.length;
         const totalMarcados = presentes + atrasos + licencias + faltas;
-        const porcentajeEfectivo = total > 0 ? Math.round(((presentes + atrasos * 0.7 + licencias) / total) * 100) : 0;
+        const porcentajeEfectivo = total > 0 ? Math.round(((presentes + atrasos * 0.7 + licencias * 0.9) / total) * 100) : 0;
 
         return {
             total,
@@ -334,7 +380,7 @@ class PortalStateManager {
             fecha: paymentData.fecha || new Date().toISOString().substring(0, 10),
             metodo: paymentData.metodo || 'Efectivo',
             nro_recibo: nroRecibo,
-            cajero: paymentData.cajero || 'Tesorería Wist\'us',
+            cajero: paymentData.cajero || 'Tesorería Wistus',
             estado: paymentData.estado || 'pagado',
             saldo_pendiente: paymentData.saldo_pendiente || 0
         };
@@ -346,7 +392,7 @@ class PortalStateManager {
             window.DBService.savePago({
                 ...newPayment,
                 ci: String(ci)
-            }).catch(err => console.warn(err));
+            }, false).catch(err => console.warn(err));
         }
 
         return newPayment;
@@ -453,7 +499,7 @@ class PortalStateManager {
             tipo: eventData.tipo || 'Ensayo',
             fecha: eventData.fecha,
             hora: eventData.hora || '15:00 - 19:00',
-            lugar: eventData.lugar || 'Sede Wist\'us',
+            lugar: eventData.lugar || 'Sede Social Tinkus Wistus',
             estado: eventData.estado || 'proximo',
             obligatorio: eventData.obligatorio !== undefined ? !!eventData.obligatorio : true,
             puntos_asistencia: parseInt(eventData.puntos_asistencia, 10) || 10
@@ -462,7 +508,7 @@ class PortalStateManager {
         this.saveState();
 
         if (window.DBService && window.DBService.isCloudActive) {
-            window.DBService.saveEvento(newEvent).catch(err => console.warn(err));
+            window.DBService.saveEvento(newEvent, false).catch(err => console.warn(err));
         }
 
         return newEvent;
@@ -485,7 +531,7 @@ class PortalStateManager {
             this.saveState();
 
             if (window.DBService && window.DBService.isCloudActive) {
-                window.DBService.saveEvento(this.state.eventos[index]).catch(err => console.warn(err));
+                window.DBService.saveEvento(this.state.eventos[index], false).catch(err => console.warn(err));
             }
 
             return this.state.eventos[index];
@@ -531,7 +577,6 @@ class PortalStateManager {
 
     setPagos(pagos, notifyState = true) {
         if (Array.isArray(pagos)) {
-            // Mapear pagos a miembros según CI
             pagos.forEach(p => {
                 if (p.ci) {
                     const m = this.getMemberByCI(p.ci);
@@ -573,11 +618,20 @@ class PortalStateManager {
     }
 
     addAsistencia(registro) {
-        return this.markAttendance(registro.ci, registro.eventoId, registro.estado, registro.marcado_por);
+        return this.markAttendance(registro.ci, registro.eventoId || registro.evento_id, registro.estado, registro.marcado_por);
     }
 
     addPago(pago) {
         return this.registerPayment(pago.ci, pago);
+    }
+
+    addEvento(evento) {
+        const existing = this.getEventById(evento.id);
+        if (existing) {
+            return this.updateEvent(evento.id, evento);
+        } else {
+            return this.addEvent(evento);
+        }
     }
 
     addAviso(aviso) {
@@ -591,4 +645,3 @@ class PortalStateManager {
 // Instancia global accesible como PortalState y StateManager
 window.PortalState = new PortalStateManager();
 window.StateManager = window.PortalState;
-

@@ -473,6 +473,7 @@ class PortalAppManager {
             { type: 'action', val: 'sim-juan-pablo', title: 'Simular: Juan Pablo Quispe', desc: 'Ingresar como miembro de Bloque Machas (CI 4839201)', icon: 'bi-person-fill' },
             { type: 'action', val: 'sim-maria-elena', title: 'Simular: Maria Elena Flores', desc: 'Ingresar como miembro de Bloque Imillas (CI 6892341)', icon: 'bi-person-check-fill' },
             { type: 'action', val: 'sim-control', title: 'Simular: Control / Directiva', desc: 'Ingresar con perfil de secretaría y administración', icon: 'bi-shield-lock-fill' },
+            { type: 'action', val: 'seed-members', title: 'Generar Padrón Demo (+10 Fraternos)', desc: 'Poblar padrón con fraternos y registros de prueba', icon: 'bi-people-fill' },
             { type: 'action', val: 'logout', title: 'Cerrar Sesión', desc: 'Salir del portal y volver a la pantalla de acceso', icon: 'bi-box-arrow-right' }
         ];
 
@@ -573,6 +574,10 @@ class PortalAppManager {
             } else if (actionVal === 'sim-control') {
                 window.Auth.loginAsControl('control', 'wistus2026');
                 this.showToast('Cambiado a: Control / Directiva');
+            } else if (actionVal === 'seed-members') {
+                if (window.Miembros && typeof window.Miembros.seedSampleFraternos === 'function') {
+                    window.Miembros.seedSampleFraternos(10);
+                }
             } else if (actionVal === 'logout') {
                 window.Auth.logout();
                 this.showToast('Sesión cerrada.');
