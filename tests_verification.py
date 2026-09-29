@@ -779,6 +779,26 @@ class TestPortalProcessesAndData(unittest.TestCase):
         # Ensure they are distinct
         self.assertEqual(len(set(receipts)), 3)
 
+    def test_29_demo_options_removed_from_user_menu(self):
+        """Verifica que las opciones de 'Cambiar Perfil / Rol' y 'Restablecer Datos Demo' hayan sido eliminadas del dropdown."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        self.assertNotIn("Cambiar Perfil / Rol", index_content)
+        self.assertNotIn("Restablecer Datos Demo", index_content)
+        self.assertNotIn("btnResetPortalData", index_content)
+
+        app_js_path = os.path.join(JS_DIR, 'app.js')
+        with open(app_js_path, 'r', encoding='utf-8') as f:
+            app_content = f.read()
+
+        self.assertNotIn("btnMoreSimularRolFraterno", app_content)
+        self.assertNotIn("btnMoreResetDemoData", app_content)
+        self.assertNotIn("sim-juan-pablo", app_content)
+        self.assertNotIn("sim-maria-elena", app_content)
+        self.assertNotIn("sim-control", app_content)
+
 if __name__ == '__main__':
     unittest.main()
 

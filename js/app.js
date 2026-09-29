@@ -470,9 +470,6 @@ class PortalAppManager {
 
         // 3. Acciones del sistema
         const actionsCatalog = [
-            { type: 'action', val: 'sim-juan-pablo', title: 'Simular: Juan Pablo Quispe', desc: 'Ingresar como miembro de Bloque Machas (CI 4839201)', icon: 'bi-person-fill' },
-            { type: 'action', val: 'sim-maria-elena', title: 'Simular: Maria Elena Flores', desc: 'Ingresar como miembro de Bloque Imillas (CI 6892341)', icon: 'bi-person-check-fill' },
-            { type: 'action', val: 'sim-control', title: 'Simular: Control / Directiva', desc: 'Ingresar con perfil de secretaría y administración', icon: 'bi-shield-lock-fill' },
             { type: 'action', val: 'seed-members', title: 'Generar Padrón Demo (+10 Fraternos)', desc: 'Poblar padrón con fraternos y registros de prueba', icon: 'bi-people-fill' },
             { type: 'action', val: 'logout', title: 'Cerrar Sesión', desc: 'Salir del portal y volver a la pantalla de acceso', icon: 'bi-box-arrow-right' }
         ];
@@ -565,16 +562,7 @@ class PortalAppManager {
                 this.showToast(`Visualizando kardex de CI ${actionVal}`, 'info');
             }
         } else if (actionType === 'action') {
-            if (actionVal === 'sim-juan-pablo') {
-                window.Auth.loginAsMember('4839201');
-                this.showToast('Cambiado a: Juan Pablo Quispe (Machas)');
-            } else if (actionVal === 'sim-maria-elena') {
-                window.Auth.loginAsMember('6892341');
-                this.showToast('Cambiado a: Maria Elena Flores (Imillas)');
-            } else if (actionVal === 'sim-control') {
-                window.Auth.loginAsControl('control', 'wistus2026');
-                this.showToast('Cambiado a: Control / Directiva');
-            } else if (actionVal === 'seed-members') {
+            if (actionVal === 'seed-members') {
                 if (window.Miembros && typeof window.Miembros.seedSampleFraternos === 'function') {
                     window.Miembros.seedSampleFraternos(10);
                 }
@@ -600,13 +588,6 @@ class PortalAppManager {
                         <div class="more-option-sub">Ver registro de ensayos asistidos</div>
                     </div>
                 </button>
-                <button class="more-option-item" id="btnMoreSimularRolFraterno">
-                    <div class="more-option-icon"><i class="bi bi-person-lines-fill"></i></div>
-                    <div>
-                        <div class="more-option-title">Simular Rol / Perfil</div>
-                        <div class="more-option-sub">Cambiar de usuario de prueba</div>
-                    </div>
-                </button>
                 <hr class="border-subtle my-2">
                 <button class="more-option-item text-danger btn-logout-action">
                     <div class="more-option-icon bg-danger bg-opacity-20 text-danger"><i class="bi bi-box-arrow-right text-danger"></i></div>
@@ -630,13 +611,6 @@ class PortalAppManager {
                     <div>
                         <div class="more-option-title">Personalizar Marca</div>
                         <div class="more-option-sub">Colores, escudo y nombre</div>
-                    </div>
-                </button>
-                <button class="more-option-item" id="btnMoreResetDemoData">
-                    <div class="more-option-icon bg-warning bg-opacity-20 text-warning"><i class="bi bi-arrow-counterclockwise text-warning"></i></div>
-                    <div>
-                        <div class="more-option-title text-warning">Restablecer Datos Demo</div>
-                        <div class="more-option-sub text-muted">Reiniciar datos de prueba</div>
                     </div>
                 </button>
                 <hr class="border-subtle my-2">
@@ -675,26 +649,6 @@ class PortalAppManager {
                 });
             }
 
-            // Simular rol
-            const btnSim = body.querySelector('#btnMoreSimularRolFraterno');
-            if (btnSim) {
-                btnSim.addEventListener('click', () => {
-                    bsModal.hide();
-                    const dropdownBtn = document.querySelector('#topbarUserDropdown .dropdown-toggle');
-                    if (dropdownBtn) dropdownBtn.click();
-                });
-            }
-
-            // Reset demo
-            const btnReset = body.querySelector('#btnMoreResetDemoData');
-            if (btnReset) {
-                btnReset.addEventListener('click', () => {
-                    bsModal.hide();
-                    const resetBtn = document.getElementById('btnResetPortalData');
-                    if (resetBtn) resetBtn.click();
-                });
-            }
-
             // Logout action in modal
             body.querySelectorAll('.btn-logout-action').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -728,18 +682,6 @@ class PortalAppManager {
                 }
             }
         });
-
-        // Botón de restablecer datos demo
-        const btnReset = document.getElementById('btnResetPortalData');
-        if (btnReset) {
-            btnReset.addEventListener('click', () => {
-                if (confirm('¿Desea restablecer todos los datos, asistencias y pagos a su estado inicial de demostración?')) {
-                    window.PortalState.resetDefaults();
-                    this.showToast('Datos demo restablecidos a su estado inicial.');
-                    location.reload();
-                }
-            });
-        }
     }
 
     // --- DASHBOARD MIEMBRO ---
