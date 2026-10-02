@@ -44,6 +44,9 @@
           spacing: {
             header: '3.25rem',
             'header-lg': '4.375rem',
+          },
+          fontSize: {
+            '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
           }
         }
       }
@@ -71,12 +74,7 @@
       background-color: var(--color-silver);
       color: var(--color-black);
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      padding-bottom: var(--spacing-header);
-    }
-    @media (min-width: 1024px) {
-      body {
-        padding-bottom: var(--spacing-header-lg);
-      }
+      /* padding-bottom compensated directly in footer to preserve dark visual background */
     }
 
     /* Header states */
@@ -197,15 +195,18 @@
 <body class="bg-silver text-charcoal font-sans antialiased selection:bg-wistus-purple selection:text-white overflow-x-hidden">
 
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
   <!-- R1. HEADER CON EFECTO BLUR, ESTADO SCROLLED Y NAVEGACIÓN EDITORIAL       -->
   <!-- ========================================================================= -->
   <header id="site-header" data-header class="fixed top-0 inset-x-0 z-40 transition-all duration-500 ease-in-out border-b border-[#f5f0ea]/20 text-[#f5f0ea] bg-transparent backdrop-blur-sm">
-    <div class="max-w-7xl mx-auto px-5 lg:px-10 h-[3.25rem] lg:h-[4.375rem] flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-10 h-[3.5rem] lg:h-[4.375rem] flex items-center justify-between">
       
       <!-- Logo Oficial & Marca -->
-      <a href="landing.html" class="flex items-center gap-3 group">
-        <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-8 lg:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
-        <span class="font-serif tracking-widest text-base lg:text-xl uppercase font-bold brand-title transition-colors">Tinkus Wistus</span>
+      <a href="landing.html" class="flex items-center gap-1.5 sm:gap-3 group flex-shrink-0">
+        <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-7 sm:h-8 lg:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+        <span class="font-serif tracking-widest text-xs sm:text-base lg:text-xl uppercase font-bold brand-title transition-colors">
+          <span class="hidden min-[380px]:inline">Tinkus </span>Wistus
+        </span>
       </a>
 
       <!-- Navegación Editorial Desktop -->
@@ -217,50 +218,69 @@
         <a href="#bloques" class="nav-link-item hover:opacity-60 transition-opacity">Nuestros Bloques</a>
       </nav>
 
-      <!-- Barra de Acciones Superior: Portal Fraterno, Unirse y Hamburger -->
-      <div class="flex items-center gap-3 sm:gap-4">
-        <!-- Enlace Bidireccional de ida a index.html -->
-        <a href="index.html" class="nav-portal-btn hidden sm:inline-flex items-center gap-2 border border-current px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-colors duration-300">
-          <span>Portal Fraterno</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      <!-- Barra de Acciones Superior: Portal Fraterno, Postular y Hamburger -->
+      <div class="flex items-center gap-1 sm:gap-2.5">
+        <!-- Enlace Bidireccional de ida a index.html (Portal Fraterno) -->
+        <a href="index.html" class="nav-portal-btn inline-flex items-center gap-1 sm:gap-2 border border-current px-2 sm:px-4 py-1 sm:py-2 rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider transition-colors duration-300">
+          <span>Portal<span class="hidden sm:inline"> Fraterno</span></span>
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
         
-        <!-- Botón Píldora "Unirse a la Fraternidad" -->
-        <button id="btn-header-join" data-open-enquire class="px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider bg-wistus-gold hover:bg-wistus-gold-light text-charcoal font-semibold shadow-sm transition-all duration-300">
-          Unirse
+        <!-- Botón Píldora "Postular" -->
+        <button id="btn-header-join" data-open-enquire class="px-2 sm:px-4 py-1 sm:py-2 rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider bg-wistus-gold hover:bg-wistus-gold-light text-charcoal font-semibold shadow-sm transition-all duration-300">
+          Postular
         </button>
 
         <!-- Botón Hamburger para Móvil y Desktop -->
-        <button id="btn-mobile-menu" data-menu-drawer-toggle class="p-2 flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-full focus:outline-none focus:ring-2 focus:ring-wistus-gold" aria-label="Abrir Menú">
-          <span class="hamburger-line line-1 block w-6 h-[2px] bg-current transition-transform duration-300"></span>
-          <span class="hamburger-line line-2 block w-6 h-[2px] bg-current transition-transform duration-300"></span>
+        <button id="btn-mobile-menu" data-menu-drawer-toggle class="p-1.5 sm:p-2 flex flex-col justify-center items-center gap-1 sm:gap-1.5 w-8 h-8 sm:w-9 sm:h-9 rounded-full focus:outline-none focus:ring-2 focus:ring-wistus-gold flex-shrink-0" aria-label="Abrir Menú">
+          <span class="hamburger-line line-1 block w-5 sm:w-6 h-[2px] bg-current transition-transform duration-300"></span>
+          <span class="hamburger-line line-2 block w-5 sm:w-6 h-[2px] bg-current transition-transform duration-300"></span>
         </button>
       </div>
     </div>
 
     <!-- Menú Drawer Desplegable (data-menu-drawer) -->
-    <div id="menu-drawer" data-menu-drawer class="menu-drawer fixed inset-0 z-50 bg-[#f5f0ea] text-[#111111] flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
+    <div id="menu-drawer" data-menu-drawer class="menu-drawer fixed inset-0 z-50 bg-[#f5f0ea] text-[#111111] flex flex-col justify-between p-5 sm:p-10 lg:p-12 overflow-y-auto">
       <div class="flex items-center justify-between border-b border-[#b9b1a4]/40 pb-4">
         <div class="flex items-center gap-3">
-          <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-9 w-auto">
-          <span class="font-serif tracking-widest text-lg uppercase font-bold">Tinkus Wistus</span>
+          <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-8 sm:h-9 w-auto">
+          <span class="font-serif tracking-widest text-base sm:text-lg uppercase font-bold">Tinkus Wistus</span>
         </div>
         <button id="btn-menu-drawer-close" data-menu-drawer-close class="font-mono text-xs uppercase tracking-widest text-[#717171] hover:text-[#111111] p-2 flex items-center gap-1" aria-label="Cerrar Menú">
           <span>Cerrar</span> &times;
         </button>
       </div>
 
-      <div class="my-auto py-8 space-y-4">
-        <a href="#hero" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">01. Convocatoria 2026</a>
-        <a href="#metadatos" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">02. Horarios y Locales de Ensayo</a>
-        <a href="#galeria" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">03. Galería Fotográfica</a>
-        <a href="#credencial" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">04. Credencial Digital 3D</a>
-        <a href="#bloques" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">05. Nuestros Bloques</a>
-        <a href="index.html" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-wistus-gold hover:text-wistus-gold-light transition-colors">06. Ingresar al Portal Fraterno &rarr;</a>
+      <!-- Acciones Rápidas Destacadas en el Drawer Móvil -->
+      <div class="pt-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <a href="index.html" class="flex items-center justify-between p-3.5 sm:p-4 rounded-xl bg-charcoal text-[#f5f0ea] hover:bg-black font-serif text-sm sm:text-base font-medium transition-all shadow-sm group">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-wistus-gold"></span>
+            <span>Portal Fraterno</span>
+          </div>
+          <svg class="w-4 h-4 text-wistus-gold transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+        <button data-open-enquire onclick="closeMenuDrawer()" class="flex items-center justify-between p-3.5 sm:p-4 rounded-xl bg-wistus-gold text-charcoal hover:bg-wistus-gold-light font-serif text-sm sm:text-base font-bold transition-all shadow-sm group text-left">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-charcoal"></span>
+            <span>Postular a la Fraternidad</span>
+          </div>
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
       </div>
 
-      <div class="border-t border-[#b9b1a4]/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#717171]">
-        <div>Carnaval Oruro</div>
+      <div class="my-auto py-6 sm:py-8 space-y-3 sm:space-y-4">
+        <a href="#hero" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">01. Convocatoria 2026</a>
+        <a href="#metadatos" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">02. Horarios y Locales de Ensayo</a>
+        <a href="#galeria" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">03. Galería Fotográfica</a>
+        <a href="#credencial" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">04. Credencial Digital 3D</a>
+        <a href="#bloques" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">05. Nuestros Bloques</a>
+        <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-wistus-gold hover:text-wistus-gold-light transition-colors">06. Ingresar al Portal Fraterno &rarr;</a>
+        <button data-open-enquire onclick="closeMenuDrawer()" class="block text-left font-serif text-2xl sm:text-4xl lg:text-5xl text-wistus-purple hover:text-wistus-purple-dark transition-colors w-full">07. Postular (Ficha 2026) &rarr;</button>
+      </div>
+
+      <div class="border-t border-[#b9b1a4]/40 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs text-[#717171]">
+        <div>Carnaval Oruro &bull; Convocatoria 2026</div>
         <div class="flex items-center gap-4">
           <a href="tel:+59176543210" class="hover:underline">+591 76543210</a>
           <a href="mailto:contacto@tinkuswistus.bo" class="hover:underline">contacto@tinkuswistus.bo</a>
@@ -277,9 +297,9 @@
     <!-- ========================================================================= -->
     <!-- R3. HERO MASTHEAD INMERSIVO FULL-SCREEN (h-svh, [data-block="masthead-full"]) -->
     <!-- ========================================================================= -->
-    <section id="hero" class="relative overflow-hidden bg-black text-[#f5f0ea] h-svh min-h-screen min-h-[600px] flex items-center justify-center">
+    <section id="hero" class="relative overflow-hidden bg-black text-[#f5f0ea] h-svh min-h-screen min-h-[560px] flex items-center justify-center">
       <!-- Contenedor Semántico Masthead Full -->
-      <header data-block="masthead-full" class="h-svh h-screen min-h-screen min-h-[600px] w-full flex items-center justify-center relative">
+      <header data-block="masthead-full" class="h-svh h-screen min-h-screen min-h-[560px] w-full flex items-center justify-center relative">
         <!-- Fotografía de Fondo Monumental con Overlay Oscuro -->
         <div class="absolute inset-0 z-0">
           <img src="assets/img/wistus-banner.jpg" alt="Fraternidad Tinkus Wistus en Desfile Oficial" class="w-full h-full object-cover object-center filter brightness-[0.70] contrast-[1.05]">
@@ -287,41 +307,51 @@
         </div>
 
         <!-- Contenido Monumental Centrado -->
-        <div class="relative z-10 max-w-5xl mx-auto px-5 text-center flex flex-col items-center">
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center py-10 sm:py-16">
           <!-- Badge Oficial Tinkus Wistus -->
-          <div class="mb-4 sm:mb-6">
-            <img src="assets/img/wistus-badge.svg" alt="Badge Oficial Tinkus Wistus" class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto object-contain filter drop-shadow-[0_4px_16px_rgba(217,119,6,0.45)] transform hover:scale-105 transition-transform duration-500">
+          <div class="mb-3 sm:mb-6">
+            <img src="assets/img/wistus-badge.svg" alt="Badge Oficial Tinkus Wistus" class="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto object-contain filter drop-shadow-[0_4px_16px_rgba(217,119,6,0.45)] transform hover:scale-105 transition-transform duration-500">
           </div>
 
           <!-- Etiqueta Editorial Convocatoria -->
-          <div class="inline-flex items-center gap-2 border border-[#f5f0ea]/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/90 mb-5">
+          <div class="inline-flex items-center gap-2 border border-[#f5f0ea]/30 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/90 mb-4 sm:mb-5">
             <span class="w-2 h-2 rounded-full bg-wistus-gold animate-pulse"></span>
             <span>Carnaval Oruro</span>
           </div>
 
           <!-- Título Monumental en Serif -->
-          <h1 class="font-serif text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.92] tracking-tight uppercase mb-6 font-bold text-white drop-shadow-lg">
+          <h1 class="font-serif text-3xl sm:text-6xl md:text-8xl lg:text-9xl leading-[0.94] tracking-tight uppercase mb-4 sm:mb-6 font-bold text-white drop-shadow-lg break-words">
             TINKUS WISTUS
           </h1>
 
           <!-- Lema Editorial -->
-          <p class="font-editorial italic text-lg sm:text-2xl md:text-3xl text-[#f5f0ea]/90 max-w-2xl mx-auto font-light leading-relaxed mb-8 drop-shadow">
+          <p class="font-editorial italic text-base sm:text-xl md:text-2xl lg:text-3xl text-[#f5f0ea]/90 max-w-2xl mx-auto font-light leading-relaxed mb-6 sm:mb-8 drop-shadow px-2">
             “Fuerza, Pasión y Tradición Ancestral en el Corazón de La Paz”
           </p>
 
-          <!-- Acciones Principales del Hero -->
-          <div class="flex flex-wrap items-center justify-center gap-4">
-            <a href="#metadatos" class="px-8 py-3.5 rounded-full bg-[#f5f0ea] text-[#111111] font-serif text-base font-semibold hover:bg-black hover:text-[#f5f0ea] border border-[#f5f0ea] transition-all duration-300 shadow-lg">
-              Descubrir Fraternidad
-            </a>
-            <button data-open-enquire class="px-8 py-3.5 rounded-full border border-[#f5f0ea]/70 text-[#f5f0ea] font-serif text-base font-semibold hover:bg-[#f5f0ea] hover:text-[#111111] transition-all duration-300 backdrop-blur-sm">
-              Postular 2026
+          <!-- Acciones Principales del Hero: Postular, Portal Fraterno y Descubrir -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full max-w-xl mx-auto px-2">
+            <!-- Botón Prominente 1: Postular -->
+            <button id="btn-hero-postular" data-open-enquire class="px-6 sm:px-8 py-3.5 rounded-full bg-wistus-gold hover:bg-wistus-gold-light text-charcoal font-serif text-sm sm:text-base font-bold shadow-lg hover:shadow-wistus-gold/30 transition-all duration-300 flex items-center justify-center gap-2 group">
+              <span>Postular 2026</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
+
+            <!-- Botón Prominente 2: Portal Fraterno -->
+            <a id="btn-hero-portal" href="index.html" class="px-6 sm:px-8 py-3.5 rounded-full bg-[#f5f0ea] hover:bg-white text-charcoal font-serif text-sm sm:text-base font-semibold shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group border border-white/40">
+              <svg class="w-4 h-4 text-wistus-purple transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+              <span>Portal Fraterno</span>
+            </a>
+
+            <!-- Botón Secundario: Descubrir Fraternidad -->
+            <a href="#metadatos" class="px-5 py-3.5 rounded-full border border-[#f5f0ea]/40 text-[#f5f0ea] font-mono text-xs uppercase tracking-wider hover:bg-white/10 hover:border-white transition-all duration-300 backdrop-blur-sm flex items-center justify-center gap-1.5">
+              <span>Explorar</span> &darr;
+            </a>
           </div>
         </div>
 
         <!-- Indicador de Scroll -->
-        <a href="#metadatos" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/70 flex flex-col items-center gap-2 hover:text-[#f5f0ea] transition-colors z-10" aria-label="Desplazarse hacia abajo">
+        <a href="#metadatos" class="hidden min-[480px]:flex absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/70 flex-col items-center gap-1 sm:gap-2 hover:text-[#f5f0ea] transition-colors z-10" aria-label="Desplazarse hacia abajo">
           <span>Explorar</span>
           <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
         </a>
@@ -354,10 +384,10 @@
 
           <!-- Columna Derecha: Lista de Metadatos Oficiales (<dl data-venue-metadata>) -->
           <div class="lg:col-span-5 lg:col-start-8">
-            <dl id="venue-metadata" data-venue-metadata class="grid grid-cols-[auto_1fr] gap-y-6 text-sm">
+            <dl id="venue-metadata" data-venue-metadata class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-y-4 sm:gap-y-6 text-sm">
               
               <!-- Horarios de Ensayo -->
-              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171] min-w-[130px]">
+              <dt class="border-b-0 sm:border-b border-[#b9b1a4]/40 pb-1 sm:pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171] sm:min-w-[130px]">
                 Horarios
               </dt>
               <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
@@ -366,7 +396,7 @@
               </dd>
 
               <!-- Local de Ensayo / Sede -->
-              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+              <dt class="border-b-0 sm:border-b border-[#b9b1a4]/40 pb-1 sm:pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
                 Local / Sede
               </dt>
               <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
@@ -375,17 +405,17 @@
               </dd>
 
               <!-- Contacto de Directiva -->
-              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+              <dt class="border-b-0 sm:border-b border-[#b9b1a4]/40 pb-1 sm:pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
                 Directiva
               </dt>
-              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
+              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111] break-words">
                 <a href="tel:+59176543210" class="font-mono hover:underline text-wistus-purple">+591 76543210</a> / 
                 <a href="tel:+59170123456" class="font-mono hover:underline text-wistus-purple">+591 70123456</a><br>
                 <a href="mailto:contacto@tinkuswistus.bo" class="hover:underline">contacto@tinkuswistus.bo</a>
               </dd>
 
               <!-- Redes Sociales Oficiales -->
-              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+              <dt class="border-b-0 sm:border-b border-[#b9b1a4]/40 pb-1 sm:pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
                 Comunidad
               </dt>
               <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111] flex flex-wrap gap-x-4 gap-y-1">
@@ -396,7 +426,7 @@
               </dd>
 
               <!-- Enlace al Portal Fraterno -->
-              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+              <dt class="border-b-0 sm:border-b border-[#b9b1a4]/40 pb-1 sm:pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
                 Portal
               </dt>
               <dd class="border-b border-[#b9b1a4]/40 pb-3">
@@ -431,44 +461,55 @@
             
             <!-- Slide 1: Banner Wistus Principal -->
             <div class="swiper-slide !w-auto">
-              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
+              <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
                 <img src="assets/img/wistus-banner.jpg" alt="Carnaval de Oruro Tinkus Wistus en Desfile" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                   <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Carnaval Oruro</span>
-                  <h3 class="font-serif text-lg font-bold">Fuerza & Devoción Wistus</h3>
+                  <h3 class="font-serif text-base sm:text-lg font-bold">Fuerza & Devoción Wistus</h3>
                 </div>
               </div>
             </div>
 
             <!-- Slide 2: Sello y Emblema Andino -->
             <div class="swiper-slide !w-auto">
-              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#0f172a] shadow-md relative group flex items-center justify-center p-8">
+              <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#0f172a] shadow-md relative group flex items-center justify-center p-6 sm:p-8">
                 <img src="assets/img/wistus-logo-w.svg" alt="Chakana Andina Wistus Emblema Oficial" class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_8px_20px_rgba(217,119,6,0.5)] group-hover:scale-110 transition-transform duration-700 ease-out">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                   <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Heráldica</span>
-                  <h3 class="font-serif text-lg font-bold">Chakana y Solsticio Andino</h3>
+                  <h3 class="font-serif text-base sm:text-lg font-bold">Chakana y Solsticio Andino</h3>
                 </div>
               </div>
             </div>
 
             <!-- Slide 3: Escudo Montera Tradicional -->
             <div class="swiper-slide !w-auto">
-              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#111111] via-[#1e1e1e] to-[#2c2c2c] shadow-md relative group flex items-center justify-center p-8 border border-white/10">
+              <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#111111] via-[#1e1e1e] to-[#2c2c2c] shadow-md relative group flex items-center justify-center p-6 sm:p-8 border border-white/10">
                 <img src="assets/img/wistus-escudo.svg" alt="Montera Tradicional de Plimas Tinkus Wistus" class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_8px_20px_rgba(124,58,237,0.4)] group-hover:scale-110 transition-transform duration-700 ease-out">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                   <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Tradición</span>
-                  <h3 class="font-serif text-lg font-bold">Montera y Plumas Rituales</h3>
+                  <h3 class="font-serif text-base sm:text-lg font-bold">Montera y Plumas Rituales</h3>
                 </div>
               </div>
             </div>
 
             <!-- Slide 4: Celebración y Júbilo Wistus -->
             <div class="swiper-slide !w-auto">
-              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
+              <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
                 <img src="assets/img/wistus-banner.jpg" alt="Cierre Triunfal Tinkus Wistus" class="w-full h-full object-cover filter brightness-[0.85] group-hover:scale-105 transition-transform duration-700 ease-out">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                   <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Victoria</span>
-                  <h3 class="font-serif text-lg font-bold">Los Mejores Tinkus del País</h3>
+                  <h3 class="font-serif text-base sm:text-lg font-bold">Los Mejores Tinkus del País</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 5: Hermandad y Ensayos Generales -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#7c3aed] via-[#5b21b6] to-[#111111] shadow-md relative group flex items-center justify-center p-6 sm:p-8 border border-white/10">
+                <img src="assets/img/wistus-badge.svg" alt="Insignia y Hermandad Tinkus Wistus" class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_8px_20px_rgba(217,119,6,0.4)] group-hover:scale-110 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Hermandad</span>
+                  <h3 class="font-serif text-base sm:text-lg font-bold">Ensayos & Padrón 2026</h3>
                 </div>
               </div>
             </div>
@@ -486,7 +527,7 @@
       <div class="absolute -top-32 -right-32 w-96 h-96 bg-wistus-purple/20 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-wistus-gold/15 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div class="max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           <!-- Columna Izquierda: Redacción Editorial de Membresía -->
@@ -515,41 +556,41 @@
               </li>
             </ul>
 
-            <div class="flex flex-wrap items-center gap-4 pt-4">
-              <button id="btn-cta-adquirir-enquire" data-open-enquire class="px-8 py-4 rounded-full bg-wistus-gold text-charcoal font-semibold text-sm hover:bg-wistus-gold-light transition-all duration-300 shadow-lg hover:shadow-wistus-gold/20">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
+              <button id="btn-cta-adquirir-enquire" data-open-enquire class="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-wistus-gold text-charcoal font-semibold text-xs sm:text-sm hover:bg-wistus-gold-light transition-all duration-300 shadow-lg hover:shadow-wistus-gold/20 text-center">
                 Adquirir Membresía / Inscribirse
               </button>
-              <a href="index.html" class="px-6 py-4 rounded-full border border-[#f5f0ea]/40 text-[#f5f0ea] font-mono text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300">
-                Ya soy Fraterno &bull; Ver mi Credencial &rarr;
+              <a href="index.html" class="px-5 sm:px-6 py-3.5 sm:py-4 rounded-full border border-[#f5f0ea]/40 text-[#f5f0ea] font-mono text-[11px] sm:text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300 text-center">
+                Portal Fraterno &bull; Ver mi Credencial &rarr;
               </a>
             </div>
           </div>
 
           <!-- Columna Derecha: Tarjeta PVC Holográfica 3D Interactiva -->
           <div class="lg:col-span-6 flex justify-center perspective-container">
-            <div id="gift-card-animation" data-gift-card-animation class="w-full max-w-[460px] p-2 sm:p-4">
+            <div id="gift-card-animation" data-gift-card-animation class="w-full max-w-[460px] p-1.5 sm:p-4">
               
               <!-- Tarjeta 3D ([data-gift-card]) -->
-              <div id="card-3d-wistus" data-gift-card class="card-3d-wrapper relative w-full aspect-[1.586] rounded-2xl p-6 sm:p-7 bg-gradient-to-br from-[#1e1b4b] via-[#2e1065] to-[#0b0c10] border border-[#d97706]/50 shadow-2xl overflow-hidden cursor-pointer select-none card-hologram-glow">
+              <div id="card-3d-wistus" data-gift-card class="card-3d-wrapper relative w-full aspect-[1.586] rounded-xl sm:rounded-2xl p-3 sm:p-6 lg:p-7 bg-gradient-to-br from-[#1e1b4b] via-[#2e1065] to-[#0b0c10] border border-[#d97706]/50 shadow-2xl overflow-hidden cursor-pointer select-none card-hologram-glow">
                 
                 <!-- Capa de Destello Especular Glare Dinámico -->
-                <div class="card-glare absolute inset-0 rounded-2xl opacity-0 z-30"></div>
+                <div class="card-glare absolute inset-0 rounded-xl sm:rounded-2xl opacity-0 z-30"></div>
 
                 <!-- Marca de agua vectorial de fondo -->
                 <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute right-[-15%] bottom-[-20%] w-[85%] h-[85%] opacity-15 pointer-events-none object-contain z-0">
 
                 <!-- Cabecera de la Credencial -->
-                <div class="relative z-10 flex items-center justify-between mb-4">
-                  <div class="flex items-center gap-3">
-                    <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-10 w-10 object-contain filter drop-shadow">
+                <div class="relative z-10 flex items-center justify-between mb-2 sm:mb-4">
+                  <div class="flex items-center gap-2 sm:gap-3">
+                    <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-7 w-7 sm:h-10 sm:w-10 object-contain filter drop-shadow">
                     <div>
-                      <span class="block font-serif text-xs sm:text-sm font-bold tracking-wider text-white uppercase">Fraternidad Tinkus Wistus</span>
-                      <span class="block font-mono text-[10px] text-wistus-gold tracking-widest uppercase">Padrón Oficial &bull; Gestión 2026</span>
+                      <span class="block font-serif text-[10px] sm:text-sm font-bold tracking-wider text-white uppercase">Fraternidad Tinkus Wistus</span>
+                      <span class="block font-mono text-[7px] sm:text-[10px] text-wistus-gold tracking-widest uppercase">Padrón Oficial &bull; Gestión 2026</span>
                     </div>
                   </div>
                   <!-- Chip de seguridad SVG dorado -->
-                  <div class="w-9 h-7 rounded bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-yellow-600 shadow-inner flex items-center justify-center">
-                    <div class="w-7 h-5 border border-yellow-700/60 rounded-xs flex flex-col justify-center gap-0.5 px-0.5">
+                  <div class="w-7 h-5 sm:w-9 sm:h-7 rounded bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-yellow-600 shadow-inner flex items-center justify-center flex-shrink-0">
+                    <div class="w-5 h-3.5 sm:w-7 sm:h-5 border border-yellow-700/60 rounded-xs flex flex-col justify-center gap-0.5 px-0.5">
                       <span class="block h-[1px] bg-yellow-800/70"></span>
                       <span class="block h-[1px] bg-yellow-800/70"></span>
                     </div>
@@ -557,12 +598,12 @@
                 </div>
 
                 <!-- Cuerpo de la Credencial -->
-                <div class="relative z-10 my-4 sm:my-6">
-                  <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#ddd8d2]/70 mb-1">Fraterno Titular</div>
-                  <div class="font-serif text-lg sm:text-2xl font-bold tracking-wide text-white drop-shadow">
+                <div class="relative z-10 my-1 sm:my-4">
+                  <div class="text-[8px] sm:text-[10px] font-mono uppercase tracking-[0.2em] text-[#ddd8d2]/70 mb-0.5 sm:mb-1">Fraterno Titular</div>
+                  <div class="font-serif text-xs sm:text-xl lg:text-2xl font-bold tracking-wide text-white drop-shadow">
                     JUAN PABLO QUISPE M.
                   </div>
-                  <div class="flex items-center gap-4 mt-2 font-mono text-xs text-wistus-gold">
+                  <div class="flex items-center gap-2 sm:gap-4 mt-0.5 sm:mt-2 font-mono text-[9px] sm:text-xs text-wistus-gold">
                     <span>CI: 8492041 LP</span>
                     <span>&bull;</span>
                     <span>BLOQUE: MACHAS</span>
@@ -570,14 +611,14 @@
                 </div>
 
                 <!-- Pie de la Credencial: Código QR y Sello Holográfico -->
-                <div class="relative z-10 flex items-end justify-between border-t border-white/15 pt-3">
-                  <div class="font-mono text-[9px] uppercase tracking-wider text-[#ddd8d2]/80">
+                <div class="relative z-10 flex items-end justify-between border-t border-white/15 pt-1.5 sm:pt-3">
+                  <div class="font-mono text-[7px] sm:text-[9px] uppercase tracking-wider text-[#ddd8d2]/80">
                     <span>VÁLIDO HASTA: DICIEMBRE 2026</span><br>
                     <span class="text-wistus-gold">ESTADO: ACTIVO / HABILITADO</span>
                   </div>
                   
                   <!-- Código QR Simulado de Alta Precisión -->
-                  <div class="w-10 h-10 bg-white p-1 rounded shadow flex items-center justify-center">
+                  <div class="w-7 h-7 sm:w-10 sm:h-10 bg-white p-0.5 sm:p-1 rounded shadow flex items-center justify-center flex-shrink-0">
                     <svg class="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v4h-4v-4zm-4 4h4v2h-4v-2zm0-4h2v2h-2v-2zm4-2h2v2h-2v-2z"/>
                     </svg>
@@ -613,7 +654,7 @@
             
             <!-- Bloque 1: Machas -->
             <div class="swiper-slide h-auto">
-              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
                 <!-- Fondo visual temático -->
                 <div class="absolute inset-0 bg-gradient-to-br from-[#7f1d1d] via-[#450a0a] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-escudo.svg" alt="Escudo Heráldico Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
@@ -638,7 +679,7 @@
 
             <!-- Bloque 2: Imillas -->
             <div class="swiper-slide h-auto">
-              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#831843] via-[#500724] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
@@ -662,7 +703,7 @@
 
             <!-- Bloque 3: Ñaupas -->
             <div class="swiper-slide h-auto">
-              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
@@ -686,7 +727,7 @@
 
             <!-- Bloque 4: Sambos -->
             <div class="swiper-slide h-auto">
-              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] via-[#047857] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
@@ -718,26 +759,41 @@
   <!-- ========================================================================= -->
   <!-- R5. BARRA FIJA INFERIOR ([data-find-a-table-btn])                         -->
   <!-- ========================================================================= -->
-  <div id="fixed-bottom-bar" data-find-a-table-btn class="fixed bottom-0 inset-x-0 z-30 shadow-2xl border-t border-[#b9b1a4]/60 h-header lg:h-header-lg py-1 bg-[#b9b1a4]">
-    <button id="btn-bottom-bar" class="w-full h-full bg-[#b9b1a4] text-[#111111] flex items-center justify-center font-serif text-base sm:text-lg lg:text-xl font-medium tracking-wide group transition-all duration-300 hover:bg-[#111111] hover:text-[#f5f0ea] py-2 px-4">
-      <span class="inline-flex items-center gap-2 transform group-hover:-translate-y-0.5 transition-transform duration-300 uppercase tracking-wider font-semibold">
-        <span>Unirse a la Fraternidad / Ingresar</span>
-        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-      </span>
-    </button>
+  <div id="fixed-bottom-bar" data-find-a-table-btn class="fixed bottom-0 inset-x-0 z-30 shadow-2xl border-t border-[#b9b1a4]/60 bg-[#b9b1a4]/95 backdrop-blur-md h-header lg:h-header-lg py-1 px-2 sm:px-6">
+    <div class="max-w-7xl mx-auto h-full flex items-center justify-between gap-1.5 sm:gap-4">
+      
+      <!-- Opción 1: Portal Fraterno (Directo a index.html) -->
+      <a href="index.html" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-2 rounded-full bg-charcoal text-[#f5f0ea] hover:bg-black font-serif text-[10.5px] sm:text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 shadow group">
+        <svg class="w-3.5 h-3.5 text-wistus-gold transition-transform group-hover:-translate-x-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+        <span class="whitespace-nowrap">Portal<span class="hidden min-[380px]:inline"> Fraterno</span></span>
+      </a>
+
+      <!-- Opción 2: Postular (Directo a Drawer #enquire) -->
+      <button id="btn-bottom-postular" data-open-enquire class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-2 rounded-full bg-wistus-gold text-charcoal hover:bg-wistus-gold-light font-serif text-[10.5px] sm:text-xs md:text-sm font-bold tracking-wide transition-all duration-300 shadow group">
+        <span class="whitespace-nowrap">Postular<span class="hidden min-[380px]:inline"> 2026</span></span>
+        <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </button>
+
+      <!-- Opción 3: Modal Desplegable General / Unirse -->
+      <button id="btn-bottom-bar" class="py-2 px-2.5 sm:px-4 rounded-full border border-charcoal/30 text-charcoal hover:bg-charcoal hover:text-[#f5f0ea] font-mono text-xs uppercase tracking-wider transition-colors duration-300 flex items-center justify-center gap-1.5 flex-shrink-0" aria-label="Abrir Menú de Opciones y Ensayos">
+        <span class="hidden md:inline font-semibold">Unirse / Info</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+
+    </div>
   </div>
 
   <!-- ========================================================================= -->
   <!-- R5. MODAL DE PANTALLA COMPLETA (<dialog id="find-a-table" data-modal>)    -->
   <!-- ========================================================================= -->
   <dialog id="find-a-table" data-modal class="fixed inset-0 m-0 w-full h-full max-w-none max-h-none bg-black/95 text-[#f5f0ea] p-0 z-50 backdrop:bg-black/85 backdrop:backdrop-blur-md">
-    <div class="w-full h-full flex flex-col justify-between p-6 sm:p-12 lg:p-16">
+    <div class="w-full h-full flex flex-col justify-between p-5 sm:p-10 lg:p-16 overflow-y-auto">
       
       <!-- Barra Superior del Modal -->
       <div class="flex items-center justify-between border-b border-white/15 pb-4">
         <div class="flex items-center gap-3">
           <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-8 w-auto">
-          <span class="font-serif tracking-widest text-lg uppercase font-bold text-white">Tinkus Wistus</span>
+          <span class="font-serif tracking-widest text-base sm:text-lg uppercase font-bold text-white">Tinkus Wistus</span>
         </div>
         <button id="btn-modal-close" data-modal-close class="font-mono text-xs uppercase tracking-widest text-[#b9b1a4] hover:text-white flex items-center gap-2 p-2" aria-label="Cerrar Diálogo">
           <span>Cerrar</span> &times;
@@ -745,37 +801,37 @@
       </div>
 
       <!-- Menú Central Monumental con Efecto de Atenuación -->
-      <nav class="my-auto py-8 space-y-4 max-w-4xl" aria-label="Menú del Modal">
+      <nav class="my-auto py-6 sm:py-8 space-y-3 sm:space-y-4 max-w-4xl" aria-label="Menú del Modal">
         <div>
-          <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+          <a href="index.html" class="block font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-wistus-gold hover:text-wistus-gold-light transition-colors py-2 font-normal">
             01. Ingresar al Portal Fraterno &rarr;
           </a>
         </div>
         <div>
-          <button data-open-enquire class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-left text-white hover:text-wistus-gold transition-colors py-2 font-normal w-full" onclick="closeFindATableModal()">
-            02. Postular a la Fraternidad (Inscripción 2026)
+          <button data-open-enquire class="block font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-left text-white hover:text-wistus-gold transition-colors py-2 font-normal w-full" onclick="closeFindATableModal()">
+            02. Postular a la Fraternidad (Inscripción 2026) &rarr;
           </button>
         </div>
         <div>
-          <a href="#metadatos" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal" onclick="closeFindATableModal()">
+          <a href="#metadatos" class="block font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal" onclick="closeFindATableModal()">
             03. Horarios y Locales de Ensayo
           </a>
         </div>
         <div>
-          <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+          <a href="index.html" class="block font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
             04. Información de Cuotas y Membresía
           </a>
         </div>
         <div>
-          <a href="tel:+59176543210" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+          <a href="tel:+59176543210" class="block font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
             05. Contactar a la Mesa Directiva
           </a>
         </div>
       </nav>
 
       <!-- Pie del Modal con Datos Institucionales -->
-      <div class="border-t border-white/15 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#b9b1a4]">
-        <div>Carnaval Oruro</div>
+      <div class="border-t border-white/15 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs text-[#b9b1a4]">
+        <div>Carnaval Oruro &bull; Convocatoria 2026</div>
         <div>WhatsApp Directiva: +591 76543210 &bull; contacto@tinkuswistus.bo</div>
       </div>
     </div>
@@ -784,14 +840,14 @@
   <!-- ========================================================================= -->
   <!-- R5. DRAWER LATERAL DE POSTULACIÓN (<dialog id="enquire" data-modal-drawer>)-->
   <!-- ========================================================================= -->
-  <dialog id="enquire" data-modal-drawer class="fixed top-0 right-0 bottom-0 m-0 h-full w-full sm:w-[520px] lg:w-[620px] max-w-full bg-[#f5f0ea] text-[#111111] p-0 z-50 shadow-2xl border-l border-[#b9b1a4]/50 backdrop:bg-black/75 backdrop:backdrop-blur-sm">
-    <div class="h-full flex flex-col justify-between overflow-y-auto p-6 sm:p-10">
+  <dialog id="enquire" data-modal-drawer class="fixed top-0 right-0 bottom-0 m-0 h-full w-full sm:w-[500px] lg:w-[600px] max-w-full bg-[#f5f0ea] text-[#111111] p-0 z-50 shadow-2xl border-l border-[#b9b1a4]/50 backdrop:bg-black/75 backdrop:backdrop-blur-sm">
+    <div class="h-full flex flex-col justify-between overflow-y-auto p-4 sm:p-8 lg:p-10">
       
       <!-- Cabecera del Drawer -->
-      <div class="flex items-center justify-between border-b border-[#b9b1a4]/40 pb-4 mb-6">
+      <div class="flex items-center justify-between border-b border-[#b9b1a4]/40 pb-4 mb-4 sm:mb-6">
         <div>
           <span class="text-xs font-mono uppercase tracking-widest text-wistus-purple block">Convocatoria 2026</span>
-          <h2 class="font-serif text-2xl lg:text-3xl font-bold">Ficha de Postulación</h2>
+          <h2 class="font-serif text-xl sm:text-2xl lg:text-3xl font-bold">Ficha de Postulación</h2>
         </div>
         <button id="btn-drawer-close" data-drawer-close class="font-mono text-xs uppercase tracking-widest text-[#717171] hover:text-black p-2 flex items-center gap-1" aria-label="Cerrar Ficha">
           <span>Cerrar</span> &times;
@@ -799,33 +855,33 @@
       </div>
 
       <!-- Formulario Reactivo de Postulación -->
-      <form id="form-enquire" class="space-y-4 my-auto py-2">
+      <form id="form-enquire" class="space-y-3 sm:space-y-4 my-auto py-2">
         <div>
           <label for="enquire-nombre" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
             Nombres <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="enquire-nombre" name="nombre" required placeholder="Ej: Juan Pablo" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+          <input type="text" id="enquire-nombre" name="nombre" required placeholder="Ej: Juan Pablo" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
         </div>
 
         <div>
           <label for="enquire-apellidos" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
             Apellidos <span class="text-red-500">*</span>
           </label>
-          <input type="text" id="enquire-apellidos" name="apellidos" required placeholder="Ej: Quispe Mamani" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+          <input type="text" id="enquire-apellidos" name="apellidos" required placeholder="Ej: Quispe Mamani" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
         </div>
 
         <div>
           <label for="enquire-telefono" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
             Teléfono / WhatsApp <span class="text-red-500">*</span>
           </label>
-          <input type="tel" id="enquire-telefono" name="telefono" required placeholder="Ej: +591 76543210" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+          <input type="tel" id="enquire-telefono" name="telefono" required placeholder="Ej: +591 76543210" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
         </div>
 
         <div>
           <label for="enquire-bloque" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
             Bloque de Interés <span class="text-red-500">*</span>
           </label>
-          <select id="enquire-bloque" name="bloque" required class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+          <select id="enquire-bloque" name="bloque" required class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
             <option value="Machas">Bloque Machas (Guerreros de vanguardia)</option>
             <option value="Imillas">Bloque Imillas (Gracia y donaire femenino)</option>
             <option value="Ñaupas">Bloque Ñaupas (Tradición y veteranía)</option>
@@ -860,9 +916,9 @@
   <!-- ========================================================================= -->
   <!-- R5. FOOTER EDITORIAL Y BOLETÍN (footer[data-footer], [data-subscribe-form])-->
   <!-- ========================================================================= -->
-  <footer id="site-footer" data-footer class="bg-charcoal text-[#f5f0ea] py-16 lg:py-24 border-t border-white/10 mb-header lg:mb-header-lg">
-    <div class="max-w-7xl mx-auto px-5 lg:px-10">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
+  <footer id="site-footer" data-footer class="bg-charcoal text-[#f5f0ea] pt-12 pb-24 lg:pt-20 lg:pb-32 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 lg:pb-16 border-b border-white/10">
         
         <!-- Columna 1: Identidad y Heráldica Wistus -->
         <div class="lg:col-span-5 space-y-4">
@@ -879,14 +935,15 @@
         </div>
 
         <!-- Columna 2: Directorio de Enlaces Editoriales -->
-        <div class="lg:col-span-3 space-y-3 font-mono text-xs uppercase tracking-wider text-[#ddd8d2]">
-          <span class="block text-white font-serif font-bold text-sm mb-4">Directorio</span>
+        <div class="lg:col-span-3 space-y-2.5 font-mono text-xs uppercase tracking-wider text-[#ddd8d2]">
+          <span class="block text-white font-serif font-bold text-sm mb-3">Directorio</span>
           <div><a href="#hero" class="hover:text-wistus-gold transition-colors">Convocatoria 2026</a></div>
           <div><a href="#metadatos" class="hover:text-wistus-gold transition-colors">Horarios de Ensayo</a></div>
           <div><a href="#galeria" class="hover:text-wistus-gold transition-colors">Galería Fotográfica</a></div>
           <div><a href="#credencial" class="hover:text-wistus-gold transition-colors">Credencial Digital 3D</a></div>
           <div><a href="#bloques" class="hover:text-wistus-gold transition-colors">Nuestros Bloques</a></div>
           <div><a href="index.html" class="text-wistus-gold hover:underline">Acceso Portal Fraterno &rarr;</a></div>
+          <div><button data-open-enquire class="text-left uppercase text-wistus-gold hover:underline">Postular a la Fraternidad &rarr;</button></div>
         </div>
 
         <!-- Columna 3: Formulario de Boletín Oficial (data-subscribe-form) -->
