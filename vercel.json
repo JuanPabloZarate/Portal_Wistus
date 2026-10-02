@@ -18,6 +18,10 @@
       "dest": "/js/"
     },
     {
+      "src": "/landing(\\.html)?",
+      "dest": "/landing.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

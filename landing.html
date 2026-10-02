@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Tinkus Wistus 2026 &bull; Convocatoria Oficial &bull; Entrada Universitaria La Paz</title>
+  <meta name="description" content="Landing page oficial y de captación de la Fraternidad Folklórica y Cultural Tinkus Wistus para la Entrada Universitaria La Paz 2026. Fuerza, pasión y tradición ancestral.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/wistus-badge.svg">
+
+  <!-- Google Fonts: Editorial Serif (Playfair Display / Cormorant Garamond), Modern Sans (Plus Jakarta Sans), Monospace (DM Mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Play CDN v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            silver: '#f5f0ea',
+            'grey-light': '#b9b1a4',
+            'grey-lighter': '#ddd8d2',
+            'grey-muted': '#717171',
+            charcoal: '#111111',
+            'wistus-purple': '#7c3aed',
+            'wistus-purple-dark': '#5b21b6',
+            'wistus-purple-deep': '#4c1d95',
+            'wistus-gold': '#d97706',
+            'wistus-gold-light': '#fbbf24',
+            'wistus-amber': '#f59e0b',
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+            editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"DM Mono"', 'ui-monospace', 'monospace'],
+          },
+          height: {
+            header: '3.25rem',
+            'header-lg': '4.375rem',
+          },
+          spacing: {
+            header: '3.25rem',
+            'header-lg': '4.375rem',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Swiper.js v11 CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <style>
+    :root {
+      --color-silver: #f5f0ea;
+      --color-black: #111111;
+      --color-grey-light: #b9b1a4;
+      --color-grey-lighter: #ddd8d2;
+      --color-grey: #717171;
+      --color-wistus-purple: #7c3aed;
+      --color-wistus-gold: #d97706;
+      --spacing-header: 3.25rem;
+      --spacing-header-lg: 4.375rem;
+    }
+
+    body {
+      background-color: var(--color-silver);
+      color: var(--color-black);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      padding-bottom: var(--spacing-header);
+    }
+    @media (min-width: 1024px) {
+      body {
+        padding-bottom: var(--spacing-header-lg);
+      }
+    }
+
+    /* Header states */
+    header[data-header] {
+      transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    header[data-header].scrolled {
+      background-color: rgba(245, 240, 234, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #111111;
+      border-color: rgba(185, 177, 164, 0.45);
+      box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.06);
+    }
+    header[data-header].scrolled .brand-title {
+      color: #111111;
+    }
+    header[data-header].scrolled .nav-link-item {
+      color: #111111;
+    }
+    header[data-header].scrolled .nav-portal-btn {
+      border-color: #111111;
+      color: #111111;
+    }
+    header[data-header].scrolled .nav-portal-btn:hover {
+      background-color: #111111;
+      color: #f5f0ea;
+    }
+    header[data-header].scrolled .hamburger-line {
+      background-color: #111111;
+    }
+
+    /* Menu drawer animations */
+    .menu-drawer {
+      transform: translateY(-100%);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .menu-drawer.menu-drawer--open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .menu-drawer--open-active #btn-mobile-menu .line-1 {
+      transform: translateY(4px) rotate(45deg);
+    }
+    .menu-drawer--open-active #btn-mobile-menu .line-2 {
+      transform: translateY(-4px) rotate(-45deg);
+    }
+
+    /* 3D Holographic Card */
+    .perspective-container {
+      perspective: 1200px;
+    }
+    .card-3d-wrapper {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+      will-change: transform;
+    }
+    .card-glare {
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      mix-blend-mode: color-dodge;
+      will-change: background, opacity;
+    }
+    @keyframes goldHolographicGlow {
+      0% {
+        box-shadow: 0 20px 40px -15px rgba(217, 119, 6, 0.25), 0 0 20px rgba(124, 58, 237, 0.2);
+      }
+      50% {
+        box-shadow: 0 25px 50px -10px rgba(217, 119, 6, 0.4), 0 0 35px rgba(124, 58, 237, 0.35);
+      }
+      100% {
+        box-shadow: 0 20px 40px -15px rgba(217, 119, 6, 0.25), 0 0 20px rgba(124, 58, 237, 0.2);
+      }
+    }
+    .card-hologram-glow {
+      animation: goldHolographicGlow 4s ease-in-out infinite;
+    }
+
+    /* Dialog styling */
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    dialog[open] {
+      animation: dialogFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes dialogFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Lateral drawer animation */
+    dialog[data-modal-drawer] {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    dialog[data-modal-drawer][open] {
+      transform: translateX(0);
+    }
+
+    /* Custom swiper adjustments */
+    .swiper-slide {
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-silver text-charcoal font-sans antialiased selection:bg-wistus-purple selection:text-white overflow-x-hidden">
+
+  <!-- ========================================================================= -->
+  <!-- R1. HEADER CON EFECTO BLUR, ESTADO SCROLLED Y NAVEGACIÓN EDITORIAL       -->
+  <!-- ========================================================================= -->
+  <header id="site-header" data-header class="fixed top-0 inset-x-0 z-40 transition-all duration-500 ease-in-out border-b border-[#f5f0ea]/20 text-[#f5f0ea] bg-transparent backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-5 lg:px-10 h-[3.25rem] lg:h-[4.375rem] flex items-center justify-between">
+      
+      <!-- Logo Oficial & Marca -->
+      <a href="landing.html" class="flex items-center gap-3 group">
+        <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-8 lg:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+        <span class="font-serif tracking-widest text-base lg:text-xl uppercase font-bold brand-title transition-colors">Tinkus Wistus</span>
+      </a>
+
+      <!-- Navegación Editorial Desktop -->
+      <nav class="hidden lg:flex items-center gap-8 text-xs font-mono tracking-widest uppercase" aria-label="Navegación Principal">
+        <a href="#hero" class="nav-link-item hover:opacity-60 transition-opacity">Inicio</a>
+        <a href="#metadatos" class="nav-link-item hover:opacity-60 transition-opacity">Ensayos</a>
+        <a href="#galeria" class="nav-link-item hover:opacity-60 transition-opacity">Galería</a>
+        <a href="#credencial" class="nav-link-item hover:opacity-60 transition-opacity">Credencial 2026</a>
+        <a href="#bloques" class="nav-link-item hover:opacity-60 transition-opacity">Nuestros Bloques</a>
+      </nav>
+
+      <!-- Barra de Acciones Superior: Portal Fraterno, Unirse y Hamburger -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Enlace Bidireccional de ida a index.html -->
+        <a href="index.html" class="nav-portal-btn hidden sm:inline-flex items-center gap-2 border border-current px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-colors duration-300">
+          <span>Portal Fraterno</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+        
+        <!-- Botón Píldora "Unirse a la Fraternidad" -->
+        <button id="btn-header-join" data-open-enquire class="px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider bg-wistus-gold hover:bg-wistus-gold-light text-charcoal font-semibold shadow-sm transition-all duration-300">
+          Unirse
+        </button>
+
+        <!-- Botón Hamburger para Móvil y Desktop -->
+        <button id="btn-mobile-menu" data-menu-drawer-toggle class="p-2 flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-full focus:outline-none focus:ring-2 focus:ring-wistus-gold" aria-label="Abrir Menú">
+          <span class="hamburger-line line-1 block w-6 h-[2px] bg-current transition-transform duration-300"></span>
+          <span class="hamburger-line line-2 block w-6 h-[2px] bg-current transition-transform duration-300"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú Drawer Desplegable (data-menu-drawer) -->
+    <div id="menu-drawer" data-menu-drawer class="menu-drawer fixed inset-0 z-50 bg-[#f5f0ea] text-[#111111] flex flex-col justify-between p-6 sm:p-12 overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-[#b9b1a4]/40 pb-4">
+        <div class="flex items-center gap-3">
+          <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-9 w-auto">
+          <span class="font-serif tracking-widest text-lg uppercase font-bold">Tinkus Wistus</span>
+        </div>
+        <button id="btn-menu-drawer-close" data-menu-drawer-close class="font-mono text-xs uppercase tracking-widest text-[#717171] hover:text-[#111111] p-2 flex items-center gap-1" aria-label="Cerrar Menú">
+          <span>Cerrar</span> &times;
+        </button>
+      </div>
+
+      <div class="my-auto py-8 space-y-4">
+        <a href="#hero" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">01. Convocatoria 2026</a>
+        <a href="#metadatos" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">02. Horarios y Locales de Ensayo</a>
+        <a href="#galeria" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">03. Galería Fotográfica</a>
+        <a href="#credencial" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">04. Credencial Digital 3D</a>
+        <a href="#bloques" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">05. Nuestros Bloques</a>
+        <a href="index.html" class="block font-serif text-3xl sm:text-5xl lg:text-6xl text-wistus-gold hover:text-wistus-gold-light transition-colors">06. Ingresar al Portal Fraterno &rarr;</a>
+      </div>
+
+      <div class="border-t border-[#b9b1a4]/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#717171]">
+        <div>Entrada Universitaria La Paz &bull; Gestión 2026</div>
+        <div class="flex items-center gap-4">
+          <a href="tel:+59176543210" class="hover:underline">+591 76543210</a>
+          <a href="mailto:contacto@tinkuswistus.bo" class="hover:underline">contacto@tinkuswistus.bo</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT: SEMANTIC STRUCTURE                                          -->
+  <!-- ========================================================================= -->
+  <main id="main-content">
+
+    <!-- ========================================================================= -->
+    <!-- R3. HERO MASTHEAD INMERSIVO FULL-SCREEN (h-svh, [data-block="masthead-full"]) -->
+    <!-- ========================================================================= -->
+    <section id="hero" class="relative overflow-hidden bg-black text-[#f5f0ea] h-svh min-h-screen min-h-[600px] flex items-center justify-center">
+      <!-- Contenedor Semántico Masthead Full -->
+      <header data-block="masthead-full" class="h-svh h-screen min-h-screen min-h-[600px] w-full flex items-center justify-center relative">
+        <!-- Fotografía de Fondo Monumental con Overlay Oscuro -->
+        <div class="absolute inset-0 z-0">
+          <img src="assets/img/wistus-banner.jpg" alt="Fraternidad Tinkus Wistus en Desfile Oficial" class="w-full h-full object-cover object-center filter brightness-[0.70] contrast-[1.05]">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/50"></div>
+        </div>
+
+        <!-- Contenido Monumental Centrado -->
+        <div class="relative z-10 max-w-5xl mx-auto px-5 text-center flex flex-col items-center">
+          <!-- Badge Oficial Tinkus Wistus -->
+          <div class="mb-4 sm:mb-6">
+            <img src="assets/img/wistus-badge.svg" alt="Badge Oficial Tinkus Wistus" class="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto object-contain filter drop-shadow-[0_4px_16px_rgba(217,119,6,0.45)] transform hover:scale-105 transition-transform duration-500">
+          </div>
+
+          <!-- Etiqueta Editorial Convocatoria -->
+          <div class="inline-flex items-center gap-2 border border-[#f5f0ea]/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/90 mb-5">
+            <span class="w-2 h-2 rounded-full bg-wistus-gold animate-pulse"></span>
+            <span>Entrada Folklórica Universitaria La Paz &bull; Gestión 2026</span>
+          </div>
+
+          <!-- Título Monumental en Serif -->
+          <h1 class="font-serif text-5xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.92] tracking-tight uppercase mb-6 font-bold text-white drop-shadow-lg">
+            TINKUS WISTUS
+          </h1>
+
+          <!-- Lema Editorial -->
+          <p class="font-editorial italic text-lg sm:text-2xl md:text-3xl text-[#f5f0ea]/90 max-w-2xl mx-auto font-light leading-relaxed mb-8 drop-shadow">
+            “Fuerza, Pasión y Tradición Ancestral en el Corazón de La Paz”
+          </p>
+
+          <!-- Acciones Principales del Hero -->
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="#metadatos" class="px-8 py-3.5 rounded-full bg-[#f5f0ea] text-[#111111] font-serif text-base font-semibold hover:bg-black hover:text-[#f5f0ea] border border-[#f5f0ea] transition-all duration-300 shadow-lg">
+              Descubrir Fraternidad
+            </a>
+            <button data-open-enquire class="px-8 py-3.5 rounded-full border border-[#f5f0ea]/70 text-[#f5f0ea] font-serif text-base font-semibold hover:bg-[#f5f0ea] hover:text-[#111111] transition-all duration-300 backdrop-blur-sm">
+              Postular 2026
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador de Scroll -->
+        <a href="#metadatos" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/70 flex flex-col items-center gap-2 hover:text-[#f5f0ea] transition-colors z-10" aria-label="Desplazarse hacia abajo">
+          <span>Explorar</span>
+          <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </a>
+      </header>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- R3. SECCIÓN EDITORIAL DE CITA & METADATOS ([data-block="columns"], [data-venue-metadata]) -->
+    <!-- ========================================================================= -->
+    <section id="metadatos" data-block="columns" data-columns="2" class="py-16 lg:py-28 bg-[#f5f0ea] text-[#111111]">
+      <div class="max-w-7xl mx-auto px-5 lg:px-10">
+        <div class="border-t border-[#b9b1a4]/50 pt-12 lg:pt-16 grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-x-12 items-start">
+          
+          <!-- Columna Izquierda: Cita Editorial Reflexiva -->
+          <div class="lg:col-span-6 flex flex-col justify-between space-y-8">
+            <div>
+              <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#717171] block mb-4">Manifiesto & Pasión Fraterna</span>
+              <blockquote class="font-serif text-2xl sm:text-3xl lg:text-4xl leading-snug font-normal text-[#111111] mb-6">
+                “Wistus no es simplemente una danza; es un latido colectivo que hace retumbar el asfalto de La Paz. Llevamos el ritmo del Tinku en la sangre, transformando cada ensayo en hermandad, cada paso en devoción y cada salto ceremonial en tributo a nuestras raíces.”
+              </blockquote>
+              <p class="font-sans text-sm text-[#717171] leading-relaxed max-w-xl">
+                Nacida en el seno de la juventud universitaria boliviana, la Fraternidad Folklórica y Cultural Tinkus Wistus custodia más de tres décadas de gloria ininterrumpida en la Entrada Universitaria de la UMSA y las principales festividades patrimoniales de Bolivia. Convocatoria abierta para fraternos nuevos y antiguos de la Gestión 2026.
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-[#b9b1a4]/30 text-xs font-mono text-[#717171] uppercase tracking-wider">
+              La Paz, Bolivia &bull; Sede Central San Pedro &bull; Gestión Cultural 2026
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Lista de Metadatos Oficiales (<dl data-venue-metadata>) -->
+          <div class="lg:col-span-5 lg:col-start-8">
+            <dl id="venue-metadata" data-venue-metadata class="grid grid-cols-[auto_1fr] gap-y-6 text-sm">
+              
+              <!-- Horarios de Ensayo -->
+              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171] min-w-[130px]">
+                Horarios
+              </dt>
+              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
+                <strong>Sábados y Domingos:</strong> 15:30 – 19:30<br>
+                <strong>Miércoles (Ensayo Extraordinario):</strong> 19:30 – 21:30
+              </dd>
+
+              <!-- Local de Ensayo / Sede -->
+              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+                Local / Sede
+              </dt>
+              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
+                <strong>Cancha Polideportiva Munaypata</strong><br>
+                Sede Social: Calle Almirante Grau, Zona San Pedro, La Paz, Bolivia
+              </dd>
+
+              <!-- Contacto de Directiva -->
+              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+                Directiva
+              </dt>
+              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111]">
+                <a href="tel:+59176543210" class="font-mono hover:underline text-wistus-purple">+591 76543210</a> / 
+                <a href="tel:+59170123456" class="font-mono hover:underline text-wistus-purple">+591 70123456</a><br>
+                <a href="mailto:contacto@tinkuswistus.bo" class="hover:underline">contacto@tinkuswistus.bo</a>
+              </dd>
+
+              <!-- Redes Sociales Oficiales -->
+              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+                Comunidad
+              </dt>
+              <dd class="border-b border-[#b9b1a4]/40 pb-3 text-[#111111] flex flex-wrap gap-x-4 gap-y-1">
+                <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:underline text-wistus-purple font-medium">Instagram</a>
+                <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:underline text-wistus-purple font-medium">Facebook</a>
+                <a href="https://tiktok.com" target="_blank" rel="noopener" class="hover:underline text-wistus-purple font-medium">TikTok</a>
+                <a href="https://youtube.com" target="_blank" rel="noopener" class="hover:underline text-wistus-purple font-medium">YouTube</a>
+              </dd>
+
+              <!-- Enlace al Portal Fraterno -->
+              <dt class="border-b border-[#b9b1a4]/40 pb-3 pr-4 font-mono text-xs uppercase tracking-widest text-[#717171]">
+                Portal
+              </dt>
+              <dd class="border-b border-[#b9b1a4]/40 pb-3">
+                <a href="index.html" class="inline-flex items-center gap-1.5 font-semibold text-wistus-purple hover:text-wistus-purple-dark transition-colors">
+                  <span>Acceso Fraternos Registrados</span> &rarr;
+                </a>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- R4. GALERÍA CARRUSEL FOTOGRÁFICA ([data-block="carousel"], Swiper.js)    -->
+    <!-- ========================================================================= -->
+    <section id="galeria" class="py-16 lg:py-24 bg-[#ddd8d2]/30 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-5 lg:px-10 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#717171] block mb-2">Registro Visual Fraterno</span>
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">Galería en Movimiento</h2>
+        </div>
+        <div class="text-xs font-mono uppercase tracking-widest text-[#717171]">
+          Desliza para explorar &bull; Swiper touch
+        </div>
+      </div>
+
+      <!-- Bloque Carrusel Swiper fluido -->
+      <div id="gallery-carousel-block" data-block="carousel" class="w-full relative">
+        <div id="gallery-swiper" data-carousel-swiper class="swiper w-full pl-5 lg:pl-10">
+          <div class="swiper-wrapper">
+            
+            <!-- Slide 1: Banner Wistus Principal -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
+                <img src="assets/img/wistus-banner.jpg" alt="Entrada Universitaria Tinkus Wistus en Desfile" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Entrada 2026</span>
+                  <h3 class="font-serif text-lg font-bold">Fuerza & Devoción Wistus</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Sello y Emblema Andino -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#0f172a] shadow-md relative group flex items-center justify-center p-8">
+                <img src="assets/img/wistus-logo-w.svg" alt="Chakana Andina Wistus Emblema Oficial" class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_8px_20px_rgba(217,119,6,0.5)] group-hover:scale-110 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Heráldica</span>
+                  <h3 class="font-serif text-lg font-bold">Chakana y Solsticio Andino</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Escudo Montera Tradicional -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-gradient-to-br from-[#111111] via-[#1e1e1e] to-[#2c2c2c] shadow-md relative group flex items-center justify-center p-8 border border-white/10">
+                <img src="assets/img/wistus-escudo.svg" alt="Montera Tradicional de Plimas Tinkus Wistus" class="w-3/4 h-3/4 object-contain filter drop-shadow-[0_8px_20px_rgba(124,58,237,0.4)] group-hover:scale-110 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Tradición</span>
+                  <h3 class="font-serif text-lg font-bold">Montera y Plumas Rituales</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 4: Desfile y Pasos Ceremoniales -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
+                <img src="assets/img/perfil-pagina.png" alt="Perfil Institucional Fraternidad Tinkus Wistus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" onerror="this.src='assets/img/wistus-banner.jpg'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Comunidad</span>
+                  <h3 class="font-serif text-lg font-bold">Hermandad y Juventud</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 5: Celebración y Júbilo Universitario -->
+            <div class="swiper-slide !w-auto">
+              <div class="h-[52vw] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
+                <img src="assets/img/wistus-banner.jpg" alt="Cierre Triunfal Entrada Universitaria Tinkus Wistus" class="w-full h-full object-cover filter brightness-[0.85] group-hover:scale-105 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                  <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Victoria</span>
+                  <h3 class="font-serif text-lg font-bold">Los Mejores Tinkus del País</h3>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- R4. BLOQUE CTA CON TARJETA HOLOGRÁFICA 3D INTERACTIVA ([data-block="cta"]) -->
+    <!-- ========================================================================= -->
+    <aside id="credencial" data-block="cta" class="py-16 lg:py-28 bg-[#111111] text-[#f5f0ea] relative overflow-hidden">
+      <!-- Decoración de fondo sutil -->
+      <div class="absolute -top-32 -right-32 w-96 h-96 bg-wistus-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-wistus-gold/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-5 lg:px-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Columna Izquierda: Redacción Editorial de Membresía -->
+          <div class="lg:col-span-6 space-y-6">
+            <span class="text-xs font-mono uppercase tracking-[0.2em] text-wistus-gold block">
+              Membresía Oficial Gestión 2026
+            </span>
+            <h2 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight text-white">
+              Credencial Digital Fraterna Wistus 2026
+            </h2>
+            <p class="font-sans text-[#ddd8d2] text-base lg:text-lg leading-relaxed">
+              Tu identidad como fraterno titular en formato digital de alta seguridad. Acceso biométrico con código QR dinámico, registro instantáneo de asistencias en ensayos, libro de cuotas y beneficios en recepciones y eventos culturales oficiales.
+            </p>
+            <ul class="space-y-3 font-sans text-sm text-[#ddd8d2]/90 border-t border-white/10 pt-4">
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-wistus-gold"></span>
+                <span>Identificación oficial con microchip digital y validación QR</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-wistus-gold"></span>
+                <span>Habilitación para desfile en la Entrada Universitaria 2026</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-wistus-gold"></span>
+                <span>Acceso directo al portal de gestión y estado de cuenta fraterno</span>
+              </li>
+            </ul>
+
+            <div class="flex flex-wrap items-center gap-4 pt-4">
+              <button id="btn-cta-adquirir-enquire" data-open-enquire class="px-8 py-4 rounded-full bg-wistus-gold text-charcoal font-semibold text-sm hover:bg-wistus-gold-light transition-all duration-300 shadow-lg hover:shadow-wistus-gold/20">
+                Adquirir Membresía / Inscribirse
+              </button>
+              <a href="index.html" class="px-6 py-4 rounded-full border border-[#f5f0ea]/40 text-[#f5f0ea] font-mono text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300">
+                Ya soy Fraterno &bull; Ver mi Credencial &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Tarjeta PVC Holográfica 3D Interactiva -->
+          <div class="lg:col-span-6 flex justify-center perspective-container">
+            <div id="gift-card-animation" data-gift-card-animation class="w-full max-w-[460px] p-2 sm:p-4">
+              
+              <!-- Tarjeta 3D ([data-gift-card]) -->
+              <div id="card-3d-wistus" data-gift-card class="card-3d-wrapper relative w-full aspect-[1.586] rounded-2xl p-6 sm:p-7 bg-gradient-to-br from-[#1e1b4b] via-[#2e1065] to-[#0b0c10] border border-[#d97706]/50 shadow-2xl overflow-hidden cursor-pointer select-none card-hologram-glow">
+                
+                <!-- Capa de Destello Especular Glare Dinámico -->
+                <div class="card-glare absolute inset-0 rounded-2xl opacity-0 z-30"></div>
+
+                <!-- Marca de agua vectorial de fondo -->
+                <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute right-[-15%] bottom-[-20%] w-[85%] h-[85%] opacity-15 pointer-events-none object-contain z-0">
+
+                <!-- Cabecera de la Credencial -->
+                <div class="relative z-10 flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-10 w-10 object-contain filter drop-shadow">
+                    <div>
+                      <span class="block font-serif text-xs sm:text-sm font-bold tracking-wider text-white uppercase">Fraternidad Tinkus Wistus</span>
+                      <span class="block font-mono text-[10px] text-wistus-gold tracking-widest uppercase">Padrón Oficial &bull; Gestión 2026</span>
+                    </div>
+                  </div>
+                  <!-- Chip de seguridad SVG dorado -->
+                  <div class="w-9 h-7 rounded bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-yellow-600 shadow-inner flex items-center justify-center">
+                    <div class="w-7 h-5 border border-yellow-700/60 rounded-xs flex flex-col justify-center gap-0.5 px-0.5">
+                      <span class="block h-[1px] bg-yellow-800/70"></span>
+                      <span class="block h-[1px] bg-yellow-800/70"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Cuerpo de la Credencial -->
+                <div class="relative z-10 my-4 sm:my-6">
+                  <div class="text-[10px] font-mono uppercase tracking-[0.2em] text-[#ddd8d2]/70 mb-1">Fraterno Titular</div>
+                  <div class="font-serif text-lg sm:text-2xl font-bold tracking-wide text-white drop-shadow">
+                    JUAN PABLO QUISPE M.
+                  </div>
+                  <div class="flex items-center gap-4 mt-2 font-mono text-xs text-wistus-gold">
+                    <span>CI: 8492041 LP</span>
+                    <span>&bull;</span>
+                    <span>BLOQUE: MACHAS</span>
+                  </div>
+                </div>
+
+                <!-- Pie de la Credencial: Código QR y Sello Holográfico -->
+                <div class="relative z-10 flex items-end justify-between border-t border-white/15 pt-3">
+                  <div class="font-mono text-[9px] uppercase tracking-wider text-[#ddd8d2]/80">
+                    <span>VÁLIDO HASTA: DICIEMBRE 2026</span><br>
+                    <span class="text-wistus-gold">ESTADO: ACTIVO / HABILITADO</span>
+                  </div>
+                  
+                  <!-- Código QR Simulado de Alta Precisión -->
+                  <div class="w-10 h-10 bg-white p-1 rounded shadow flex items-center justify-center">
+                    <svg class="w-full h-full text-black" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 0h4v4h-4v-4zm-4 4h4v2h-4v-2zm0-4h2v2h-2v-2zm4-2h2v2h-2v-2z"/>
+                    </svg>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- R4. CARRUSEL DE BLOQUES FRATERNOS ([data-block="listing-carousel"])       -->
+    <!-- ========================================================================= -->
+    <section id="bloques" data-block="listing-carousel" class="py-16 lg:py-28 bg-[#f5f0ea] text-[#111111]">
+      <div class="max-w-7xl mx-auto px-5 lg:px-10 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#717171] block mb-2">Estructura Fraterna</span>
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">Nuestros Bloques</h2>
+        </div>
+        <p class="font-sans text-sm text-[#717171] max-w-md">
+          Cada bloque representa una faceta viva de la danza del Tinku: desde la bravura guerrera hasta la elegancia ritual.
+        </p>
+      </div>
+
+      <!-- Carrusel Swiper de Bloques -->
+      <div class="max-w-7xl mx-auto px-5 lg:px-10">
+        <div id="bloques-swiper" class="swiper w-full">
+          <div class="swiper-wrapper">
+            
+            <!-- Bloque 1: Machas -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <!-- Fondo visual temático -->
+                <div class="absolute inset-0 bg-gradient-to-br from-[#7f1d1d] via-[#450a0a] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-escudo.svg" alt="Escudo Heráldico Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-wistus-gold text-charcoal font-semibold">
+                    Vanguardia Guerrera
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Machas</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Guerreros de vanguardia. Representan la fuerza indomable, los saltos enérgicos y la bravura tradicional del Tinku potosino.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Cupos 2026: 60 fraternos</span>
+                    <button data-open-enquire data-bloque="Machas" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 2: Imillas -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#831843] via-[#500724] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-pink-400 text-charcoal font-semibold">
+                    Gracia & Donaires
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Imillas</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Elegancia femenina, coquetería y sincronía coreográfica. Portan polleras bordadas y la alegría inconfundible de la juventud.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Cupos 2026: 75 fraternas</span>
+                    <button data-open-enquire data-bloque="Imillas" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 3: Ñaupas -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-indigo-300 text-charcoal font-semibold">
+                    Tradición & Jerarquía
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Ñaupas</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Los guardianes de la tradición y veteranía fraterna. Cadencia ritual, paso firme y el legado histórico de tres décadas.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Cupos 2026: 50 fraternos</span>
+                    <button data-open-enquire data-bloque="Ñaupas" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 4: Sambos -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] via-[#047857] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-emerald-300 text-charcoal font-semibold">
+                    Potencia Acrobática
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Sambos</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Fuerza y agilidad acrobática. Coreografía vertiginosa, despliegue físico de alto impacto y destreza en cada desplazamiento.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Cupos 2026: 65 fraternos</span>
+                    <button data-open-enquire data-bloque="Sambos" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- R5. BARRA FIJA INFERIOR ([data-find-a-table-btn])                         -->
+  <!-- ========================================================================= -->
+  <div id="fixed-bottom-bar" data-find-a-table-btn class="fixed bottom-0 inset-x-0 z-30 shadow-2xl border-t border-[#b9b1a4]/60 h-header lg:h-header-lg py-1 bg-[#b9b1a4]">
+    <button id="btn-bottom-bar" class="w-full h-full bg-[#b9b1a4] text-[#111111] flex items-center justify-center font-serif text-base sm:text-lg lg:text-xl font-medium tracking-wide group transition-all duration-300 hover:bg-[#111111] hover:text-[#f5f0ea] py-2 px-4">
+      <span class="inline-flex items-center gap-2 transform group-hover:-translate-y-0.5 transition-transform duration-300 uppercase tracking-wider font-semibold">
+        <span>Unirse a la Fraternidad / Ingresar</span>
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- R5. MODAL DE PANTALLA COMPLETA (<dialog id="find-a-table" data-modal>)    -->
+  <!-- ========================================================================= -->
+  <dialog id="find-a-table" data-modal class="fixed inset-0 m-0 w-full h-full max-w-none max-h-none bg-black/95 text-[#f5f0ea] p-0 z-50 backdrop:bg-black/85 backdrop:backdrop-blur-md">
+    <div class="w-full h-full flex flex-col justify-between p-6 sm:p-12 lg:p-16">
+      
+      <!-- Barra Superior del Modal -->
+      <div class="flex items-center justify-between border-b border-white/15 pb-4">
+        <div class="flex items-center gap-3">
+          <img src="assets/img/wistus-badge.svg" alt="Insignia Tinkus Wistus" class="h-8 w-auto">
+          <span class="font-serif tracking-widest text-lg uppercase font-bold text-white">Tinkus Wistus</span>
+        </div>
+        <button id="btn-modal-close" data-modal-close class="font-mono text-xs uppercase tracking-widest text-[#b9b1a4] hover:text-white flex items-center gap-2 p-2" aria-label="Cerrar Diálogo">
+          <span>Cerrar</span> &times;
+        </button>
+      </div>
+
+      <!-- Menú Central Monumental con Efecto de Atenuación -->
+      <nav class="my-auto py-8 space-y-4 max-w-4xl" aria-label="Menú del Modal">
+        <div>
+          <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+            01. Ingresar al Portal Fraterno &rarr;
+          </a>
+        </div>
+        <div>
+          <button data-open-enquire class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-left text-white hover:text-wistus-gold transition-colors py-2 font-normal w-full" onclick="closeFindATableModal()">
+            02. Postular a la Fraternidad (Inscripción 2026)
+          </button>
+        </div>
+        <div>
+          <a href="#metadatos" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal" onclick="closeFindATableModal()">
+            03. Horarios y Locales de Ensayo
+          </a>
+        </div>
+        <div>
+          <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+            04. Información de Cuotas y Membresía
+          </a>
+        </div>
+        <div>
+          <a href="tel:+59176543210" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-white hover:text-wistus-gold transition-colors py-2 font-normal">
+            05. Contactar a la Mesa Directiva
+          </a>
+        </div>
+      </nav>
+
+      <!-- Pie del Modal con Datos Institucionales -->
+      <div class="border-t border-white/15 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#b9b1a4]">
+        <div>Entrada Folklórica Universitaria La Paz &bull; Gestión 2026</div>
+        <div>WhatsApp Directiva: +591 76543210 &bull; contacto@tinkuswistus.bo</div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================= -->
+  <!-- R5. DRAWER LATERAL DE POSTULACIÓN (<dialog id="enquire" data-modal-drawer>)-->
+  <!-- ========================================================================= -->
+  <dialog id="enquire" data-modal-drawer class="fixed top-0 right-0 bottom-0 m-0 h-full w-full sm:w-[520px] lg:w-[620px] max-w-full bg-[#f5f0ea] text-[#111111] p-0 z-50 shadow-2xl border-l border-[#b9b1a4]/50 backdrop:bg-black/75 backdrop:backdrop-blur-sm">
+    <div class="h-full flex flex-col justify-between overflow-y-auto p-6 sm:p-10">
+      
+      <!-- Cabecera del Drawer -->
+      <div class="flex items-center justify-between border-b border-[#b9b1a4]/40 pb-4 mb-6">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-wistus-purple block">Convocatoria 2026</span>
+          <h2 class="font-serif text-2xl lg:text-3xl font-bold">Ficha de Postulación</h2>
+        </div>
+        <button id="btn-drawer-close" data-drawer-close class="font-mono text-xs uppercase tracking-widest text-[#717171] hover:text-black p-2 flex items-center gap-1" aria-label="Cerrar Ficha">
+          <span>Cerrar</span> &times;
+        </button>
+      </div>
+
+      <!-- Formulario Reactivo de Postulación -->
+      <form id="form-enquire" class="space-y-4 my-auto py-2">
+        <div>
+          <label for="enquire-nombre" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
+            Nombres <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="enquire-nombre" name="nombre" required placeholder="Ej: Juan Pablo" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+        </div>
+
+        <div>
+          <label for="enquire-apellidos" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
+            Apellidos <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="enquire-apellidos" name="apellidos" required placeholder="Ej: Quispe Mamani" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+        </div>
+
+        <div>
+          <label for="enquire-telefono" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
+            Teléfono / WhatsApp <span class="text-red-500">*</span>
+          </label>
+          <input type="tel" id="enquire-telefono" name="telefono" required placeholder="Ej: +591 76543210" class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+        </div>
+
+        <div>
+          <label for="enquire-bloque" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
+            Bloque de Interés <span class="text-red-500">*</span>
+          </label>
+          <select id="enquire-bloque" name="bloque" required class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
+            <option value="Machas">Bloque Machas (Guerreros de vanguardia)</option>
+            <option value="Imillas">Bloque Imillas (Gracia y donaire femenino)</option>
+            <option value="Ñaupas">Bloque Ñaupas (Tradición y veteranía)</option>
+            <option value="Sambos">Bloque Sambos (Potencia acrobática)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="enquire-mensaje" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
+            Mensaje o Experiencia Previa
+          </label>
+          <textarea id="enquire-mensaje" name="mensaje" rows="3" placeholder="Cuéntanos si tienes experiencia previa en Tinku o alguna consulta..." class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple resize-none"></textarea>
+        </div>
+
+        <button type="submit" id="btn-submit-enquire" class="w-full py-3.5 px-6 rounded-full bg-charcoal text-[#f5f0ea] font-semibold text-xs font-mono uppercase tracking-widest hover:bg-black transition-colors duration-300 shadow-md">
+          Enviar Postulación
+        </button>
+
+        <!-- Feedback reactivo de confirmación -->
+        <div id="enquire-feedback" class="hidden p-4 rounded-xl bg-green-100 border border-green-300 text-green-900 text-sm font-medium">
+          ¡Postulación recibida con éxito! La mesa directiva se contactará contigo vía WhatsApp para confirmar tu asistencia al próximo ensayo.
+        </div>
+      </form>
+
+      <!-- Pie del Drawer -->
+      <div class="border-t border-[#b9b1a4]/40 pt-4 text-[11px] font-mono text-[#717171] text-center">
+        Tinkus Wistus 2026 &bull; Convocatoria Oficial &bull; Entrada Universitaria
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ========================================================================= -->
+  <!-- R5. FOOTER EDITORIAL Y BOLETÍN (footer[data-footer], [data-subscribe-form])-->
+  <!-- ========================================================================= -->
+  <footer id="site-footer" data-footer class="bg-charcoal text-[#f5f0ea] py-16 lg:py-24 border-t border-white/10 mb-header lg:mb-header-lg">
+    <div class="max-w-7xl mx-auto px-5 lg:px-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
+        
+        <!-- Columna 1: Identidad y Heráldica Wistus -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="flex items-center gap-3">
+            <img src="assets/img/wistus-escudo.svg" alt="Escudo Heráldico Tinkus Wistus" class="h-10 w-auto">
+            <span class="font-serif tracking-widest text-xl uppercase font-bold text-white">Tinkus Wistus</span>
+          </div>
+          <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed max-w-sm">
+            Fraternidad Folklórica y Cultural fundada en La Paz, Bolivia. Más de tres décadas difundiendo la fuerza, gallardía y herencia viva del Tinku en la Entrada Universitaria de la UMSA y escenarios internacionales.
+          </p>
+          <div class="text-xs font-mono text-wistus-gold uppercase tracking-wider">
+            “Los mejores Tinkus del país”
+          </div>
+        </div>
+
+        <!-- Columna 2: Directorio de Enlaces Editoriales -->
+        <div class="lg:col-span-3 space-y-3 font-mono text-xs uppercase tracking-wider text-[#ddd8d2]">
+          <span class="block text-white font-serif font-bold text-sm mb-4">Directorio</span>
+          <div><a href="#hero" class="hover:text-wistus-gold transition-colors">Convocatoria 2026</a></div>
+          <div><a href="#metadatos" class="hover:text-wistus-gold transition-colors">Horarios de Ensayo</a></div>
+          <div><a href="#galeria" class="hover:text-wistus-gold transition-colors">Galería Fotográfica</a></div>
+          <div><a href="#credencial" class="hover:text-wistus-gold transition-colors">Credencial Digital 3D</a></div>
+          <div><a href="#bloques" class="hover:text-wistus-gold transition-colors">Nuestros Bloques</a></div>
+          <div><a href="index.html" class="text-wistus-gold hover:underline">Acceso Portal Fraterno &rarr;</a></div>
+        </div>
+
+        <!-- Columna 3: Formulario de Boletín Oficial (data-subscribe-form) -->
+        <div class="lg:col-span-4 space-y-4">
+          <span class="block text-white font-serif font-bold text-sm">Boletín Oficial</span>
+          <p class="font-sans text-xs text-[#ddd8d2] leading-relaxed">
+            Suscríbete para recibir avisos oficiales, convocatorias extraordinarias y cronogramas de ensayos.
+          </p>
+          
+          <form id="subscribe-form" data-subscribe-form class="space-y-3">
+            <div class="flex items-center border-b border-[#b9b1a4]/60 pb-2 focus-within:border-wistus-gold transition-colors">
+              <input type="email" id="subscribe-email" name="email" required placeholder="tu.correo@ejemplo.com" class="bg-transparent text-sm text-white placeholder-[#717171] w-full focus:outline-none">
+              <button type="submit" class="font-mono text-xs uppercase tracking-widest text-wistus-gold hover:text-wistus-gold-light pl-2">
+                Enviar
+              </button>
+            </div>
+            <div id="subscribe-feedback" class="hidden text-xs font-mono text-green-400">
+              ¡Suscripción registrada con éxito! Te mantendremos informado.
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Fila Inferior de Copyright y Enlaces Legales -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#717171]">
+        <div>
+          &copy; 2026 Fraternidad Folklórica y Cultural Tinkus Wistus. Todos los derechos reservados.
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="index.html" class="hover:text-white transition-colors">Portal Oficial</a>
+          <span>&bull;</span>
+          <a href="#hero" class="hover:text-white transition-colors">Volver Arriba &uarr;</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- SCRIPTS AUTÓNOMOS VANILLA JS: HEADER, 3D TILT, MODALES Y CARRUSELES       -->
+  <!-- ========================================================================= -->
+  <script>
+    // -------------------------------------------------------------------------
+    // 1. HEADER SCROLL DETECTION (.scrolled)
+    // -------------------------------------------------------------------------
+    const siteHeader = document.querySelector('header[data-header]');
+    function updateHeaderScroll() {
+      if (!siteHeader) return;
+      if (window.scrollY > 50) {
+        siteHeader.classList.add('scrolled');
+      } else {
+        siteHeader.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', updateHeaderScroll, { passive: true });
+    document.addEventListener('DOMContentLoaded', updateHeaderScroll);
+
+    // -------------------------------------------------------------------------
+    // 2. MENÚ DRAWER TOGGLE (data-menu-drawer-toggle & data-menu-drawer)
+    // -------------------------------------------------------------------------
+    const menuToggleBtn = document.querySelector('[data-menu-drawer-toggle]');
+    const menuDrawer = document.querySelector('[data-menu-drawer]');
+    const menuCloseBtn = document.querySelector('[data-menu-drawer-close]');
+
+    function toggleMenuDrawer() {
+      if (!menuDrawer) return;
+      const isOpen = menuDrawer.classList.contains('menu-drawer--open');
+      if (isOpen) {
+        closeMenuDrawer();
+      } else {
+        openMenuDrawer();
+      }
+    }
+
+    function openMenuDrawer() {
+      if (!menuDrawer) return;
+      menuDrawer.classList.add('menu-drawer--open');
+      document.body.classList.add('menu-drawer--open-active');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeMenuDrawer() {
+      if (!menuDrawer) return;
+      menuDrawer.classList.remove('menu-drawer--open');
+      document.body.classList.remove('menu-drawer--open-active');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    if (menuToggleBtn) menuToggleBtn.addEventListener('click', toggleMenuDrawer);
+    if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenuDrawer);
+
+    // -------------------------------------------------------------------------
+    // 3. MODAL FULLSCREEN FIND-A-TABLE & LATERAL DRAWER ENQUIRE
+    // -------------------------------------------------------------------------
+    const findATableModal = document.getElementById('find-a-table');
+    const enquireDrawer = document.getElementById('enquire');
+    const bottomBarBtn = document.getElementById('btn-bottom-bar');
+    const modalCloseBtn = document.getElementById('btn-modal-close');
+    const drawerCloseBtn = document.getElementById('btn-drawer-close');
+
+    function closeModal() {
+      if (findATableModal && findATableModal.open) {
+        findATableModal.close();
+      }
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function openFindATableModal() {
+      if (findATableModal && typeof findATableModal.showModal === 'function') {
+        findATableModal.showModal();
+        document.body.classList.add('overflow-hidden');
+      }
+    }
+
+    function closeFindATableModal() {
+      closeModal();
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function openEnquireDrawer(bloqueName) {
+      // find-a-table close modal transition logic to prevent dialogue collision
+      if (findATableModal && findATableModal.open) {
+        findATableModal.close();
+      }
+      closeModal();
+      closeMenuDrawer();
+      if (enquireDrawer && typeof enquireDrawer.showModal === 'function') {
+        if (bloqueName) {
+          const select = document.getElementById('enquire-bloque');
+          if (select) select.value = bloqueName;
+        }
+        enquireDrawer.showModal();
+        document.body.classList.add('overflow-hidden');
+      }
+    }
+
+    function closeEnquireDrawer() {
+      if (enquireDrawer && enquireDrawer.open) {
+        enquireDrawer.close();
+      }
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    if (bottomBarBtn) bottomBarBtn.addEventListener('click', openFindATableModal);
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeFindATableModal);
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeEnquireDrawer);
+
+    // Escucha de todos los botones data-open-enquire
+    document.querySelectorAll('[data-open-enquire]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const bloque = btn.getAttribute('data-bloque') || '';
+        openEnquireDrawer(bloque);
+      });
+    });
+
+    // Cierre al hacer click en el backdrop nativo de los <dialog>
+    [findATableModal, enquireDrawer].forEach(dialog => {
+      if (!dialog) return;
+      dialog.addEventListener('click', (e) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!isInDialog) {
+          dialog.close();
+          document.body.classList.remove('overflow-hidden');
+        }
+      });
+      dialog.addEventListener('close', () => {
+        document.body.classList.remove('overflow-hidden');
+      });
+    });
+
+    // -------------------------------------------------------------------------
+    // 4. CREDENCIAL 3D HOLOGRÁFICA: INTERACCIÓN TILT CON BRILLO ESPECULAR
+    // -------------------------------------------------------------------------
+    const cardAnimationContainer = document.querySelector('[data-gift-card-animation]');
+    const card3d = document.querySelector('[data-gift-card]');
+
+    if (cardAnimationContainer && card3d) {
+      const glare = card3d.querySelector('.card-glare');
+
+      cardAnimationContainer.addEventListener('mousemove', (e) => {
+        const rect = card3d.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -14;
+        const rotateY = ((x - centerX) / centerX) * 16;
+
+        card3d.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+        if (glare) {
+          const px = (x / rect.width) * 100;
+          const py = (y / rect.height) * 100;
+          glare.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.45) 0%, rgba(217,119,6,0.3) 35%, rgba(124,58,237,0.25) 70%, transparent 90%)`;
+          glare.style.opacity = '1';
+        }
+      });
+
+      cardAnimationContainer.addEventListener('mouseleave', () => {
+        card3d.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        if (glare) glare.style.opacity = '0';
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. INICIALIZACIÓN DE CARRUSELES SWIPER
+    // -------------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+      // Swiper de Galería
+      if (typeof Swiper !== 'undefined' && document.getElementById('gallery-swiper')) {
+        new Swiper('#gallery-swiper', {
+          slidesPerView: 'auto',
+          spaceBetween: 20,
+          centeredSlides: false,
+          grabCursor: true,
+          loop: true,
+          freeMode: true,
+          breakpoints: {
+            1024: {
+              spaceBetween: 28
+            }
+          }
+        });
+      }
+
+      // Swiper de Bloques Fraternos
+      if (typeof Swiper !== 'undefined' && document.getElementById('bloques-swiper')) {
+        new Swiper('#bloques-swiper', {
+          slidesPerView: 1.15,
+          spaceBetween: 20,
+          grabCursor: true,
+          breakpoints: {
+            640: {
+              slidesPerView: 2.1,
+              spaceBetween: 20
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 24
+            }
+          }
+        });
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // 6. VALIDACIÓN Y RESPUESTA REACTIVA DE FORMULARIOS
+    // -------------------------------------------------------------------------
+    const formEnquire = document.getElementById('form-enquire');
+    if (formEnquire) {
+      formEnquire.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Trim inputs validation
+        const nombreInput = document.getElementById('enquire-nombre');
+        const apellidosInput = document.getElementById('enquire-apellidos');
+        const telefonoInput = document.getElementById('enquire-telefono');
+        
+        const nombre = nombreInput ? nombreInput.value.trim() : '';
+        const apellidos = apellidosInput ? apellidosInput.value.trim() : '';
+        const telefono = telefonoInput ? telefonoInput.value.trim() : '';
+        
+        // Bolivia phone formatting and minimum length enforcement (+591)
+        const cleanPhone = telefono.replace(/[^0-9]/g, '');
+        if (cleanPhone.length < 7 || cleanPhone.length > 15) {
+          alert('Por favor ingrese un número telefónico válido de Bolivia (+591 o mínimo 7-8 dígitos).');
+          return;
+        }
+
+        const feedback = document.getElementById('enquire-feedback');
+        const submitBtn = document.getElementById('btn-submit-enquire');
+        if (feedback) {
+          feedback.classList.remove('hidden');
+          if (submitBtn) submitBtn.classList.add('hidden');
+          setTimeout(() => {
+            closeEnquireDrawer();
+            formEnquire.reset();
+            feedback.classList.add('hidden');
+            if (submitBtn) submitBtn.classList.remove('hidden');
+          }, 3500);
+        }
+      });
+    }
+
+    // Isolated newsletter subscription form handler
+    const subscribeForm = document.querySelector('[data-subscribe-form]') || document.getElementById('subscribe-form');
+    if (subscribeForm) {
+      subscribeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const emailInput = document.getElementById('subscribe-email');
+        const email = emailInput ? emailInput.value.trim() : '';
+        const feedback = document.getElementById('subscribe-feedback');
+        if (feedback) {
+          feedback.classList.remove('hidden');
+          feedback.textContent = '¡Gracias por suscribirte al boletín oficial Wistus 2026!';
+          setTimeout(() => {
+            subscribeForm.reset();
+            feedback.classList.add('hidden');
+          }, 4500);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
