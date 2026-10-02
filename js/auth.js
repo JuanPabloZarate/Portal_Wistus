@@ -9,10 +9,15 @@ class AuthManager {
     }
 
     init() {
-        document.addEventListener('DOMContentLoaded', () => {
+        const startup = () => {
             this.bindAuthEvents();
             this.checkExistingSession();
-        });
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startup);
+        } else {
+            startup();
+        }
     }
 
     bindAuthEvents() {
@@ -38,6 +43,110 @@ class AuthManager {
                 const pass = passInput ? passInput.value : '';
                 this.loginAsControl(user, pass);
             });
+        }
+
+        // Chips de acceso rápido para fraternos
+        document.querySelectorAll('.btn-quick-ci').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ci = btn.getAttribute('data-ci');
+                const ciInput = document.getElementById('inputCI');
+                const btnClear = document.getElementById('btnClearCI');
+                this.hideAlert(document.getElementById('alertFraternoLogin'));
+                if (ciInput && ci) {
+                    ciInput.value = ci;
+                    if (btnClear) btnClear.classList.remove('d-none');
+                    ciInput.focus();
+                    btn.classList.add('btn-quick-active');
+                    setTimeout(() => btn.classList.remove('btn-quick-active'), 350);
+                }
+            });
+        });
+
+        // Chips de acceso rápido para directiva / control
+        document.querySelectorAll('.btn-quick-admin').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const user = btn.getAttribute('data-user') || 'admi';
+                const pass = btn.getAttribute('data-pass') || 'admi123';
+                const userInput = document.getElementById('inputControlUser');
+                const passInput = document.getElementById('inputControlPass');
+                this.hideAlert(document.getElementById('alertControlLogin'));
+                if (userInput) userInput.value = user;
+                if (passInput) passInput.value = pass;
+                if (userInput) userInput.focus();
+                btn.classList.add('btn-quick-active');
+                setTimeout(() => btn.classList.remove('btn-quick-active'), 350);
+            });
+        });
+
+        // Toggle de visualización de contraseña
+        const btnTogglePass = document.getElementById('btnToggleControlPass');
+        const passControlInput = document.getElementById('inputControlPass');
+        const iconTogglePass = document.getElementById('iconTogglePass');
+        if (btnTogglePass && passControlInput) {
+            btnTogglePass.addEventListener('click', () => {
+                const isPass = passControlInput.type === 'password';
+                passControlInput.type = isPass ? 'text' : 'password';
+                if (iconTogglePass) {
+                    iconTogglePass.className = isPass ? 'bi bi-eye-slash text-primary' : 'bi bi-eye';
+                }
+                btnTogglePass.setAttribute('title', isPass ? 'Ocultar contraseña' : 'Mostrar contraseña');
+            });
+        }
+
+        // Inputs reactivos para limpiar alertas al teclear
+        const userInputControl = document.getElementById('inputControlUser');
+        if (userInputControl) {
+            userInputControl.addEventListener('input', () => {
+                this.hideAlert(document.getElementById('alertControlLogin'));
+            });
+        }
+        if (passControlInput) {
+            passControlInput.addEventListener('input', () => {
+                this.hideAlert(document.getElementById('alertControlLogin'));
+            });
+        }
+
+        // Botón para limpiar campo CI
+        const btnClearCI = document.getElementById('btnClearCI');
+        const ciInput = document.getElementById('inputCI');
+        if (btnClearCI && ciInput) {
+            ciInput.addEventListener('input', () => {
+                this.hideAlert(document.getElementById('alertFraternoLogin'));
+                if (ciInput.value.trim().length > 0) {
+                    btnClearCI.classList.remove('d-none');
+                } else {
+                    btnClearCI.classList.add('d-none');
+                }
+            });
+            btnClearCI.addEventListener('click', () => {
+                ciInput.value = '';
+                btnClearCI.classList.add('d-none');
+                this.hideAlert(document.getElementById('alertFraternoLogin'));
+                ciInput.focus();
+            });
+        }
+
+        // Limpiar alertas al cambiar de pestaña
+        const tabFraternoBtn = document.getElementById('tab-fraterno-btn');
+        const tabControlBtn = document.getElementById('tab-control-btn');
+        if (tabFraternoBtn) {
+            const onTabFraterno = () => {
+                const alertEl = document.getElementById('alertFraternoLogin');
+                this.hideAlert(alertEl);
+                if (ciInput) ciInput.focus();
+            };
+            tabFraternoBtn.addEventListener('shown.bs.tab', onTabFraterno);
+            tabFraternoBtn.addEventListener('click', onTabFraterno);
+        }
+        if (tabControlBtn) {
+            const onTabControl = () => {
+                const alertEl = document.getElementById('alertControlLogin');
+                this.hideAlert(alertEl);
+                const userInput = document.getElementById('inputControlUser');
+                if (userInput) userInput.focus();
+            };
+            tabControlBtn.addEventListener('shown.bs.tab', onTabControl);
+            tabControlBtn.addEventListener('click', onTabControl);
         }
 
         // Botón Cerrar Sesión
@@ -127,7 +236,7 @@ class AuthManager {
             const passTrim = (password || '').trim();
 
             const allowedUsers = ['admi', 'directiva', 'control', 'admin', 'supervisor'];
-            const validPasswords = ['admi123', 'admin123', 'wistus2026', '2026', 'admi'];
+            const validPasswords = ['admi123', 'admin123', 'wistus2027', '2027', 'wistus2026', '2026', 'admi'];
             if (ctrl && ctrl.password) validPasswords.push(ctrl.password);
             if (ctrl && ctrl.pin) validPasswords.push(ctrl.pin);
             if (ctrl && ctrl.username) allowedUsers.push(ctrl.username.toLowerCase());
@@ -171,6 +280,7 @@ class AuthManager {
     }
 
     logout() {
+        this.resetLoginForm();
         if (window.PortalState) {
             window.PortalState.clearSession();
         }
@@ -179,9 +289,36 @@ class AuthManager {
         }
     }
 
+    resetLoginForm() {
+        const ciInput = document.getElementById('inputCI');
+        const btnClearCI = document.getElementById('btnClearCI');
+        const userInput = document.getElementById('inputControlUser');
+        const passInput = document.getElementById('inputControlPass');
+        const btnTogglePass = document.getElementById('btnToggleControlPass');
+        const iconTogglePass = document.getElementById('iconTogglePass');
+        const alertFraterno = document.getElementById('alertFraternoLogin');
+        const alertControl = document.getElementById('alertControlLogin');
+
+        if (ciInput) ciInput.value = '';
+        if (btnClearCI) btnClearCI.classList.add('d-none');
+        if (userInput) userInput.value = '';
+        if (passInput) {
+            passInput.value = '';
+            passInput.type = 'password';
+        }
+        if (iconTogglePass) {
+            iconTogglePass.className = 'bi bi-eye';
+        }
+        if (btnTogglePass) {
+            btnTogglePass.setAttribute('title', 'Mostrar u ocultar contraseña');
+        }
+        this.hideAlert(alertFraterno);
+        this.hideAlert(alertControl);
+    }
+
     showAlert(el, msg) {
         if (!el) return;
-        el.textContent = msg;
+        el.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> ${msg}`;
         el.classList.remove('d-none');
         el.classList.add('animate__animated', 'animate__shakeX');
         setTimeout(() => {
@@ -192,7 +329,7 @@ class AuthManager {
     hideAlert(el) {
         if (!el) return;
         el.classList.add('d-none');
-        el.textContent = '';
+        el.innerHTML = '';
     }
 }
 

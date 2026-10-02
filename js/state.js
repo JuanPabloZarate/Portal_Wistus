@@ -1,7 +1,7 @@
 /**
  * STATE MANAGER - LOCALSTORAGE REACTIVO
  * Gestiona la persistencia de datos, sesión activa, temas y operaciones de negocio.
- * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+ * Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
  */
 
 const STORAGE_KEY = 'portal_fraternal_storage_v4';
@@ -519,7 +519,7 @@ class PortalStateManager {
 
         const cuotaId = paymentData.cuota_id || 'cuota_general';
         const cuota = this.getCuotaById(cuotaId);
-        const concepto = paymentData.concepto || (cuota ? cuota.title : 'Aporte Fraternal 2026');
+        const concepto = paymentData.concepto || (cuota ? cuota.title : 'Aporte Carnaval de Oruro 2027');
 
         const now = new Date();
         const nroRecibo = paymentData.nro_recibo !== undefined && paymentData.nro_recibo !== '' 

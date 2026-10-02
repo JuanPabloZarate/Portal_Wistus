@@ -10,6 +10,7 @@ class PortalAppManager {
     }
 
     init() {
+        this.initCountdownTimer();
         document.addEventListener('DOMContentLoaded', () => {
             this.bindNavigationEvents();
             this.initLayoutEvents();
@@ -27,6 +28,34 @@ class PortalAppManager {
             if (this.currentView === 'control-eventos') this.renderEventsTimeline(true);
             if (this.currentView === 'member-perfil') this.renderMemberProfileEdit();
         });
+    }
+
+    initCountdownTimer() {
+        const targetDate = new Date(2027, 1, 6, 6, 0, 0); // 06 Feb 2027 06:00 AM
+
+        const updateTimer = () => {
+            const now = new Date();
+            const diff = targetDate.getTime() - now.getTime();
+
+            let days = 0, hours = 0, minutes = 0, seconds = 0;
+
+            if (diff > 0) {
+                days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            }
+
+            const format = (num) => String(num).padStart(2, '0');
+
+            document.querySelectorAll('.countdown-days').forEach(el => el.textContent = format(days));
+            document.querySelectorAll('.countdown-hours').forEach(el => el.textContent = format(hours));
+            document.querySelectorAll('.countdown-minutes').forEach(el => el.textContent = format(minutes));
+            document.querySelectorAll('.countdown-seconds').forEach(el => el.textContent = format(seconds));
+        };
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
     }
 
     showView(viewName) {
@@ -812,12 +841,12 @@ class PortalAppManager {
         if (credFratDanza) credFratDanza.textContent = theme.danza || 'Tinkus';
 
         const credFratYear = document.getElementById('credFratYear');
-        if (credFratYear) credFratYear.textContent = `${theme.year || '2026'}`;
+        if (credFratYear) credFratYear.textContent = '2027';
 
         const credEscudo = document.getElementById('credEscudo');
         if (credEscudo) credEscudo.src = theme.escudo_url || 'assets/img/wistus-badge.svg';
 
-        // 2. Datos Principales Requeridos: Foto, Nombre Completo y CI
+        // 2. Datos Principales Requeridos: Foto, Nombre Completo, CI y Distinción Fraternal
         const credFoto = document.getElementById('credFoto');
         if (credFoto) credFoto.src = member.foto || 'assets/img/avatar-default.svg';
 
@@ -827,11 +856,17 @@ class PortalAppManager {
         const credCI = document.getElementById('credCI');
         if (credCI) credCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
 
+        const credBloqueBadge = document.getElementById('credBloqueBadge');
+        if (credBloqueBadge) credBloqueBadge.textContent = member.bloque_nombre || 'Bloque Machas Wistus';
+
+        const credDistincionBadge = document.getElementById('credDistincionBadge');
+        if (credDistincionBadge) credDistincionBadge.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i>${member.rol_fraternal || 'Fraterno Titular'}`;
+
         // 3. Código QR Amplio y Centrado para Escaneo Rápido (180px)
         const qrContainer = document.getElementById('credentialQRCode');
         if (qrContainer) {
             qrContainer.innerHTML = '';
-            const verifyPayload = `https://entradauniversitarialapaz2026.bo/verificar?ci=${member.ci}&frat=${encodeURIComponent(theme.short_name || 'Wistus')}`;
+            const verifyPayload = `https://carnavaldeoruro2027.bo/verificar?ci=${member.ci}&frat=${encodeURIComponent(theme.short_name || 'Wistus')}`;
             
             if (typeof QRCode !== 'undefined') {
                 try {
@@ -1482,7 +1517,7 @@ class PortalAppManager {
             if (percentage >= 100) {
                 elMsg.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-shield-check me-1"></i>¡Excelente! Tu perfil fraternal se encuentra 100% completo y verificado.</span>';
             } else {
-                elMsg.textContent = 'Completa tus datos personales para habilitar al 100% tu credencial y ficha del padrón 2026.';
+                elMsg.textContent = 'Completa tus datos personales para habilitar al 100% tu credencial y ficha del padrón Carnaval de Oruro 2027.';
             }
         }
 

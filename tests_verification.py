@@ -799,7 +799,82 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertNotIn("sim-maria-elena", app_content)
         self.assertNotIn("sim-control", app_content)
 
+    def test_30_login_ux_ui_festive_presentation_and_auth(self):
+        """Verifica los componentes visuales UX/UI de login Oruro 2027 y la lógica de autenticación."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Componentes estructurales y festivos del login
+        self.assertIn('id="view-login"', index_content)
+        self.assertIn("login-festive-tag", index_content)
+        self.assertIn("badge-oruro-carnaval", index_content)
+        self.assertIn("Carnaval de Oruro 2027", index_content)
+        self.assertIn("login-logo-halo", index_content)
+        self.assertIn("login-edition-badge", index_content)
+        self.assertIn("GESTIÓN OFICIAL 2027", index_content)
+
+        # Segmented Control Tabs
+        self.assertIn('id="tab-fraterno-btn"', index_content)
+        self.assertIn('id="tab-control-btn"', index_content)
+
+        # Formulario Fraterno y micro-interacciones limpias
+        self.assertIn('id="formLoginFraterno"', index_content)
+        self.assertIn('id="inputCI"', index_content)
+        self.assertIn('id="btnClearCI"', index_content)
+        self.assertIn('id="alertFraternoLogin"', index_content)
+        self.assertNotIn("login-quick-chips-wrapper", index_content)
+        self.assertNotIn("login-hint-box", index_content)
+
+        # Formulario Control y micro-interacciones limpias
+        self.assertIn('id="formLoginControl"', index_content)
+        self.assertIn('id="inputControlUser"', index_content)
+        self.assertIn('id="inputControlPass"', index_content)
+        self.assertIn('id="btnToggleControlPass"', index_content)
+        self.assertIn('id="alertControlLogin"', index_content)
+
+        # Estilos en css/style.css
+        style_path = os.path.join(WORKSPACE_DIR, 'css', 'style.css')
+        with open(style_path, 'r', encoding='utf-8') as f:
+            style_content = f.read()
+
+        self.assertIn(".login-wrapper", style_content)
+        self.assertIn("overflow-y: auto", style_content)
+        self.assertIn(".login-card-main", style_content)
+        self.assertIn(".login-logo-halo", style_content)
+        self.assertIn(".badge-oruro-carnaval", style_content)
+        self.assertIn(".login-quick-chips-wrapper", style_content)
+        self.assertIn(".btn-quick-ci", style_content)
+        self.assertIn(".btn-login-submit", style_content)
+        self.assertIn(".btn-toggle-password:focus-visible", style_content)
+        self.assertIn(".btn-quick-ci:focus-visible", style_content)
+
+        # Lógica en js/auth.js
+        auth_path = os.path.join(JS_DIR, 'auth.js')
+        with open(auth_path, 'r', encoding='utf-8') as f:
+            auth_content = f.read()
+
+        self.assertIn(".btn-quick-ci", auth_content)
+        self.assertIn(".btn-quick-admin", auth_content)
+        self.assertIn("btnToggleControlPass", auth_content)
+        self.assertIn("btnClearCI", auth_content)
+        self.assertIn("loginAsMember", auth_content)
+        self.assertIn("loginAsControl", auth_content)
+        self.assertIn("resetLoginForm", auth_content)
+        self.assertIn("wistus2027", auth_content)
+        self.assertIn("2027", auth_content)
+
+        # Simulación de autenticación fraterno por CI
+        cis_validos = ["6998544", "4839201", "6892341"]
+        data_path = os.path.join(JS_DIR, 'data.js')
+        with open(data_path, 'r', encoding='utf-8') as f:
+            data_content = f.read()
+
+        for test_ci in cis_validos:
+            self.assertIn(test_ci, data_content, f"El CI {test_ci} debe estar en el padrón de data.js")
+
 if __name__ == '__main__':
     unittest.main()
+
 
 

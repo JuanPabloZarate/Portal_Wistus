@@ -1,6 +1,6 @@
 /**
- * CONFIGURACIÓN INICIAL DEL PORTAL - TINKUS WISTUS 2026
- * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+ * CONFIGURACIÓN INICIAL DEL PORTAL - TINKUS WISTUS 2027
+ * Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
  * Estructura de Datos Centralizada y Generador de Padrón Fraternal
  */
 
@@ -13,7 +13,7 @@ const DEFAULT_PORTAL_CONFIG = {
             short_name: "Tinkus Wistus",
             danza: 'Tinkus',
             motto: 'Los mejores Tinkus del país',
-            year: '2026',
+            year: '2027',
             escudo_url: 'assets/img/wistus-badge.svg',
             banner_url: 'assets/img/wistus-banner.svg',
             logo_url: 'assets/img/wistus-logo-w.svg',
@@ -42,13 +42,13 @@ const DEFAULT_PORTAL_CONFIG = {
         { id: 'mayores', name: "Bloque Tinkus Wistus Mayores", guia: 'Carlos Mendoza', cupos: 40, color: '#3182ce' },
         { id: 'choclos', name: "Bloque Choclos", guia: 'Gabriela Vargas', cupos: 50, color: '#38a169' },
         { id: 'wanllis', name: "Bloque Semillero Wanllis", guia: 'Sonia Choque', cupos: 30, color: '#805ad5' },
-        { id: 'directiva', name: "Directiva y Pasantes 2026", guia: 'Lic. Roberto Alarcón', cupos: 20, color: '#7c3aed' }
+        { id: 'directiva', name: "Directiva y Pasantes Oruro 2027", guia: 'Lic. Roberto Alarcón', cupos: 20, color: '#7c3aed' }
     ],
     cuotas_definidas: [
-        { id: 'cuota_1', title: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, vencimiento: '2026-02-28', obligatorio: true },
-        { id: 'cuota_2', title: 'Banda Oficial y Acompañamiento', monto: 350, vencimiento: '2026-03-31', obligatorio: true },
-        { id: 'cuota_3', title: 'Confección Traje Oficial Tinku (Montera y Chaleco)', monto: 800, vencimiento: '2026-04-30', obligatorio: true },
-        { id: 'cuota_4', title: 'Recepción Social y Diana', monto: 200, vencimiento: '2026-05-15', obligatorio: true }
+        { id: 'cuota_1', title: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 300, vencimiento: '2026-11-30', obligatorio: true },
+        { id: 'cuota_2', title: 'Banda Oficial y Acompañamiento Carnaval', monto: 400, vencimiento: '2026-12-31', obligatorio: true },
+        { id: 'cuota_3', title: 'Confección Traje Oficial Tinku Wistus (Montera y Chaleco)', monto: 900, vencimiento: '2027-01-25', obligatorio: true },
+        { id: 'cuota_4', title: 'Convite y Recepción Social', monto: 250, vencimiento: '2027-02-15', obligatorio: true }
     ],
     bancos_disponibles: [
         { id: 'bnb', name: 'Banco Nacional de Bolivia (BNB)', cuenta: '150-1928374-2', titular: 'Fraternidad Tinkus Wistus', tipo: 'Cuenta Corriente', qr_habilitado: true },
@@ -66,7 +66,7 @@ const DEFAULT_PORTAL_CONFIG = {
             id: 'ev_1',
             title: '1er Ensayo General y Confraternización Tinku',
             tipo: 'Ensayo',
-            fecha: '2026-02-15',
+            fecha: '2026-11-15',
             hora: '15:00 - 19:00',
             lugar: 'Sede Social Tinkus Wistus (Zona San Pedro, Calle Almirante Grau)',
             responsable: 'Directiva Central y Mesa de Control',
@@ -76,23 +76,23 @@ const DEFAULT_PORTAL_CONFIG = {
         },
         {
             id: 'ev_2',
-            title: '2do Ensayo Oficial y Medida de Monteras',
-            tipo: 'Ensayo',
-            fecha: '2026-03-08',
-            hora: '15:30 - 20:00',
-            lugar: 'Cancha Polideportiva Munaypata',
-            responsable: 'Secretaría de Control y Guías',
+            title: 'Primer Convite Oruro - Ruta Socavón',
+            tipo: 'Convite',
+            fecha: '2026-12-06',
+            hora: '07:00 - 18:00',
+            lugar: 'Av. 6 de Agosto hasta Santuario del Socavón (Oruro)',
+            responsable: 'Directiva Central y Pasantes Oruro 2027',
             tolerancia_minutos: 15,
             estado: 'finalizado',
             obligatorio: true
         },
         {
             id: 'ev_3',
-            title: '3er Ensayo General de Pasos y Saltos Tinku',
+            title: 'Ensayo General de Pasos y Medición de Monteras',
             tipo: 'Ensayo',
-            fecha: '2026-03-22',
+            fecha: '2027-01-17',
             hora: '15:00 - 19:30',
-            lugar: 'Av. Simón Bolívar (Monumento Busch)',
+            lugar: 'Cancha Polideportiva Munaypata / Sede Social',
             responsable: 'Secretaría de Control y Guías',
             tolerancia_minutos: 15,
             estado: 'finalizado',
@@ -100,48 +100,36 @@ const DEFAULT_PORTAL_CONFIG = {
         },
         {
             id: 'ev_4',
-            title: 'Recorrido Nocturno de Fraternidades - Entrada Universitaria La Paz',
-            tipo: 'Recorrido',
-            fecha: '2026-04-12',
-            hora: '18:00 - 22:30',
-            lugar: 'Plaza Mayor de San Francisco a Plaza Eguino',
-            responsable: 'Mesa Directiva y Control General',
+            title: 'Último Convite Santuario del Socavón',
+            tipo: 'Convite',
+            fecha: '2027-01-31',
+            hora: '07:00 - 19:00',
+            lugar: 'Ruta Oficial del Carnaval de Oruro (Av. 6 de Agosto al Socavón)',
+            responsable: 'Directiva Central y Control General',
             tolerancia_minutos: 15,
             estado: 'activo',
             obligatorio: true
         },
         {
             id: 'ev_5',
-            title: 'Misa de Promesa de la Entrada Universitaria La Paz',
-            tipo: 'Solemne',
-            fecha: '2026-05-03',
-            hora: '09:00 - 13:00',
-            lugar: 'Santuario de la Entrada Universitaria La Paz (Calle Antonio Gallardo)',
-            responsable: 'Comisión Religiosa y Directiva',
-            tolerancia_minutos: 15,
-            estado: 'proximo',
-            obligatorio: true
-        },
-        {
-            id: 'ev_6',
-            title: 'Magna Entrada Universitaria La Paz 2026',
+            title: 'Gran Entrada - Sábado de Peregrinación Carnaval Oruro 2027',
             tipo: 'Entrada Oficial',
-            fecha: '2026-05-24',
-            hora: '07:00 - 20:00',
-            lugar: 'Ruta Oficial Entrada Universitaria La Paz (Av. Baptista hasta Estadio Hernando Siles)',
-            responsable: 'Directiva Central y Pasantes 2026',
+            fecha: '2027-02-06',
+            hora: '06:00 - 22:00',
+            lugar: 'Ruta Oficial Carnaval de Oruro (Avenida 6 de Agosto hasta el Socavón)',
+            responsable: 'Directiva Central y Pasantes Oruro 2027',
             tolerancia_minutos: 10,
             estado: 'proximo',
             obligatorio: true
         },
         {
-            id: 'ev_7',
-            title: 'Diana Folklórica y Recepción de Gala Tinkus Wistus',
+            id: 'ev_6',
+            title: 'Domingo de Carnaval, Alba y Recepción Fraternal',
             tipo: 'Recepción',
-            fecha: '2026-05-25',
-            hora: '13:00 - 23:00',
-            lugar: 'Salón de Eventos "El Conquistador", La Paz',
-            responsable: 'Comisión de Festejos',
+            fecha: '2027-02-07',
+            hora: '05:00 - 20:00',
+            lugar: 'Santuario del Socavón y Salón de Fiestas Oruro',
+            responsable: 'Comisión de Festejos Oruro 2027',
             tolerancia_minutos: 30,
             estado: 'proximo',
             obligatorio: false
@@ -150,26 +138,26 @@ const DEFAULT_PORTAL_CONFIG = {
     comunicados: [
         {
             id: 'com_1',
-            fecha: '2026-03-25',
-            titulo: 'Control Estricto con Credencial QR en Recorrido Nocturno',
+            fecha: '2027-01-20',
+            titulo: 'Control Estricto con Credencial QR en el Último Convite y Entrada Oruro 2027',
             autor: 'Secretaría de Control y Asistencia',
-            contenido: 'Recordamos a todos los fraternos y fraternas de la Fraternidad Tinkus Wistus que para el Recorrido Nocturno del 12 de Abril el control de asistencia se realizará exclusivamente mediante escaneo de Credencial Digital QR o presentación de CI en el punto de concentración.',
+            contenido: 'Recordamos a todos los fraternos y fraternas de la Fraternidad Tinkus Wistus que para el Último Convite y el Sábado de Peregrinación en Oruro, el control de asistencia se realizará exclusivamente mediante escaneo de Credencial Digital QR o presentación de CI.',
             prioridad: 'alta'
         },
         {
             id: 'com_2',
-            fecha: '2026-03-20',
-            titulo: 'Última Fecha para Pago de Cuota 2 (Banda Oficial)',
-            autor: 'Tesorería General Tinkus Wistus 2026',
-            contenido: 'Fraternos que aún tengan saldo pendiente en la Cuota 2 deben regularizar hasta el 31 de marzo para confirmar su puesto en fila y bloque oficial de Tinkus Wistus.',
+            fecha: '2026-12-15',
+            titulo: 'Última Fecha para Pago de Cuota 2 (Banda Oficial Carnaval)',
+            autor: 'Tesorería General Tinkus Wistus 2027',
+            contenido: 'Fraternos que aún tengan saldo pendiente en la Cuota 2 deben regularizar hasta el 31 de diciembre para confirmar su puesto en fila y bloque oficial de Tinkus Wistus para el Carnaval de Oruro 2027.',
             prioridad: 'media'
         },
         {
             id: 'com_3',
-            fecha: '2026-03-15',
-            titulo: 'Prueba de Traje Oficial y Medición de Monteras',
+            fecha: '2027-01-10',
+            titulo: 'Entrega de Traje Oficial y Monteras Oruro 2027',
             autor: 'Comisión de Bordados y Trajes',
-            contenido: 'La sastrería oficial iniciará la prueba de chalecos y monteras en la sede social para todos los fraternos con la Cuota 3 cancelada o con abono registrado.',
+            contenido: 'La sastrería oficial iniciará la prueba final y entrega de chalecos y monteras en la sede social para todos los fraternos con la Cuota 3 cancelada.',
             prioridad: 'baja'
         }
     ],
@@ -198,7 +186,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'presente', hora: '18:10', marcado_por: 'Terminal QR', timestamp: '2026-04-12T18:10:00.000Z' }
             },
             pagos: [
-                { id: 'PAG-48301', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-10', metodo: 'QR Banco BNB', nro_recibo: 'REC-00201', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-48301', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-10', metodo: 'QR Banco BNB', nro_recibo: 'REC-00201', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-48302', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-02', metodo: 'QR Banco BNB', nro_recibo: 'REC-00288', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-48303', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku (Montera y Chaleco)', monto: 800, fecha: '2026-03-25', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00412', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-48304', cuota_id: 'cuota_4', concepto: 'Recepción Social y Diana', monto: 200, fecha: '2026-04-01', metodo: 'Efectivo', nro_recibo: 'REC-00505', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
@@ -229,7 +217,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-68901', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-14', metodo: 'QR Banco BNB', nro_recibo: 'REC-00215', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-68901', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-14', metodo: 'QR Banco BNB', nro_recibo: 'REC-00215', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-68902', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-10', metodo: 'QR Banco Unión', nro_recibo: 'REC-00302', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: [
@@ -268,7 +256,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-101', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-15', metodo: 'QR Banco BNB', nro_recibo: 'REC-00101', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-101', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-15', metodo: 'QR Banco BNB', nro_recibo: 'REC-00101', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-102', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-05', metodo: 'Efectivo', nro_recibo: 'REC-00185', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: []
@@ -297,7 +285,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'presente', hora: '18:00', marcado_por: 'Terminal QR', timestamp: '2026-04-12T18:00:00.000Z' }
             },
             pagos: [
-                { id: 'PAG-34501', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-05', metodo: 'QR Banco BNB', nro_recibo: 'REC-00110', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-34501', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-05', metodo: 'QR Banco BNB', nro_recibo: 'REC-00110', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-34502', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-02-28', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00195', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-34503', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku (Montera y Chaleco)', monto: 800, fecha: '2026-03-20', metodo: 'QR Banco BNB', nro_recibo: 'REC-00380', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
@@ -327,7 +315,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-51201', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-18', metodo: 'Efectivo', nro_recibo: 'REC-00220', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-51201', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-18', metodo: 'Efectivo', nro_recibo: 'REC-00220', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-51202', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-15', metodo: 'QR Banco BNB', nro_recibo: 'REC-00315', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: []
@@ -356,7 +344,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-78201', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-25', metodo: 'QR Banco BNB', nro_recibo: 'REC-00245', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
+                { id: 'PAG-78201', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-25', metodo: 'QR Banco BNB', nro_recibo: 'REC-00245', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: []
         },
@@ -384,7 +372,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'presente', hora: '17:45', marcado_por: 'Terminal QR', timestamp: '2026-04-12T17:45:00.000Z' }
             },
             pagos: [
-                { id: 'PAG-29801', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-01-20', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00050', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-29801', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-01-20', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00050', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-29802', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-02-15', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00120', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-29803', cuota_id: 'cuota_3', concepto: 'Confección Traje Oficial Tinku (Montera y Chaleco)', monto: 800, fecha: '2026-03-10', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00305', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-29804', cuota_id: 'cuota_4', concepto: 'Recepción Social y Diana', monto: 200, fecha: '2026-03-28', metodo: 'Transferencia Bancaria', nro_recibo: 'REC-00450', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
@@ -415,7 +403,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-83401', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-28', metodo: 'QR Banco BNB', nro_recibo: 'REC-00260', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
+                { id: 'PAG-83401', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-28', metodo: 'QR Banco BNB', nro_recibo: 'REC-00260', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: []
         },
@@ -443,7 +431,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-72001', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-12', metodo: 'QR Banco BNB', nro_recibo: 'REC-00170', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
+                { id: 'PAG-72001', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-12', metodo: 'QR Banco BNB', nro_recibo: 'REC-00170', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 },
                 { id: 'PAG-72002', cuota_id: 'cuota_2', concepto: 'Banda Oficial y Acompañamiento', monto: 350, fecha: '2026-03-18', metodo: 'QR Banco BNB', nro_recibo: 'REC-00330', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: []
@@ -472,7 +460,7 @@ const DEFAULT_PORTAL_CONFIG = {
                 'ev_4': { estado: 'pendiente', hora: null, marcado_por: null }
             },
             pagos: [
-                { id: 'PAG-90401', cuota_id: 'cuota_1', concepto: 'Inscripción Entrada Universitaria La Paz 2026', monto: 250, fecha: '2026-02-27', metodo: 'QR Banco BNB', nro_recibo: 'REC-00255', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
+                { id: 'PAG-90401', cuota_id: 'cuota_1', concepto: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 250, fecha: '2026-02-27', metodo: 'QR Banco BNB', nro_recibo: 'REC-00255', cajero: 'Tesorería Wistus', estado: 'pagado', saldo_pendiente: 0 }
             ],
             vouchers_pendientes: [
                 {
@@ -490,7 +478,7 @@ const DEFAULT_PORTAL_CONFIG = {
     control_user: {
         username: 'admi',
         password: 'admi123',
-        pin: '2026',
+        pin: '2027',
         nombre: 'Mesa Directiva y Control',
         fraternidad: "Fraternidad Tinkus Wistus",
         allowed_users: ['admi', 'directiva', 'control', 'admin', 'supervisor']

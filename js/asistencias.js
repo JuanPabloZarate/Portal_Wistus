@@ -239,9 +239,9 @@ class AsistenciasManager {
         if (elHabilitacion) {
             if (porcentaje >= 80) {
                 elHabilitacion.innerHTML = `
-                    <div class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-shield-fill-check fs-6"></i>
-                        <span class="fw-bold">HABILITADO PARA ENTRADA UNIVERSITARIA 2026</span>
+                    <div class="badge badge-socavon-gold gold-glow-pulse px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-shield-fill-check fs-6 text-white"></i>
+                        <span class="fw-bold text-white">HABILITADO &bull; CARNAVAL DE ORURO 2027</span>
                     </div>`;
             } else if (porcentaje >= 60) {
                 elHabilitacion.innerHTML = `

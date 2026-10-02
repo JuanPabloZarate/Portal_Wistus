@@ -191,94 +191,238 @@ body {
     border-color: rgba(124, 58, 237, 0.35) !important;
 }
 
-/* Pantalla de Login Minimalista */
+/* ==========================================================================
+   PANTALLA DE ACCESO / LOGIN FESTIVO & DISTINGUIDO - CARNAVAL DE ORURO 2027
+   ========================================================================== */
 .login-wrapper {
-    min-height: calc(100vh - 42px);
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px 16px;
+    padding: 32px 16px;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: radial-gradient(circle at 10% 15%, rgba(124, 58, 237, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(245, 158, 11, 0.10) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(59, 7, 100, 0.05) 0%, transparent 65%),
+                var(--bg-base);
 }
 
+/* Formas y destellos decorativos festivos de fondo */
+.login-bg-shape-1 {
+    position: absolute;
+    top: -90px;
+    left: -90px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, rgba(124, 58, 237, 0) 70%);
+    pointer-events: none;
+    filter: blur(28px);
+}
+
+.login-bg-shape-2 {
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0) 70%);
+    pointer-events: none;
+    filter: blur(32px);
+}
+
+.login-bg-shape-3 {
+    position: absolute;
+    top: 40%;
+    right: 5%;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 70%);
+    pointer-events: none;
+    filter: blur(24px);
+}
+
+/* Tarjeta Principal de Login */
 .login-card-main {
-    background: var(--bg-surface-1);
-    border: 1px solid var(--border-card);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08), 0 0 30px rgba(124, 58, 237, 0.04);
-    max-width: 460px;
+    background: #ffffff;
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    border-radius: 24px;
+    box-shadow: 0 25px 60px -12px rgba(46, 16, 101, 0.16), 
+                0 0 35px rgba(245, 158, 11, 0.06);
+    max-width: 480px;
     width: 100%;
-    padding: 38px 30px;
+    padding: 36px 32px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.login-card-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 4px;
+    background: linear-gradient(90deg, #7c3aed 0%, #fbbf24 50%, #7c3aed 100%);
+    border-radius: 4px 4px 0 0;
+}
+
+/* Indicador Festivo Oruro 2027 */
+.login-festive-tag {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.badge-oruro-carnaval {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(124, 58, 237, 0.12));
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #92400e;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+}
+
+/* Insignia / Escudo Oficial con Halo Dorado-Lila */
+.login-badge-container {
     position: relative;
 }
 
-.login-logo {
-    max-width: 110px;
-    height: auto;
+.login-logo-halo {
+    display: inline-block;
+    position: relative;
+    padding: 5px;
     border-radius: 50%;
-    border: 3px solid rgba(251, 191, 36, 0.85);
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.5), 0 8px 24px rgba(46, 16, 101, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #fbbf24 0%, #7c3aed 50%, #3b0764 100%);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.32), 0 0 20px rgba(251, 191, 36, 0.45);
+    margin-bottom: 10px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
 
-.login-logo:hover {
+.login-logo-halo:hover {
     transform: scale(1.06) rotate(2deg);
-    box-shadow: 0 0 35px rgba(251, 191, 36, 0.8), 0 12px 30px rgba(91, 33, 182, 0.7);
+    box-shadow: 0 12px 30px rgba(124, 58, 237, 0.45), 0 0 28px rgba(251, 191, 36, 0.6);
 }
 
-.login-banner-title {
-    max-width: 320px;
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-subtle);
+.login-logo {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 3px;
+    display: block;
+    object-fit: contain;
 }
 
-/* /* Pestañas de Acceso Minimalistas (Segmented Control) */
+.login-edition-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #6d28d9;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+/* Tipografía de Identidad */
+.login-portal-title {
+    font-size: 1.42rem;
+    font-weight: 800;
+    color: #1e1b4b !important;
+    letter-spacing: -0.3px;
+}
+
+.login-portal-subtitle {
+    font-size: 0.80rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: #7c3aed;
+}
+
+.login-portal-label {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+/* Pestañas de Acceso Minimalistas (Segmented Control) */
 .nav-pills-portal {
     background: #f1f5f9;
     padding: 4px;
-    border-radius: var(--radius-md);
+    border-radius: 14px;
     border: 1px solid var(--border-subtle);
+    gap: 4px;
 }
 
 .nav-pills-portal .nav-link {
     color: var(--text-secondary);
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.86rem;
-    padding: 8px 14px;
-    transition: all 0.15s ease;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 9px 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-pills-portal .nav-link:hover {
     color: var(--text-primary);
+    background: rgba(124, 58, 237, 0.06);
 }
 
 .nav-pills-portal .nav-link.active {
-    background: var(--brand-primary);
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.32);
 }
 
-/* Inputs Minimalistas y Funcionales */
-.input-wrapper-portal {
-    background: var(--bg-surface-1);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 5px 14px;
+/* Caja de Ayuda y Contexto */
+.login-hint-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #7c3aed;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.80rem;
+    color: #475569;
     display: flex;
     align-items: center;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    line-height: 1.4;
+}
+
+/* Inputs y Contenedores */
+.input-wrapper-portal {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 4px 14px;
+    display: flex;
+    align-items: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-wrapper-portal:focus-within {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+    background: #ffffff;
 }
 
 .input-wrapper-portal i {
-    color: var(--brand-primary);
     font-size: 1.15rem;
     margin-right: 10px;
 }
@@ -287,8 +431,8 @@ body {
     background: transparent;
     border: none;
     color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.98rem;
+    font-weight: 600;
+    font-size: 0.96rem;
     padding: 10px 0;
     width: 100%;
 }
@@ -301,30 +445,177 @@ body {
 }
 
 .form-control-portal::placeholder {
-    color: var(--text-muted);
+    color: #94a3b8;
     font-weight: 400;
 }
 
-/* Botones Minimalistas */
-.btn-portal-primary {
-    background: var(--brand-primary);
+/* Botones de acción en inputs (ver clave / limpiar) */
+.btn-toggle-password,
+.btn-clear-input {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 4px 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-toggle-password:hover,
+.btn-clear-input:hover {
+    color: #7c3aed;
+    transform: scale(1.1);
+}
+
+.btn-toggle-password:focus-visible,
+.btn-clear-input:focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* Accesos Rápidos de Prueba / Chips */
+.login-quick-chips-wrapper {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.login-quick-chips-header {
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-quick-ci,
+.btn-quick-admin {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #334155;
+    padding: 4px 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.btn-quick-ci:hover,
+.btn-quick-admin:hover {
+    background: #f5f3ff;
+    border-color: #c4b5fd;
+    color: #6d28d9;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.14);
+}
+
+.btn-quick-ci:active,
+.btn-quick-admin:active,
+.btn-quick-active {
+    background: #ede9fe !important;
+    border-color: #7c3aed !important;
+    color: #5b21b6 !important;
+    transform: scale(0.97);
+}
+
+.btn-quick-ci:focus-visible,
+.btn-quick-admin:focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+}
+
+.badge-chip-role {
+    background: #e0e7ff;
+    color: #4338ca;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+
+/* Botones de Envío y Acceso */
+.btn-portal-primary,
+.btn-login-submit {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
     color: #ffffff;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     padding: 12px 20px;
     font-weight: 700;
     font-size: 0.92rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
-    transition: all 0.18s ease;
+    letter-spacing: 0.4px;
+    box-shadow: 0 5px 16px rgba(124, 58, 237, 0.28);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
-.btn-portal-primary:hover {
-    background: var(--brand-hover);
+.btn-portal-primary:hover,
+.btn-login-submit:hover {
+    background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
     color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.38);
+}
+
+.btn-portal-primary:hover i,
+.btn-login-submit:hover i {
+    transform: translateX(3px);
+}
+
+.btn-portal-primary i,
+.btn-login-submit i {
+    transition: transform 0.2s ease;
+}
+
+/* Pie de Tarjeta */
+.login-footer {
+    border-top: 1px solid #f1f5f9;
+}
+
+@media (max-width: 575.98px) {
+    .login-wrapper {
+        padding: 20px 12px;
+    }
+    .login-card-main {
+        padding: 26px 18px;
+        border-radius: 20px;
+    }
+    .login-logo {
+        width: 80px;
+        height: 80px;
+    }
+    .login-portal-title {
+        font-size: 1.25rem;
+    }
+    .nav-pills-portal .nav-link {
+        font-size: 0.78rem;
+        padding: 8px 6px;
+    }
+    .badge-oruro-carnaval {
+        font-size: 0.65rem;
+        padding: 4px 10px;
+    }
+    .btn-quick-ci, .btn-quick-admin {
+        font-size: 0.72rem;
+        padding: 4px 7px;
+    }
 }
 
 .btn-brand-subtle {
@@ -1441,4 +1732,99 @@ input:-webkit-autofill:active {
     font-size: 0.74rem;
     color: var(--text-muted);
 }
+
+/* ========================================================================= */
+/* MEJORAS UX/UI Y EFECTOS VISUALES ORO WISTUS - CARNAVAL DE ORURO 2027      */
+/* ========================================================================= */
+
+/* 1. Pulso Dorado / Lila Acentuado */
+@keyframes goldGlowPulse {
+    0% {
+        box-shadow: 0 0 6px rgba(245, 158, 11, 0.4), 0 0 12px rgba(124, 58, 237, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.8), 0 0 30px rgba(124, 58, 237, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 6px rgba(245, 158, 11, 0.4), 0 0 12px rgba(124, 58, 237, 0.2);
+    }
+}
+
+.gold-glow-pulse {
+    animation: goldGlowPulse 2.5s infinite ease-in-out;
+}
+
+/* 2. Tarjeta Shimmer con Destello Dorado Gradient */
+.gold-shimmer-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 45%, #7c3aed 75%, #b45309 100%) !important;
+    border: 1.5px solid rgba(251, 191, 36, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(109, 40, 217, 0.25), 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.gold-shimmer-card::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -60%;
+    width: 220%;
+    height: 220%;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        transparent 40%,
+        rgba(255, 223, 0, 0.22) 48%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 223, 0, 0.22) 52%,
+        transparent 60%,
+        transparent 100%
+    );
+    transform: rotate(25deg);
+    animation: goldShimmerSweep 5s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes goldShimmerSweep {
+    0% { transform: translateX(-100%) rotate(25deg); }
+    100% { transform: translateX(100%) rotate(25deg); }
+}
+
+/* 3. Badge Socavón Gold Conmemorativo */
+.badge-socavon-gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #b45309 100%) !important;
+    color: #0f172a !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+    border: 1px solid #fef08a !important;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Estilos de Banner Festivo & Cuenta Regresiva */
+.festive-banner-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.festive-banner-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 35px rgba(109, 40, 217, 0.35), 0 0 20px rgba(245, 158, 11, 0.3) !important;
+}
+
+.countdown-box {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.countdown-unit {
+    min-width: 52px;
+}
+
 

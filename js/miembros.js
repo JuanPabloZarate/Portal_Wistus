@@ -33,7 +33,7 @@ class MiembrosManager {
         document.querySelectorAll('.member-val-ci').forEach(el => el.textContent = `${member.ci} ${member.ci_exp}`);
         document.querySelectorAll('.member-val-bloque').forEach(el => el.textContent = member.bloque_nombre);
         document.querySelectorAll('.member-val-rol').forEach(el => el.textContent = member.rol_fraternal);
-        document.querySelectorAll('.member-val-antiguedad').forEach(el => el.textContent = `${member.antiguedad_anios} años en Entrada Universitaria La Paz`);
+        document.querySelectorAll('.member-val-antiguedad').forEach(el => el.textContent = `${member.antiguedad_anios} años en Carnaval de Oruro`);
         document.querySelectorAll('.member-val-telefono').forEach(el => el.textContent = member.telefono || 'No registrado');
         document.querySelectorAll('.member-val-email').forEach(el => el.textContent = member.email || 'Sin correo asociado');
         document.querySelectorAll('.member-val-foto').forEach(el => {
@@ -226,7 +226,7 @@ class MiembrosManager {
                 if (bsModal) bsModal.hide();
             }
 
-            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en el Padrón 2026!`);
+            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en el Padrón Carnaval de Oruro 2027!`);
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
         }
@@ -254,7 +254,7 @@ class MiembrosManager {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `padron_fraternos_entrada_universitaria_la_paz_2026.csv`);
+        link.setAttribute('download', `padron_fraternos_carnaval_oruro_2027.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

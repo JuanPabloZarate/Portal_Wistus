@@ -1,6 +1,6 @@
 /**
  * MÓDULO DE PAGOS, CUOTAS Y CONCILIACIÓN FRATERNAL BOOST
- * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+ * Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
  * Gestiona aportes, saldos, emisión de recibos oficiales, generación dinámica de QR,
  * carga y validación de vouchers con zoom, observaciones de tesorería y conciliación de directorio.
  */
@@ -167,7 +167,7 @@ class PagosManager {
 
                 let badge = '';
                 if (pendienteEnEsta === 0) {
-                    badge = '<span class="badge bg-success px-3 py-1 rounded-pill"><i class="bi bi-check2-circle me-1"></i>Completado</span>';
+                    badge = '<span class="badge badge-socavon-gold px-3 py-1 rounded-pill"><i class="bi bi-check2-circle me-1"></i>Completado (Al día)</span>';
                 } else if (voucherPendiente) {
                     badge = `<span class="badge bg-warning text-dark px-3 py-1 rounded-pill"><i class="bi bi-clock-history me-1"></i>En Verificación (Bs. ${voucherPendiente.monto})</span>`;
                 } else if (pagadoEnEsta > 0) {
@@ -218,9 +218,11 @@ class PagosManager {
                     }
                 }
 
+                const cardBorderClass = pendienteEnEsta === 0 ? 'border-gold border-2' : 'border-subtle';
+
                 htmlCuotas += `
                 <div class="col-md-6 mb-3">
-                    <div class="card bg-surface-1 border border-subtle p-3 rounded-4 h-100 hover-scale-sm shadow-sm">
+                    <div class="card bg-surface-1 border ${cardBorderClass} p-3 rounded-4 h-100 hover-scale-sm shadow-sm">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-brand fw-bold small text-uppercase"><i class="bi bi-tag-fill me-1"></i>${c.categoria || 'Cuota'}</span>
                             ${badge}
@@ -1025,7 +1027,7 @@ class PagosManager {
         const qrContainer = document.getElementById('reciboQRStampContainer');
         if (qrContainer) {
             qrContainer.innerHTML = '';
-            const verificationPayload = `CERTIFICADO OFICIAL WISTUS 2026\nRecibo: ${payment.nro_recibo || payment.id}\nCI: ${member.ci}\nFraterno: ${member.nombres} ${member.apellidos}\nMonto: Bs. ${payment.monto}\nFecha: ${payment.fecha}`;
+            const verificationPayload = `CERTIFICADO OFICIAL WISTUS - CARNAVAL DE ORURO 2027\nRecibo: ${payment.nro_recibo || payment.id}\nCI: ${member.ci}\nFraterno: ${member.nombres} ${member.apellidos}\nMonto: Bs. ${payment.monto}\nFecha: ${payment.fecha}`;
             if (typeof QRCode !== 'undefined') {
                 try {
                     new QRCode(qrContainer, {
@@ -1251,7 +1253,7 @@ class PagosManager {
             if (inCategoria) inCategoria.value = cuota.categoria || 'General';
             if (inObligatorio) inObligatorio.checked = cuota.obligatorio !== false;
         } else {
-            if (titleEl) titleEl.innerHTML = '<i class="bi bi-plus-circle text-brand me-2"></i>Nueva Cuota Fraternal 2026';
+            if (titleEl) titleEl.innerHTML = '<i class="bi bi-plus-circle text-brand me-2"></i>Nueva Cuota Fraternal Oruro 2027';
             if (inId) inId.value = '';
             if (inTitle) inTitle.value = '';
             if (inMonto) inMonto.value = 100;
