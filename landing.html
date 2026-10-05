@@ -444,7 +444,7 @@
             <!-- Slide 1: Banner Wistus Principal -->
             <div class="swiper-slide !w-auto">
               <div class="h-[72vw] sm:h-[52vw] min-h-[260px] max-h-[460px] lg:h-[32vw] lg:max-h-[500px] aspect-[4/5] rounded-xl overflow-hidden bg-charcoal shadow-md relative group">
-                <img src="assets/img/wistus-banner.jpg" alt="Carnaval de Oruro Tinkus Wistus en Desfile" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                <img src="assets/img/wistus-banner.jpg" alt="Carnaval de Oruro Tinkus Wistus en Desfile" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" onerror="this.src='assets/img/wistus-banner.jpg'">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                   <span class="text-xs font-mono uppercase tracking-wider text-wistus-gold">Carnaval Oruro</span>
                   <h3 class="font-serif text-base sm:text-lg font-bold">Fuerza & Devoción Wistus</h3>
@@ -738,32 +738,6 @@
 
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- R5. BARRA FIJA INFERIOR ([data-find-a-table-btn])                         -->
-  <!-- ========================================================================= -->
-  <div id="fixed-bottom-bar" data-find-a-table-btn class="fixed bottom-0 inset-x-0 z-30 shadow-2xl border-t border-[#b9b1a4]/60 bg-[#b9b1a4]/95 backdrop-blur-md h-header lg:h-header-lg py-1 px-2 sm:px-6">
-    <div class="max-w-7xl mx-auto h-full flex items-center justify-between gap-1.5 sm:gap-4">
-      
-      <!-- Opción 1: Portal Fraterno (Directo a index.html) -->
-      <a href="index.html" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-2 rounded-full bg-charcoal text-[#f5f0ea] hover:bg-black font-serif text-[10.5px] sm:text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 shadow group">
-        <svg class="w-3.5 h-3.5 text-wistus-gold transition-transform group-hover:-translate-x-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-        <span class="whitespace-nowrap">Portal<span class="hidden min-[380px]:inline"> Fraterno</span></span>
-      </a>
-
-      <!-- Opción 2: Postular (Directo a Drawer #enquire) -->
-      <button id="btn-bottom-postular" data-open-enquire class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-2 rounded-full bg-wistus-gold text-charcoal hover:bg-wistus-gold-light font-serif text-[10.5px] sm:text-xs md:text-sm font-bold tracking-wide transition-all duration-300 shadow group">
-        <span class="whitespace-nowrap">Postular<span class="hidden min-[380px]:inline"> 2026</span></span>
-        <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-      </button>
-
-      <!-- Opción 3: Modal Desplegable General / Unirse -->
-      <button id="btn-bottom-bar" class="py-2 px-2.5 sm:px-4 rounded-full border border-charcoal/30 text-charcoal hover:bg-charcoal hover:text-[#f5f0ea] font-mono text-xs uppercase tracking-wider transition-colors duration-300 flex items-center justify-center gap-1.5 flex-shrink-0" aria-label="Abrir Menú de Opciones y Ensayos">
-        <span class="hidden md:inline font-semibold">Unirse / Info</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-      </button>
-
-    </div>
-  </div>
 
   <!-- ========================================================================= -->
   <!-- R5. MODAL DE PANTALLA COMPLETA (<dialog id="find-a-table" data-modal>)    -->
@@ -1022,7 +996,6 @@
     // -------------------------------------------------------------------------
     const findATableModal = document.getElementById('find-a-table');
     const enquireDrawer = document.getElementById('enquire');
-    const bottomBarBtn = document.getElementById('btn-bottom-bar');
     const modalCloseBtn = document.getElementById('btn-modal-close');
     const drawerCloseBtn = document.getElementById('btn-drawer-close');
 
@@ -1069,7 +1042,6 @@
       document.body.classList.remove('overflow-hidden');
     }
 
-    if (bottomBarBtn) bottomBarBtn.addEventListener('click', openFindATableModal);
     if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeFindATableModal);
     if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeEnquireDrawer);
 

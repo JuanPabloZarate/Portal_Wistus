@@ -644,47 +644,43 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         self.assertIn("sambos", section.get_text().lower(), "Debe existir tarjeta para el 'Bloque Sambos'")
 
     # --------------------------------------------------------------------------
-    # F14: Barra Inferior Fija ("Find a Table" / "Unirse")
+    # F14: Eliminación de Barra Inferior Fija & Acciones en Header Superior
     # --------------------------------------------------------------------------
-    def test_f14_01_find_a_table_btn_container(self):
-        """F14: Contrato DOM: Existe [data-find-a-table-btn]."""
+    def test_f14_01_find_a_table_btn_container_removed(self):
+        """F14: Contrato DOM: La barra inferior fija [data-find-a-table-btn] y #fixed-bottom-bar están eliminadas."""
         soup = self.require_landing_soup()
         btn = soup.select_one('[data-find-a-table-btn]')
-        self.assertIsNotNone(btn, "Debe existir un elemento con el atributo data-find-a-table-btn")
+        self.assertIsNone(btn, "La barra inferior fija [data-find-a-table-btn] no debe existir en el DOM")
+        bottom_bar = soup.select_one('#fixed-bottom-bar')
+        self.assertIsNone(bottom_bar, "El elemento #fixed-bottom-bar no debe existir en el DOM")
 
-    def test_f14_02_find_a_table_fixed_positioning(self):
-        """F14: Barra fijada al pie del viewport con clase 'fixed bottom-0'."""
+    def test_f14_02_header_portal_access(self):
+        """F14: El header superior mantiene el acceso directo al Portal Fraterno hacia index.html."""
         soup = self.require_landing_soup()
-        btn = soup.select_one('[data-find-a-table-btn]')
-        classes = " ".join(btn.get("class", []))
-        self.assertTrue("fixed" in classes and "bottom-0" in classes, "La barra inferior debe tener clases 'fixed bottom-0'")
+        portal_btn = soup.select_one('header a[href*="index.html"], [data-header] a[href*="index.html"]')
+        self.assertIsNotNone(portal_btn, "El header superior debe mantener el enlace a index.html")
+        text = portal_btn.get_text().lower()
+        self.assertIn("portal", text, "El enlace del header superior debe indicar 'Portal'")
 
-    def test_f14_03_find_a_table_action_text(self):
-        """F14: Barra exhibe texto de acción editorial 'UNIRSE' o 'INGRESAR'."""
+    def test_f14_03_header_postular_access(self):
+        """F14: El header superior mantiene el botón 'Postular' hacia el drawer de postulación."""
         soup = self.require_landing_soup()
-        btn = soup.select_one('[data-find-a-table-btn]')
-        text = btn.get_text().lower()
-        has_text = any(w in text for w in ["unirse", "ingresar", "portal", "postular"])
-        self.assertTrue(has_text, "La barra inferior debe incluir texto 'UNIRSE' o 'INGRESAR'")
+        postular_btn = soup.select_one('header button[data-open-enquire], [data-header] button[data-open-enquire]')
+        self.assertIsNotNone(postular_btn, "El header superior debe mantener el botón 'Postular' con data-open-enquire")
+        text = postular_btn.get_text().lower()
+        self.assertIn("postular", text, "El botón del header superior debe indicar 'Postular'")
 
-    def test_f14_04_find_a_table_modal_trigger(self):
-        """F14: Clic en la barra inferior dispara el modal find-a-table."""
+    def test_f14_04_header_hamburger_menu_toggle(self):
+        """F14: El header superior mantiene el botón hamburguesa para el menú desplegable."""
         soup = self.require_landing_soup()
-        btn = soup.select_one('[data-find-a-table-btn]')
-        trigger = (
-            btn.get("data-modal-open") or
-            btn.find(attrs={"data-modal-open": True}) or
-            btn.find("button")
-        )
-        scripts_text = self.get_scripts_text()
-        has_js_trigger = bool(re.search(r"find-a-table.*showModal|data-find-a-table-btn", scripts_text, re.I))
-        self.assertTrue(bool(trigger or has_js_trigger), "La barra inferior debe tener disparador hacia el modal de acceso")
+        menu_toggle = soup.select_one('[data-menu-drawer-toggle]')
+        self.assertIsNotNone(menu_toggle, "El header superior debe mantener el botón hamburguesa [data-menu-drawer-toggle]")
 
-    def test_f14_05_footer_bottom_spacing_compensation(self):
-        """F14: El footer o body posee compensación de margen/padding inferior para no ser tapado por la barra fija."""
-        content = self.require_landing_file()
-        pattern = re.compile(r"(pb-\d+|pb-header|mb-header|mb-\d+|padding-bottom)", re.IGNORECASE)
-        self.assertRegex(content, pattern, "Debe existir compensación de espaciado inferior para la barra fija")
+    def test_f14_05_clean_bottom_viewport(self):
+        """F14: No existe barra fija inferior que obstaculice la lectura del contenido."""
+        soup = self.require_landing_soup()
+        fixed_bottom_bars = soup.select('div.fixed.bottom-0, [data-find-a-table-btn]')
+        self.assertEqual(len(fixed_bottom_bars), 0, "No deben existir barras fijadas al fondo de la pantalla")
 
     # --------------------------------------------------------------------------
     # F15: Modal de Pantalla Completa (<dialog id="find-a-table">)
@@ -980,12 +976,10 @@ class Tier2BoundaryCornerCaseTests(BaseLandingTestCase):
     def test_b04_03_touch_friendly_tap_targets(self):
         """B4: Botones clave poseen clases de padding generoso para pantallas táctiles (mínimo 36-40px)."""
         soup = self.require_landing_soup()
-        bar = soup.select_one('[data-find-a-table-btn]')
-        btn = bar.find("button") if bar else None
-        target = btn or bar
+        target = soup.select_one('#btn-header-join') or soup.select_one('.nav-portal-btn')
         classes = " ".join(target.get("class", [])) if target else ""
         has_padding = bool(re.search(r"(py-\d+|h-\d+|h-header|p-\d+|h-\[[^\]]+\])", classes))
-        self.assertTrue(has_padding, "La barra y botones deben tener tamaño táctil accesible")
+        self.assertTrue(has_padding, "Los botones de acción en header deben tener tamaño táctil accesible")
 
     def test_b04_04_horizontal_overflow_protection(self):
         """B4: Estructura previene desbordamiento horizontal accidental con overflow-x-hidden."""
@@ -1105,13 +1099,14 @@ class Tier3CrossFeatureCombinationTests(BaseLandingTestCase):
         has_open = bool(re.search(r"find-a-table.*showModal|modal-open|showModal", scripts_text))
         self.assertTrue(has_open, "El script debe invocar showModal() para desplegar el modal de acceso")
 
-    def test_x04_02_bottom_bar_z_index_hierarchy(self):
-        """X4: La barra fija tiene z-index apropiado (z-30 / z-40) para flotar sobre el contenido sin solapar modales."""
+    def test_x04_02_header_z_index_hierarchy(self):
+        """X4: El header superior tiene z-index apropiado (z-40 / z-50) y la barra inferior fija está ausente."""
         soup = self.require_landing_soup()
-        bar = soup.select_one('[data-find-a-table-btn]')
-        classes = " ".join(bar.get("class", []))
+        header = soup.select_one('#site-header')
+        classes = " ".join(header.get("class", [])) if header else ""
         has_z = bool(re.search(r"z-\d+", classes))
-        self.assertTrue(has_z, "La barra fija debe tener clase z-index explícita")
+        self.assertTrue(has_z, "El header superior debe tener clase z-index explícita")
+        self.assertIsNone(soup.select_one('[data-find-a-table-btn]'), "La barra inferior fija debe estar eliminada")
 
     # --------------------------------------------------------------------------
     # X5: Hamburger Drawer vs Body Scroll Locking
@@ -1233,21 +1228,23 @@ class Tier4EndToEndUserJourneyTests(BaseLandingTestCase):
     # --------------------------------------------------------------------------
     # J3: Flujo de Navegación Rápida con Barra Inferior Fija
     # --------------------------------------------------------------------------
-    def test_j03_quick_action_bottom_bar_flow(self):
-        """J3: Flujo: Barra Fija -> Modal a Pantalla Completa -> Enlace a Portal -> Retorno desde Portal."""
+    # J3: Flujo de Navegación Rápida Superior y Enlace a Portal
+    # --------------------------------------------------------------------------
+    def test_j03_quick_action_header_portal_flow(self):
+        """J3: Flujo: Header Superior -> Enlace Directo a Portal (index.html) -> Retorno desde Portal a Landing."""
         soup = self.require_landing_soup()
 
-        # Paso 1: Presencia de barra fija
+        # Paso 1: Confirmación de que la barra inferior fija fue retirada
         bottom_bar = soup.select_one('[data-find-a-table-btn]')
-        self.assertIsNotNone(bottom_bar, "J3.P1: Barra inferior fija ausente")
+        self.assertIsNone(bottom_bar, "J3.P1: La barra inferior fija debe estar eliminada")
 
-        # Paso 2: Presencia de modal de acceso vinculado
-        modal = soup.find("dialog", id="find-a-table")
-        self.assertIsNotNone(modal, "J3.P2: Modal de acceso no vinculado a la barra")
+        # Paso 2: Enlace directo al portal en el header superior
+        portal_btn = soup.select_one('header a[href*="index.html"], [data-header] a[href*="index.html"]')
+        self.assertIsNotNone(portal_btn, "J3.P2: Enlace de acceso a index.html ausente en header")
 
-        # Paso 3: Enlace al portal fraterno en modal
-        portal_link = modal.find("a", href=lambda h: h and "index.html" in h)
-        self.assertIsNotNone(portal_link, "J3.P3: Enlace de acceso a index.html ausente en modal")
+        # Paso 3: Botón de postular en el header superior
+        postular_btn = soup.select_one('header button[data-open-enquire], [data-header] button[data-open-enquire]')
+        self.assertIsNotNone(postular_btn, "J3.P3: Botón de postular ausente en header")
 
         # Paso 4: Enlace recíproco de regreso en index.html
         index_content = get_index_html()
