@@ -1,6 +1,6 @@
 """
 SUITE DE VERIFICACIÓN DE PROCESOS Y ESTRUCTURA DE DATOS
-Portal Fraternal Tinkus Wistus 2026 - Entrada Universitaria La Paz
+Portal Fraternal Tinkus Wistus - Carnaval de Oruro 2027
 """
 
 import os
@@ -104,7 +104,7 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertEqual(calc_completion(member_basic), 75)
 
     def test_05_attendance_and_qualification_process(self):
-        """Verifica la lógica de habilitación de fraternos para la Entrada Universitaria (mínimo 80%)."""
+        """Verifica la lógica de habilitación de fraternos para el Carnaval de Oruro 2027 (mínimo 80%)."""
         def js_round(val):
             import math
             return math.floor(val + 0.5)
@@ -247,7 +247,7 @@ class TestPortalProcessesAndData(unittest.TestCase):
                 'ev_2': {'estado': 'atraso', 'hora': '16:05', 'marcado_por': 'Secretaría Control'}
             },
             'pagos': [
-                {'id': 'PAG-2198-01', 'cuota_id': 'cuota_1', 'concepto': 'Inscripción Entrada Universitaria', 'monto': 250, 'fecha': '2026-02-28', 'metodo': 'QR Banco BNB', 'nro_recibo': 'REC-54321', 'cajero': 'Tesorería Wistus', 'estado': 'pagado', 'saldo_pendiente': 0}
+                {'id': 'PAG-2198-01', 'cuota_id': 'cuota_1', 'concepto': 'Inscripción Oficial Carnaval de Oruro 2027', 'monto': 250, 'fecha': '2026-02-28', 'metodo': 'QR Banco BNB', 'nro_recibo': 'REC-54321', 'cajero': 'Tesorería Wistus', 'estado': 'pagado', 'saldo_pendiente': 0}
             ],
             'vouchers_pendientes': []
         }
@@ -633,7 +633,7 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertEqual(extract_ci_from_qr("CI:6892341"), "6892341")
         self.assertEqual(extract_ci_from_qr('{"ci": "6998544", "nombre": "Fraterno Wistus"}'), "6998544")
         self.assertEqual(extract_ci_from_qr('{"carnet": "3459128"}'), "3459128")
-        self.assertEqual(extract_ci_from_qr("https://entradauniversitarialapaz2026.bo/verificar?ci=7823419&frat=Wistus"), "7823419")
+        self.assertEqual(extract_ci_from_qr("https://carnavaldeoruro2027.bo/verificar?ci=7823419&frat=Wistus"), "7823419")
         self.assertEqual(extract_ci_from_qr(""), None)
 
     def test_25_event_location_and_directive_management(self):

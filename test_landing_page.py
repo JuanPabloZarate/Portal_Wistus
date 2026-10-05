@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SUITE DE PRUEBAS AUTOMATIZADAS E2E: LANDING PAGE MONTE-STYLE TINKUS WISTUS 2026
+SUITE DE PRUEBAS AUTOMATIZADAS E2E: LANDING PAGE MONTE-STYLE TINKUS WISTUS - CARNAVAL DE ORURO 2027
 --------------------------------------------------------------------------------
 Valida la arquitectura editorial, tokens visuales, tipografía, componentes interactivos,
 límites y casos de borde, interacciones entre características y viajes de usuario
@@ -148,13 +148,13 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         self.assertIn("width=device-width", content, "meta viewport debe incluir width=device-width")
 
     def test_f01_04_document_title_editorial(self):
-        """F1: <title> editorial con identidad Wistus y año 2026."""
+        """F1: <title> editorial con identidad Wistus y año 2027 (Carnaval de Oruro)."""
         soup = self.require_landing_soup()
         title = soup.find("title")
         self.assertIsNotNone(title, "Falta la etiqueta <title>")
         title_text = title.get_text().lower()
         self.assertIn("wistus", title_text, "El título debe contener 'Wistus'")
-        self.assertIn("2026", title_text, "El título debe contener el año '2026'")
+        self.assertIn("2027", title_text, "El título debe contener el año '2027'")
 
     def test_f01_05_semantic_html5_structure(self):
         """F1: Jerarquía de etiquetas semánticas HTML5 completas."""
@@ -594,11 +594,11 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         has_chip_qr = any(k in text for k in ["qr", "chip", "svg", "digital", "pvc", "seguridad"])
         self.assertTrue(has_chip_qr, "La credencial debe incluir elemento de código QR, chip o seguridad digital")
 
-    def test_f12_04_credencial_year_2026_badge(self):
-        """F12: La credencial muestra el año oficial 2026."""
+    def test_f12_04_credencial_year_2027_badge(self):
+        """F12: La credencial muestra el año oficial 2027."""
         soup = self.require_landing_soup()
         card = soup.select_one('[data-gift-card]')
-        self.assertIn("2026", card.get_text(), "La credencial debe exhibir el año de gestión '2026'")
+        self.assertIn("2027", card.get_text(), "La credencial debe exhibir el año de gestión '2027'")
 
     def test_f12_05_credencial_title_label(self):
         """F12: La credencial identifica el Carnet de Membresía Fraterna Wistus."""
@@ -799,12 +799,12 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         email_inp = form.find("input", type="email") or form.find("input", attrs={"name": lambda n: n and "email" in n})
         self.assertIsNotNone(email_inp, "El formulario de boletín debe contener un campo de correo electrónico")
 
-    def test_f17_04_copyright_and_year_2026(self):
-        """F17: Footer exhibe derechos reservados con año 2026 y Fraternidad Tinkus Wistus."""
+    def test_f17_04_copyright_and_year_2027(self):
+        """F17: Footer exhibe derechos reservados con año 2027 y Fraternidad Tinkus Wistus."""
         soup = self.require_landing_soup()
         footer = soup.select_one("[data-footer]")
         text = footer.get_text().lower()
-        self.assertIn("2026", text, "El footer debe incluir el año 2026")
+        self.assertIn("2027", text, "El footer debe incluir el año 2027")
         self.assertIn("wistus", text, "El footer debe incluir el nombre de la Fraternidad Wistus")
 
     def test_f17_05_footer_navigation_links(self):
@@ -1336,7 +1336,7 @@ class TierDiagnosticTestResult(unittest.TextTestResult):
 
 def run_e2e_test_suite():
     print("=" * 80)
-    print("  TINKUS WISTUS 2026 -- SUITE DE PRUEBAS E2E MONTE STYLE (Tiers 1-4)")
+    print("  TINKUS WISTUS - CARNAVAL DE ORURO 2027 -- SUITE DE PRUEBAS E2E MONTE STYLE")
     print("=" * 80)
     print(f"  Objetivo principal : {LANDING_HTML_PATH}")
     print(f"  Objetivos reciprocos: {INDEX_HTML_PATH}, {VERCEL_JSON_PATH}")

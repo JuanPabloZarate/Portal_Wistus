@@ -1,13 +1,13 @@
 /**
- * MÓDULO DE ASISTENCIAS Y ESCÁNER QR - TINKUS WISTUS 2026
- * Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+ * MÓDULO DE ASISTENCIAS Y ESCÁNER QR - TINKUS WISTUS
+ * Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
  * 
  * Funcionalidades completas:
  * 1. Generación de QR automático basado en CI / Carnet.
  * 2. Gestión de Punto de Asistencia y Evento Activo por Directiva.
  * 3. Escáner QR con cámara en vivo (html5-qrcode), audio sintetizado y validación anti-duplicados.
  * 4. Tablero de Gestión Directiva con KPIs, filtros por bloque/estado y acciones por lote.
- * 5. Vista de Asistencia Fraterno con estado de habilitación para Entrada Universitaria (mínimo 80%).
+ * 5. Vista de Asistencia Fraterno con estado de habilitación para Carnaval de Oruro 2027 (mínimo 80%).
  */
 
 class AsistenciasManager {
@@ -222,7 +222,7 @@ class AsistenciasManager {
 
         container.innerHTML = html;
 
-        // Cálculo de porcentaje para habilitación (Entrada Universitaria La Paz)
+        // Cálculo de porcentaje para habilitación (Carnaval de Oruro 2027)
         const puntajeEfectivo = asistidos + (atrasos * 0.7) + (licencias * 0.9);
         const porcentaje = totalObligatorios > 0 ? Math.min(100, Math.round((puntajeEfectivo / totalObligatorios) * 100)) : 100;
 
@@ -544,7 +544,7 @@ class AsistenciasManager {
         const ev = window.PortalState.getEventById(this.currentEventId);
         const evTitle = ev ? ev.title : 'Evento';
 
-        let csv = `LISTA DE ASISTENCIA OFICIAL - TINKUS WISTUS 2026\n`;
+        let csv = `LISTA DE ASISTENCIA OFICIAL - TINKUS WISTUS - CARNAVAL DE ORURO 2027\n`;
         csv += `Evento:,"${evTitle}"\n`;
         csv += `Fecha:,"${ev ? ev.fecha : ''}"\n`;
         csv += `Lugar:,"${ev ? ev.lugar : ''}"\n\n`;
@@ -743,7 +743,7 @@ class AsistenciasManager {
         if (!member) {
             this.playFeedbackTone('error');
             if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
-            window.PortalApp.showToast(`Código QR no reconocido: El CI ${ci} no existe en el Padrón Oficial 2026.`, 'danger');
+            window.PortalApp.showToast(`Código QR no reconocido: El CI ${ci} no existe en el Padrón Oficial Carnaval de Oruro 2027.`, 'danger');
             return;
         }
 

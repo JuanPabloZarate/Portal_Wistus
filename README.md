@@ -1,6 +1,6 @@
-# Portal Fraternal Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+# Portal Fraternal Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
 
-Sistema web moderno del portal fraternal de la Entrada Universitaria La Paz 2026, enfocado en la experiencia del fraterno y el panel de control directivo de la **Fraternidad Tinkus Wistus**.
+Sistema web moderno del portal fraternal del Carnaval de Oruro 2027, enfocado en la experiencia del fraterno y el panel de control directivo de la **Fraternidad Tinkus Wistus**.
 
 ---
 
@@ -27,7 +27,7 @@ Abre automáticamente `http://localhost:8000/index.html`.
 ## 🚀 Funcionalidades Seleccionadas para el Fraterno
 
 1. **Pagos (Cuotas & Aportes):** Consulta de estado de cuenta individual, saldos pendientes, aportes cancelados y emisión/descarga de recibos y comprobantes digitales.
-2. **Calendario de Eventos:** Cronograma oficial de convocatorias, ensayos, recorridos, misa de promesa y Entrada Universitaria La Paz 2026.
+2. **Calendario de Eventos:** Cronograma oficial de convocatorias, ensayos, recorridos, misa de promesa y Carnaval de Oruro 2027.
 3. **Avisos de Directiva:** Comunicados e informativos expedidos por la Mesa Directiva de la Fraternidad.
 4. **QR de Asistencia:** Credencial digital oficial PVC con código QR verificado para el control de asistencia a ensayos y el evento principal.
 
@@ -45,7 +45,7 @@ La barra superior (`SIMULAR ROL`) y la pantalla principal de login cuentan con b
 
 ### 2. Rol Control / Directiva (Secretaría de Actas y Asistencias)
 - **Usuario:** `control`
-- **Contraseña:** `wistus2026` (o PIN `2026`)
+- **Contraseña:** `wistus2027` (o PIN `2027`)
 - **Nombre:** Secretaría de Control y Asistencia
 - **Experiencia:**
   - **Métricas Globales:** Total de fraternos, tasa promedio de asistencia, recaudación de cuotas y saldos.
@@ -59,7 +59,7 @@ La barra superior (`SIMULAR ROL`) y la pantalla principal de login cuentan con b
 
 - **Organización:** Fraternidad Tinkus Wistus
 - **Danza:** Tinkus
-- **Año:** Entrada Universitaria La Paz 2026
+- **Año:** Carnaval de Oruro 2027
 - **Lema:** Los mejores Tinkus del país
 - **Paleta Oficial:** Púrpura (`#7c3aed`), Lavanda (`#a78bfa`), Índigo (`#6366f1`) y Slate Dark Canvas (`#0a0b10`).
 
@@ -78,7 +78,7 @@ Goal - portal Wistus/
 │   ├── style.css                # Estilos visuales, tema oscuro, gradientes y animaciones
 │   └── credencial.css           # Simulación de tarjeta PVC holográfica e impresión
 ├── js/
-│   ├── data.js                  # Padrón base, eventos Entrada Universitaria La Paz 2026 y cuotas Tinkus Wistus
+│   ├── data.js                  # Padrón base, eventos Carnaval de Oruro 2027 y cuotas Tinkus Wistus
 │   ├── state.js                 # Gestor reactivo de estado en LocalStorage
 │   ├── auth.js                  # Autenticación para miembros y control
 │   ├── asistencias.js           # Historial, escáner QR en vivo y pase de lista por bloque

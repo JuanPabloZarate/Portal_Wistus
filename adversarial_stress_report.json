@@ -1,0 +1,288 @@
+{
+  "metadata": {
+    "agent": "challenger_2",
+    "role": "critic, specialist",
+    "timestamp": "2026-10-05T22:55:52Z",
+    "project_root": "C:\\Users\\juan.zarate\\OneDrive - bancofie.com.bo\\Escritorio\\Goal - Portal"
+  },
+  "tests": {
+    "T1_bidirectional_flows": {
+      "outbound_count": 9,
+      "outbound_targets": [
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html",
+        "http://localhost:8089/index.html"
+      ],
+      "header_click_to_index": true,
+      "login_click_to_landing": true,
+      "modal_click_to_index": true,
+      "footer_click_to_landing": true,
+      "inbound_count_in_index": 4,
+      "inbound_details": [
+        {
+          "text": "\u2190 Convocatoria 2026",
+          "href": "http://localhost:8089/landing.html",
+          "parent_tag": "div"
+        },
+        {
+          "text": "Ir a la Portada Institucional 2026 \u2192",
+          "href": "http://localhost:8089/landing.html",
+          "parent_tag": "div"
+        },
+        {
+          "text": "",
+          "href": "http://localhost:8089/landing.html",
+          "parent_tag": "div"
+        },
+        {
+          "text": "",
+          "href": "http://localhost:8089/landing.html",
+          "parent_tag": "div"
+        }
+      ],
+      "round_trip_success": true
+    },
+    "T2_asset_integrity": {
+      "assets/img/wistus-banner.jpg": {
+        "exists": true,
+        "size_bytes": 555781,
+        "valid": true,
+        "info": {
+          "format": "JPEG",
+          "dimensions": [
+            2048,
+            1285
+          ],
+          "mode": "RGB"
+        }
+      },
+      "assets/img/wistus-badge.svg": {
+        "exists": true,
+        "size_bytes": 2247,
+        "valid": true,
+        "info": {
+          "tag": "{http://www.w3.org/2000/svg}svg",
+          "viewBox": "0 0 128 128"
+        }
+      },
+      "assets/img/wistus-logo-w.svg": {
+        "exists": true,
+        "size_bytes": 6306,
+        "valid": true,
+        "info": {
+          "tag": "{http://www.w3.org/2000/svg}svg",
+          "viewBox": "0 0 512 512"
+        }
+      },
+      "assets/img/wistus-escudo.svg": {
+        "exists": true,
+        "size_bytes": 3703,
+        "valid": true,
+        "info": {
+          "tag": "{http://www.w3.org/2000/svg}svg",
+          "viewBox": "0 0 400 400"
+        }
+      },
+      "assets/img/perfil-pagina.png": {
+        "exists": true,
+        "size_bytes": 279916,
+        "valid": true,
+        "info": {
+          "format": "PNG",
+          "dimensions": [
+            800,
+            800
+          ],
+          "mode": "RGB"
+        }
+      },
+      "browser_render": {
+        "total_images_in_dom": 17,
+        "unrendered_count": 0,
+        "unrendered": []
+      }
+    },
+    "T3_viewport_layouts": {
+      "mobile_375": {
+        "overflow": {
+          "inner_w": 375,
+          "doc_scroll_w": 375,
+          "body_scroll_w": 375,
+          "has_overflow": false
+        },
+        "card_3d_fits": {
+          "rect": {
+            "height": 211.21875,
+            "left": 20,
+            "right": 355,
+            "width": 335
+          },
+          "fits": true
+        },
+        "header_scroll": {
+          "initial_scrolled": false,
+          "scrolled_at_150px": true,
+          "works": true
+        },
+        "fixed_bottom_bar": {
+          "absent": true
+        }
+      },
+      "tablet_768": {
+        "overflow": {
+          "inner_w": 752,
+          "doc_scroll_w": 737,
+          "body_scroll_w": 737,
+          "has_overflow": false
+        },
+        "card_3d_fits": {
+          "rect": {
+            "height": 269.859375,
+            "left": 154.5,
+            "right": 582.5,
+            "width": 428
+          },
+          "fits": true
+        },
+        "header_scroll": {
+          "initial_scrolled": false,
+          "scrolled_at_150px": true,
+          "works": true
+        },
+        "fixed_bottom_bar": {
+          "absent": true
+        }
+      },
+      "desktop_1440": {
+        "overflow": {
+          "inner_w": 1424,
+          "doc_scroll_w": 1409,
+          "body_scroll_w": 1409,
+          "has_overflow": false
+        },
+        "card_3d_fits": {
+          "rect": {
+            "height": 269.859375,
+            "left": 802.5,
+            "right": 1230.5,
+            "width": 428
+          },
+          "fits": true
+        },
+        "header_scroll": {
+          "initial_scrolled": false,
+          "scrolled_at_150px": true,
+          "works": true
+        },
+        "fixed_bottom_bar": {
+          "absent": true
+        }
+      },
+      "adversarial_320": {
+        "overflow": {
+          "inner_w": 320,
+          "doc_scroll_w": 320,
+          "body_scroll_w": 320,
+          "has_overflow": false
+        },
+        "card_3d_fits": {
+          "rect": {
+            "height": 176.53125,
+            "left": 20,
+            "right": 300,
+            "width": 280
+          },
+          "fits": true
+        },
+        "header_scroll": {
+          "initial_scrolled": false,
+          "scrolled_at_150px": true,
+          "works": true
+        },
+        "fixed_bottom_bar": {
+          "absent": true
+        }
+      }
+    },
+    "T4_modal_drawer_interactions": {
+      "modal_opens": true,
+      "body_locks_on_modal": true,
+      "escape_closes_modal": true,
+      "body_unlocks_after_modal": true,
+      "modal_to_drawer_transition_closes_modal": true,
+      "modal_to_drawer_transition_opens_drawer": true,
+      "escape_closes_drawer": true,
+      "body_unlocks_after_drawer": true,
+      "success": true
+    },
+    "T5_block_preselection": {
+      "results": {
+        "Machas": {
+          "selected_val": "Machas",
+          "match": true
+        },
+        "Imillas": {
+          "selected_val": "Imillas",
+          "match": true
+        },
+        "\u00d1aupas": {
+          "selected_val": "\u00d1aupas",
+          "match": true
+        },
+        "Sambos": {
+          "selected_val": "Sambos",
+          "match": true
+        }
+      },
+      "success": true
+    },
+    "T6_3d_card_physics": {
+      "initial_transform": "",
+      "hover_transform": "perspective(1000px) rotateX(10.9116deg) rotateY(-12.2991deg) scale3d(1.02, 1.02, 1.02)",
+      "hover_glare_opacity": "1",
+      "reset_transform": "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
+      "reset_glare_opacity": "0",
+      "tilt_works": true,
+      "glare_works": true,
+      "reset_works": true,
+      "success": true
+    },
+    "T7_form_validation_adversarial": {
+      "invalid_phone_rejected": true,
+      "valid_form_shows_feedback": true,
+      "newsletter_shows_feedback": true,
+      "success": true
+    },
+    "T8_cdn_offline_resilience": {
+      "font_family_fallbacks_present": true,
+      "swiper_undefined_guard_present": true,
+      "image_error_fallback_present": true,
+      "success": true
+    },
+    "T9_performance_and_dom_metrics": {
+      "load_time_seconds": 1.037,
+      "dom_node_count": 369,
+      "scripts_count": 4,
+      "stylesheets_count": 5,
+      "navigation_timing_ms": {
+        "domContentLoaded": 753.6999999880791,
+        "loadComplete": 1013.2999999523163
+      },
+      "dom_is_lean": true
+    },
+    "T10_browser_console_errors": {
+      "total_logs": 1,
+      "severe_count": 0,
+      "severe_entries": []
+    }
+  },
+  "failures": [],
+  "warnings": [],
+  "verdict": "APPROVE"
+}

@@ -476,7 +476,7 @@ class PortalAppManager {
             { id: 'member-dashboard', title: 'Inicio / Mi Dashboard', desc: 'Estado general y resumen fraternal', icon: 'bi-grid-1x2', badge: 'Vista' },
             { id: 'member-perfil', title: 'Mi Perfil & Datos Personales', desc: 'Editar fotografía, datos personales y verificar completitud', icon: 'bi-person-gear', badge: 'Vista' },
             { id: 'member-pagos', title: '1. Pagos & Cuotas', desc: 'Estado de cuenta, aportes y saldos', icon: 'bi-wallet2', badge: 'Vista' },
-            { id: 'member-eventos', title: '2. Calendario de Eventos', desc: 'Cronograma oficial de la Entrada 2026', icon: 'bi-calendar3', badge: 'Vista' },
+            { id: 'member-eventos', title: '2. Calendario de Eventos', desc: 'Cronograma oficial del Carnaval de Oruro 2027', icon: 'bi-calendar3', badge: 'Vista' },
             { id: 'member-credencial', title: '3. Mi Credencial QR Oficial', desc: 'Credencial PVC digital para escaneo', icon: 'bi-qr-code', badge: 'Vista' },
             { id: 'member-asistencias', title: 'Historial de Asistencias', desc: 'Registro de asistencias a ensayos', icon: 'bi-calendar-check', badge: 'Vista' }
         ];

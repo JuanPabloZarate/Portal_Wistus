@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Reglas iniciales para Portal Fraternal Tinkus Wistus 2026
+    // Reglas iniciales para Portal Fraternal Tinkus Wistus - Carnaval de Oruro 2027
     // Permite lectura y escritura de colecciones durante fase de despliegue y pruebas
     match /{document=**} {
       allow read, write: if true;

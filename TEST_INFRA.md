@@ -311,7 +311,7 @@ Verifies realistic user flows through the entire site experience.
     3. Fullscreen modal `<dialog id="find-a-table">` opens with backdrop blur.
     4. Visitor selects "Ingresar al Portal Fraterno" (`<a href="index.html">`).
     5. Browser navigates to `index.html`.
-    6. From `index.html`, visitor clicks return link "← Convocatoria 2026" / "Landing Editorial 2026" to return to `landing.html`.
+    6. From `index.html`, visitor clicks return link "← Carnaval de Oruro 2027" / "Landing Carnaval Oruro 2027" to return to `landing.html`.
   - Assertions: Validates bottom bar element, modal options, outbound link, and reciprocal inbound links in `index.html`.
 
 - **Journey 4: Mobile Visitor Exploration Flow**

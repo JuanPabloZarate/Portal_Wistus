@@ -1,4 +1,4 @@
-# Project: Tinkus Wistus 2026 Editorial Landing Page (Monte Style)
+# Project: Tinkus Wistus - Carnaval de Oruro 2027 Editorial Landing Page (Monte Style)
 
 ## Architecture
 - **Paradigm**: Autonomous, bundlerless, ultra-high-fidelity editorial landing page (`landing.html`) faithfully modeling DOMA R&B Monte (`https://domarb.com.au/venue/monte/`).
@@ -56,8 +56,8 @@
   - Modal Access Option: `<a href="index.html" class="...">Ingresar al Portal Fraterno</a>`
   - Footer & Metadata: `<a href="index.html" class="...">Portal Oficial</a>`
 - Inbound Links in `index.html`:
-  - Login view `#view-login`: `<a href="landing.html" class="...">← Convocatoria 2026</a>`
-  - Portal sidebar `#appSidebar`: `<a href="landing.html" class="...">Landing Editorial 2026</a>`
+  - Login view `#view-login`: `<a href="landing.html" class="...">← Carnaval de Oruro 2027</a>`
+  - Portal sidebar `#appSidebar`: `<a href="landing.html" class="...">Landing Carnaval Oruro 2027</a>`
 
 ### DOM Data Attributes & Selectors Contract
 - Header: `header[data-header]` containing `button[data-menu-drawer-toggle]` and `div[data-menu-drawer]`

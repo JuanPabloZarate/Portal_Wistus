@@ -1,7 +1,7 @@
 @echo off
-title Portal Fraternal Entrada Universitaria La Paz 2026 - Tinkus Wistus
+title Portal Fraternal Carnaval de Oruro 2027 - Tinkus Wistus
 echo =========================================================================
-echo    PORTAL FRATERNAL TINKUS WISTUS - ENTRADA UNIVERSITARIA LA PAZ 2026
+echo    PORTAL FRATERNAL TINKUS WISTUS - CARNAVAL DE ORURO 2027
 echo =========================================================================
 echo.
 echo Iniciando el portal en su navegador web...

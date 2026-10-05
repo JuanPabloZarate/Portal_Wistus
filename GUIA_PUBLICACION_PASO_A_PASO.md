@@ -1,5 +1,5 @@
 # 🚀 Guía Oficial de Publicación y Conexión Cloud
-## Portal Fraternal Tinkus Wistus 2026
+## Portal Fraternal Tinkus Wistus - Carnaval de Oruro 2027
 
 Esta guía detalla el procedimiento exacto paso a paso para publicar el portal en **Vercel** y conectarlo a **Google Firebase Cloud Firestore**.
 

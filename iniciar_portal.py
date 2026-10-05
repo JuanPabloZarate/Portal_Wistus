@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Servidor local ultraligero sin dependencias externas para Portal Fraternal Entrada Universitaria La Paz 2026.
+Servidor local ultraligero sin dependencias externas para Portal Fraternal Carnaval de Oruro 2027.
 Compatible con Python 3.x nativo.
 """
 import http.server
@@ -36,7 +36,7 @@ def main():
         with socketserver.TCPServer(("", PORT), Handler) as httpd:
             url = f"http://localhost:{PORT}/landing.html"
             print("=" * 72)
-            print("  TINKUS WISTUS 2026 - PAGINA PRINCIPAL & PORTAL FRATERNAL")
+            print("  TINKUS WISTUS - CARNAVAL DE ORURO 2027 - PAGINA PRINCIPAL & PORTAL FRATERNAL")
             print(f"  Página Principal (Landing): {url}")
             print(f"  Portal Fraterno: http://localhost:{PORT}/index.html")
             print("  Presione CTRL+C en esta ventana para detener el servidor.")

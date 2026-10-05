@@ -1,5 +1,5 @@
 # 🚀 Guía Oficial de Publicación Paso a Paso: Vercel & Firebase
-## Portal Fraternidad Tinkus Wistus - Entrada Universitaria La Paz 2026
+## Portal Fraternidad Tinkus Wistus - Carnaval de Oruro 2027
 
 ---
 

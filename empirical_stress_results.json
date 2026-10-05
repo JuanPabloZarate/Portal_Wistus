@@ -1,0 +1,286 @@
+{
+  "bidirectional_flows": {
+    "landing_outbound_links_count": 8,
+    "outbound_targets": [
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html",
+      "http://localhost:8089/index.html"
+    ],
+    "navigation_landing_to_index": {
+      "current_url": "http://localhost:8089/index.html",
+      "success": true,
+      "page_title": "Portal Fraternal - Tinkus Wistus - Carnaval de Oruro 2027"
+    },
+    "index_inbound_links_count": 4,
+    "inbound_targets": [
+      "http://localhost:8089/landing.html",
+      "http://localhost:8089/landing.html",
+      "http://localhost:8089/landing.html",
+      "http://localhost:8089/landing.html"
+    ],
+    "navigation_index_to_landing": {
+      "current_url": "http://localhost:8089/landing.html",
+      "success": true,
+      "page_title": "Tinkus Wistus 2026 \u2022 Convocatoria Oficial \u2022 Entrada Universitaria La Paz"
+    },
+    "round_trip_cycle": {
+      "step1_landing_to_index": true,
+      "step2_index_to_landing": true,
+      "cycle_complete": true
+    }
+  },
+  "asset_integrity": {
+    "files": {
+      "assets/img/wistus-banner.jpg": {
+        "exists": true,
+        "size": 555781,
+        "valid": true,
+        "details": "Format=JPEG, size=(2048, 1285), mode=RGB"
+      },
+      "assets/img/wistus-badge.svg": {
+        "exists": true,
+        "size": 2247,
+        "valid": true,
+        "details": "SVG tag={http://www.w3.org/2000/svg}svg, attribs=['viewBox', 'width', 'height']"
+      },
+      "assets/img/wistus-logo-w.svg": {
+        "exists": true,
+        "size": 6306,
+        "valid": true,
+        "details": "SVG tag={http://www.w3.org/2000/svg}svg, attribs=['viewBox', 'width', 'height']"
+      },
+      "assets/img/wistus-escudo.svg": {
+        "exists": true,
+        "size": 3703,
+        "valid": true,
+        "details": "SVG tag={http://www.w3.org/2000/svg}svg, attribs=['viewBox', 'width', 'height']"
+      },
+      "assets/img/perfil-pagina.png": {
+        "exists": true,
+        "size": 279916,
+        "valid": true,
+        "details": "Format=PNG, size=(800, 800), mode=RGB"
+      }
+    }
+  },
+  "viewports": {
+    "mobile_375": {
+      "horizontal_overflow": {
+        "has_overflow": false,
+        "scroll_width": 485,
+        "client_width": 485,
+        "body_scroll_width": 485,
+        "inner_width": 500
+      },
+      "header_scrolled_interaction": {
+        "initial_scrolled": false,
+        "scrolled_active": true,
+        "works": true
+      },
+      "menu_drawer_behavior": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "bottom_bar_and_modal": {
+        "bottom_bar_displayed": true,
+        "modal_opens": true,
+        "modal_closes": true,
+        "works": true
+      },
+      "enquire_drawer": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "swipers": {
+        "gallery_initialized": true,
+        "bloques_initialized": true,
+        "works": true
+      },
+      "card_3d": {
+        "rect": {
+          "height": 270.484375,
+          "left": 28,
+          "top": 2791.5,
+          "width": 429
+        },
+        "fits_viewport": false
+      },
+      "images": {
+        "total": 17,
+        "rendered_ok": 17,
+        "failed": []
+      }
+    },
+    "tablet_768": {
+      "horizontal_overflow": {
+        "has_overflow": false,
+        "scroll_width": 737,
+        "client_width": 737,
+        "body_scroll_width": 737,
+        "inner_width": 752
+      },
+      "header_scrolled_interaction": {
+        "initial_scrolled": false,
+        "scrolled_active": true,
+        "works": true
+      },
+      "menu_drawer_behavior": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "bottom_bar_and_modal": {
+        "bottom_bar_displayed": true,
+        "modal_opens": true,
+        "modal_closes": true,
+        "works": true
+      },
+      "enquire_drawer": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "swipers": {
+        "gallery_initialized": true,
+        "bloques_initialized": true,
+        "works": true
+      },
+      "card_3d": {
+        "rect": {
+          "height": 269.859375,
+          "left": 154.5,
+          "top": 3078.03125,
+          "width": 428
+        },
+        "fits_viewport": true
+      },
+      "images": {
+        "total": 17,
+        "rendered_ok": 17,
+        "failed": []
+      }
+    },
+    "desktop_1440": {
+      "horizontal_overflow": {
+        "has_overflow": false,
+        "scroll_width": 1409,
+        "client_width": 1409,
+        "body_scroll_width": 1409,
+        "inner_width": 1424
+      },
+      "header_scrolled_interaction": {
+        "initial_scrolled": false,
+        "scrolled_active": true,
+        "works": true
+      },
+      "menu_drawer_behavior": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "bottom_bar_and_modal": {
+        "bottom_bar_displayed": true,
+        "modal_opens": true,
+        "modal_closes": true,
+        "works": true
+      },
+      "enquire_drawer": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "swipers": {
+        "gallery_initialized": true,
+        "bloques_initialized": true,
+        "works": true
+      },
+      "card_3d": {
+        "rect": {
+          "height": 269.859375,
+          "left": 802.5,
+          "top": 2618.234375,
+          "width": 428
+        },
+        "fits_viewport": true
+      },
+      "images": {
+        "total": 17,
+        "rendered_ok": 17,
+        "failed": []
+      }
+    },
+    "adversarial_320": {
+      "horizontal_overflow": {
+        "has_overflow": false,
+        "scroll_width": 485,
+        "client_width": 485,
+        "body_scroll_width": 485,
+        "inner_width": 500
+      },
+      "header_scrolled_interaction": {
+        "initial_scrolled": false,
+        "scrolled_active": true,
+        "works": true
+      },
+      "menu_drawer_behavior": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "bottom_bar_and_modal": {
+        "bottom_bar_displayed": true,
+        "modal_opens": true,
+        "modal_closes": true,
+        "works": true
+      },
+      "enquire_drawer": {
+        "opens": true,
+        "closes": true,
+        "works": true
+      },
+      "swipers": {
+        "gallery_initialized": true,
+        "bloques_initialized": true,
+        "works": true
+      },
+      "card_3d": {
+        "rect": {
+          "height": 270.484375,
+          "left": 28,
+          "top": 2692.5,
+          "width": 429
+        },
+        "fits_viewport": false
+      },
+      "images": {
+        "total": 17,
+        "rendered_ok": 17,
+        "failed": []
+      }
+    }
+  },
+  "browser_console": {
+    "all_logs": [
+      {
+        "level": "WARNING",
+        "message": "https://cdn.tailwindcss.com/ 63:1710 \"cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation\"",
+        "source": "console-api",
+        "timestamp": 1790973452348
+      }
+    ],
+    "severe_errors_count": 0,
+    "severe_errors": []
+  },
+  "verdict": "REJECT",
+  "failures": [
+    "3D Card wider than viewport at mobile_375 (429 > 375)",
+    "3D Card wider than viewport at adversarial_320 (429 > 320)"
+  ]
+}

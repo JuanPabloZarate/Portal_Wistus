@@ -1,5 +1,5 @@
 # 🚀 Documento de Puntos de Mejora y Hoja de Ruta
-## Portal Fraternal Entrada Universitaria La Paz 2026 - Fraternidad Tinkus Wistus
+## Portal Fraternal Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
 
 Este documento detalla la propuesta técnica y operativa de **puntos de mejora** para evolucionar el **MVP estático** actual hacia un sistema web robusto, seguro y escalable listo para producción.
 
@@ -116,7 +116,7 @@ Actualmente los cobros se registran de forma directa por la directiva. Se propon
 ### 3.1 Pasos del Flujo de Pago
 
 #### Paso 1: Carga de Comprobante por el Fraterno
-* El fraterno selecciona la cuota a pagar (ej. *1ra Cuota Entrada Universitaria La Paz 2026*).
+* El fraterno selecciona la cuota a pagar (ej. *1ra Cuota Carnaval de Oruro 2027*).
 * Adjunta una fotografía o documento PDF de la transferencia bancaria o recibo de depósito.
 * Ingresa el **Número de Operación / Referencia** y la fecha del depósito.
 * El sistema guarda la solicitud con estado **`PENDIENTE`**.
@@ -193,7 +193,7 @@ El código QR es la credencial digital central para el control de acceso y pagos
 El calendario debe transformarse en una herramienta activa de comunicación y gestión de eventos.
 
 ### 5.1 Categorización y Priorización de Eventos
-* 🔴 **Eventos Obligatorios / Puntiables:** Ensayos Generales, Misa de Promesa, Recorrido Oficial, Entrada Universitaria La Paz. (Afectan la puntuación para la ubicación en la fila/bloque).
+* 🔴 **Eventos Obligatorios / Puntiables:** Ensayos Generales, Misa de Promesa, Recorrido Oficial, Carnaval de Oruro. (Afectan la puntuación para la ubicación en la fila/bloque).
 * 🟡 **Eventos de Bloque:** Ensayos específicos por bloque (Machas, Imillas, Morenos, etc.).
 * 🔵 **Eventos Sociales y Culturales:** Veladas, recepciones, presentaciones de traje, reuniones informativas.
 
@@ -240,7 +240,7 @@ La tabla de control debe incorporar un motor de filtros combinados multi-criteri
      * Registro detallado de asistencias, atrasos y faltas justificadas.
      * Historial de sanciones u observaciones emitidas por la directiva.
 5. **Exportación de Reportes Oficiales:**
-   * Generar reportes en **Excel / CSV / PDF** formateados según los requisitos de acreditación de la **Asociación de Conjuntos Folklóricos de la Entrada Universitaria La Paz (ACFO)**.
+   * Generar reportes en **Excel / CSV / PDF** formateados según los requisitos de acreditación de la **Asociación de Conjuntos del Folklore de Oruro (ACFO)**.
 
 ---
 
@@ -273,7 +273,7 @@ Desde el listado directivo, los administradores autorizados podrán realizar las
 #### Detalle de Acciones Directivas:
 
 1. **Gestión de Estado y Habilitación:**
-   * **Habilitar / Inhabilitar para la Entrada:** Marcar expresamente si el fraterno cumple los requisitos mínimos de cuotas y asistencias para participar en la Promesa y Entrada Universitaria La Paz 2026.
+   * **Habilitar / Inhabilitar para la Entrada:** Marcar expresamente si el fraterno cumple los requisitos mínimos de cuotas y asistencias para participar en la Promesa y Carnaval de Oruro 2027.
    * **Cambiar Estado del Miembro:** Modificar entre `ACTIVO`, `SUSPENDIDO`, `LICENCIA` o `INACTIVO`.
 
 2. **Reasignación de Bloque, Tropa y Posición:**
@@ -312,4 +312,4 @@ Desde el listado directivo, los administradores autorizados podrán realizar las
 ```
 
 ---
-*Documento preparado para la Mesa Directiva de la Fraternidad - Portal Fraternal Entrada Universitaria La Paz 2026.*
+*Documento preparado para la Mesa Directiva de la Fraternidad - Portal Fraternal Carnaval de Oruro 2027.*
