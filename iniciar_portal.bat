@@ -6,8 +6,8 @@ echo =========================================================================
 echo.
 echo Iniciando el portal en su navegador web...
 echo.
-start "" "%~dp0index.html"
-echo [OK] Portal abierto directamente desde index.html.
+start "" "%~dp0landing.html"
+echo [OK] Pagina principal (Landing Page) abierta directamente desde landing.html.
 echo.
 echo Si desea ejecutar con servidor web local en http://localhost:8000:
 echo Presione cualquier tecla para iniciar el servidor Python...

@@ -18,7 +18,15 @@
       "dest": "/js/"
     },
     {
+      "src": "/portal(\\.html)?",
+      "dest": "/index.html"
+    },
+    {
       "src": "/landing(\\.html)?",
+      "dest": "/landing.html"
+    },
+    {
+      "src": "/$",
       "dest": "/landing.html"
     },
     {

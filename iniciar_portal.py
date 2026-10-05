@@ -16,6 +16,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    def do_GET(self):
+        # Servir landing.html en la raíz / como página principal
+        if self.path in ("/", ""):
+            self.send_response(302)
+            self.send_header("Location", "/landing.html")
+            self.end_headers()
+            return
+        super().do_GET()
+
     def log_message(self, format, *args):
         # Log limpio y legible
         print(f"[{self.log_date_time_string()}] {args[0]} - {args[1]}")
@@ -25,10 +34,11 @@ def main():
     socketserver.TCPServer.allow_reuse_address = True
     try:
         with socketserver.TCPServer(("", PORT), Handler) as httpd:
-            url = f"http://localhost:{PORT}/index.html"
+            url = f"http://localhost:{PORT}/landing.html"
             print("=" * 72)
-            print("  PORTAL FRATERNAL TINKUS WISTUS - ENTRADA UNIVERSITARIA LA PAZ 2026")
-            print(f"  Servidor activo en: {url}")
+            print("  TINKUS WISTUS 2026 - PAGINA PRINCIPAL & PORTAL FRATERNAL")
+            print(f"  Página Principal (Landing): {url}")
+            print(f"  Portal Fraterno: http://localhost:{PORT}/index.html")
             print("  Presione CTRL+C en esta ventana para detener el servidor.")
             print("=" * 72)
             try:
@@ -41,8 +51,8 @@ def main():
         sys.exit(0)
     except Exception as e:
         print(f"\nError iniciando servidor en puerto {PORT}: {e}")
-        print("Abriendo index.html directamente...")
-        webbrowser.open(os.path.join(DIRECTORY, "index.html"))
+        print("Abriendo landing.html directamente...")
+        webbrowser.open(os.path.join(DIRECTORY, "landing.html"))
 
 if __name__ == "__main__":
     main()
