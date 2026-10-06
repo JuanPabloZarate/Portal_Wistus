@@ -1,12 +1,15 @@
 /**
  * DIRECTORIO DE MIEMBROS Y GESTIÓN DE PADRÓN
  * Gestiona el padrón fraternal, perfil del fraterno y kardex individual.
+ * Carnaval de Oruro 2027 - Fraternidad Tinkus Wistus
  */
 
 class MiembrosManager {
     constructor() {
         this.selectedFilter = 'all';
         this.selectedBlock = 'all';
+        this.selectedFilial = 'all';
+        this.currentKardexCI = null;
         this.init();
     }
 
@@ -30,10 +33,11 @@ class MiembrosManager {
 
         // Inyectar datos en la vista de Credencial y Perfil
         document.querySelectorAll('.member-val-nombre').forEach(el => el.textContent = `${member.nombres} ${member.apellidos}`);
-        document.querySelectorAll('.member-val-ci').forEach(el => el.textContent = `${member.ci} ${member.ci_exp}`);
-        document.querySelectorAll('.member-val-bloque').forEach(el => el.textContent = member.bloque_nombre);
-        document.querySelectorAll('.member-val-rol').forEach(el => el.textContent = member.rol_fraternal);
-        document.querySelectorAll('.member-val-antiguedad').forEach(el => el.textContent = `${member.antiguedad_anios} años en Carnaval de Oruro`);
+        document.querySelectorAll('.member-val-ci').forEach(el => el.textContent = `${member.ci} ${member.ci_exp || 'LP'}`);
+        document.querySelectorAll('.member-val-bloque').forEach(el => el.textContent = member.bloque_nombre || 'Bloque Hombres');
+        document.querySelectorAll('.member-val-filial').forEach(el => el.textContent = member.filial_nombre || 'Matriz (La Paz)');
+        document.querySelectorAll('.member-val-rol').forEach(el => el.textContent = member.rol_fraternal || 'Fraterno Titular');
+        document.querySelectorAll('.member-val-antiguedad').forEach(el => el.textContent = `${member.antiguedad_anios || 1} años en Carnaval de Oruro`);
         document.querySelectorAll('.member-val-telefono').forEach(el => el.textContent = member.telefono || 'No registrado');
         document.querySelectorAll('.member-val-email').forEach(el => el.textContent = member.email || 'Sin correo asociado');
         document.querySelectorAll('.member-val-foto').forEach(el => {
@@ -50,23 +54,70 @@ class MiembrosManager {
         const searchInput = document.getElementById('searchDirectoryMember');
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-        // Contadores
+        // Contadores y distribución de bloques
         let total = members.length;
+        let countHombres = 0;
+        let countMujeres = 0;
+        const filialCounts = {};
 
-        // Actualizar badges de conteo
+        const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
+        filialesDef.forEach(f => {
+            filialCounts[f.id] = { id: f.id, name: f.name, count: 0 };
+        });
+
+        members.forEach(m => {
+            if (m.bloque_id === 'mujeres') countMujeres++;
+            else countHombres++;
+
+            const fid = m.filial_id || 'matriz_lp';
+            if (!filialCounts[fid]) {
+                filialCounts[fid] = { id: fid, name: m.filial_nombre || fid, count: 0 };
+            }
+            filialCounts[fid].count++;
+        });
+
+        // Actualizar badges de conteo y métricas de distribución
         const elTotalCount = document.getElementById('dirCountTotal');
         if (elTotalCount) elTotalCount.textContent = total;
 
+        const elHombres = document.getElementById('distCountHombres');
+        if (elHombres) elHombres.textContent = countHombres;
+
+        const elMujeres = document.getElementById('distCountMujeres');
+        if (elMujeres) elMujeres.textContent = countMujeres;
+
+        const filialesBadgesContainer = document.getElementById('distFilialesBadgesContainer');
+        if (filialesBadgesContainer) {
+            let fHtml = '';
+            Object.values(filialCounts).forEach(f => {
+                fHtml += `
+                    <span class="badge bg-surface-2 border border-subtle text-dark p-2 d-inline-flex align-items-center gap-1 rounded-3">
+                        <i class="bi bi-geo-alt text-brand"></i>
+                        <span class="fw-semibold">${f.name}:</span>
+                        <span class="badge bg-brand text-white ms-1">${f.count}</span>
+                    </span>
+                `;
+            });
+            filialesBadgesContainer.innerHTML = fHtml;
+        }
+
         // Filtrar
         const filtered = members.filter(m => {
+            const fullName = `${m.nombres || ''} ${m.apellidos || ''}`.toLowerCase();
+            const ciStr = String(m.ci || '');
+            const bName = String(m.bloque_nombre || '').toLowerCase();
+            const fName = String(m.filial_nombre || '').toLowerCase();
+
             const matchesSearch = !searchTerm ||
-                m.ci.includes(searchTerm) ||
-                `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchTerm) ||
-                m.bloque_nombre.toLowerCase().includes(searchTerm);
+                ciStr.includes(searchTerm) ||
+                fullName.includes(searchTerm) ||
+                bName.includes(searchTerm) ||
+                fName.includes(searchTerm);
 
             let matchesBlock = this.selectedBlock === 'all' || m.bloque_id === this.selectedBlock;
+            let matchesFilial = this.selectedFilial === 'all' || m.filial_id === this.selectedFilial;
 
-            return matchesSearch && matchesBlock;
+            return matchesSearch && matchesBlock && matchesFilial;
         });
 
         let html = '';
@@ -80,6 +131,7 @@ class MiembrosManager {
                 });
             }
             const attPct = totalEvents > 0 ? Math.round((attended / totalEvents) * 100) : 0;
+            const isMujer = m.bloque_id === 'mujeres';
 
             html += `
             <tr class="align-middle">
@@ -87,17 +139,27 @@ class MiembrosManager {
                     <div class="d-flex align-items-center gap-2">
                         <img src="${m.foto || 'assets/img/avatar-default.svg'}" class="rounded-circle border border-brand" width="40" height="40" alt="Foto">
                         <div>
-                            <div class="fw-bold text-white">${m.nombres} ${m.apellidos}</div>
+                            <div class="fw-bold text-dark">${m.nombres} ${m.apellidos}</div>
                             <div class="small text-secondary">${m.telefono || 'Sin teléfono'}</div>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <span class="fw-bold text-brand font-monospace">${m.ci} ${m.ci_exp}</span>
+                    <span class="fw-bold text-brand font-monospace">${m.ci} ${m.ci_exp || 'LP'}</span>
                 </td>
                 <td>
-                    <span class="badge bg-surface-2 border border-subtle text-primary fw-semibold">${m.bloque_nombre}</span>
-                    <div class="small text-muted">${m.rol_fraternal}</div>
+                    <span class="badge ${isMujer ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} border border-subtle fw-semibold">
+                        ${m.bloque_nombre || (isMujer ? 'Bloque Mujeres' : 'Bloque Hombres')}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-surface-2 text-dark border border-subtle fw-semibold">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>${m.filial_nombre || 'Matriz (La Paz)'}
+                    </span>
+                </td>
+                <td>
+                    <div class="small text-white fw-medium">${m.rol_fraternal || 'Fraterno Titular'}</div>
+                    <div class="text-muted" style="font-size:0.75rem;">${m.antiguedad_anios || 1} años</div>
                 </td>
                 <td>
                     <div class="d-flex align-items-center gap-2">
@@ -109,8 +171,8 @@ class MiembrosManager {
                 </td>
                 <td class="text-end">
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha / Kardex">
-                            <i class="bi bi-person-vcard"></i> Ficha
+                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Gestionar Bloque/Filial">
+                            <i class="bi bi-person-gear"></i> Ficha & Bloque
                         </button>
                         <button class="btn btn-outline-success" onclick="window.Pagos.openRegisterPaymentModal('${m.ci}')" title="Cobrar Cuota">
                             <i class="bi bi-cash"></i> Cobrar
@@ -121,7 +183,7 @@ class MiembrosManager {
         });
 
         if (filtered.length === 0) {
-            html = '<tr><td colspan="5" class="text-center py-4 text-muted">No se encontraron fraternos registrados con este criterio.</td></tr>';
+            html = '<tr><td colspan="7" class="text-center py-4 text-muted">No se encontraron fraternos registrados con este criterio de filtro.</td></tr>';
         }
 
         container.innerHTML = html;
@@ -135,13 +197,24 @@ class MiembrosManager {
         const member = window.PortalState.getMemberByCI(ci);
         if (!member) return;
 
+        this.currentKardexCI = member.ci;
+
         document.getElementById('kardexNombre').textContent = `${member.nombres} ${member.apellidos}`;
-        document.getElementById('kardexCI').textContent = `${member.ci} ${member.ci_exp}`;
-        document.getElementById('kardexBloque').textContent = member.bloque_nombre;
-        document.getElementById('kardexRol').textContent = member.rol_fraternal;
-        document.getElementById('kardexAntiguedad').textContent = `${member.antiguedad_anios} años`;
+        document.getElementById('kardexCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
+        document.getElementById('kardexBloque').textContent = member.bloque_nombre || 'Bloque Hombres';
+        const elFilial = document.getElementById('kardexFilial');
+        if (elFilial) elFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
+        document.getElementById('kardexRol').textContent = member.rol_fraternal || 'Fraterno Titular';
+        document.getElementById('kardexAntiguedad').textContent = `${member.antiguedad_anios || 1} años`;
         document.getElementById('kardexTelefono').textContent = member.telefono || 'Sin teléfono';
         document.getElementById('kardexFoto').src = member.foto || 'assets/img/avatar-default.svg';
+
+        // Set form values in reassign section
+        const editBloque = document.getElementById('kardexEditBloque');
+        if (editBloque) editBloque.value = (member.bloque_id === 'mujeres' || member.bloque_id === 'hombres') ? member.bloque_id : 'hombres';
+
+        const editFilial = document.getElementById('kardexEditFilial');
+        if (editFilial) editFilial.value = member.filial_id || 'matriz_lp';
 
         // Lista de asistencias
         const events = window.PortalState.getEvents();
@@ -150,7 +223,7 @@ class MiembrosManager {
             const reg = (member.asistencias && member.asistencias[ev.id]) || { estado: 'pendiente' };
             attHtml += `<div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-25">
                 <div>
-                    <div class="fw-semibold text-white small">${ev.title}</div>
+                    <div class="fw-semibold text-dark small">${ev.title}</div>
                     <div class="text-secondary small">${ev.fecha}</div>
                 </div>
                 ${window.Asistencias.getStatusBadgeHtml(reg.estado)}
@@ -163,7 +236,7 @@ class MiembrosManager {
         (member.pagos || []).forEach(p => {
             pagosHtml += `<div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-25">
                 <div>
-                    <div class="fw-semibold text-white small">${p.concepto}</div>
+                    <div class="fw-semibold text-dark small">${p.concepto}</div>
                     <div class="text-secondary small">${p.fecha} &bull; ${p.nro_recibo}</div>
                 </div>
                 <span class="text-brand fw-bold">Bs. ${p.monto}</span>
@@ -181,6 +254,40 @@ class MiembrosManager {
         }
     }
 
+    submitReassignBloqueFilial() {
+        if (!this.currentKardexCI) return;
+        const ci = this.currentKardexCI;
+        const editBloque = document.getElementById('kardexEditBloque');
+        const editFilial = document.getElementById('kardexEditFilial');
+
+        const newBloqueId = editBloque ? editBloque.value : 'hombres';
+        const newFilialId = editFilial ? editFilial.value : 'matriz_lp';
+
+        const bloqueNombre = newBloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
+        const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
+        const filialObj = filialesDef.find(f => f.id === newFilialId);
+        const filialNombre = filialObj ? filialObj.name : 'Matriz (La Paz)';
+
+        try {
+            const updated = window.PortalState.updateMember(ci, {
+                bloque_id: newBloqueId,
+                bloque_nombre: bloqueNombre,
+                filial_id: newFilialId,
+                filial_nombre: filialNombre
+            });
+
+            // Actualizar etiquetas en el modal
+            document.getElementById('kardexBloque').textContent = bloqueNombre;
+            const elFilial = document.getElementById('kardexFilial');
+            if (elFilial) elFilial.textContent = filialNombre;
+
+            this.renderControlDirectory();
+            window.PortalApp.showToast(`¡Asignación actualizada para ${updated.nombres}! ${bloqueNombre} &bull; ${filialNombre}`, 'success');
+        } catch (e) {
+            window.PortalApp.showToast(e.message, 'danger');
+        }
+    }
+
     openNewMemberModal() {
         const modalEl = document.getElementById('modalNewMember');
         if (modalEl && window.bootstrap) {
@@ -195,7 +302,10 @@ class MiembrosManager {
         const nombres = document.getElementById('newMemberNombres').value.trim();
         const apellidos = document.getElementById('newMemberApellidos').value.trim();
         const telefono = document.getElementById('newMemberTelefono').value.trim();
-        const bloqueId = document.getElementById('newMemberBloque').value;
+        const bloqueEl = document.getElementById('newMemberBloque');
+        const bloqueId = bloqueEl ? bloqueEl.value : 'hombres';
+        const filialEl = document.getElementById('newMemberFilial');
+        const filialId = filialEl ? filialEl.value : 'matriz_lp';
         const rol = document.getElementById('newMemberRol').value;
         const antiguedad = document.getElementById('newMemberAntiguedad').value;
 
@@ -204,8 +314,10 @@ class MiembrosManager {
             return;
         }
 
-        const bloqueObj = window.PortalState.state.bloques.find(b => b.id === bloqueId);
-        const bloqueNombre = bloqueObj ? bloqueObj.name : 'Bloque Machas Wistus';
+        const bloqueNombre = bloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
+        const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
+        const filialObj = filialesDef.find(f => f.id === filialId);
+        const filialNombre = filialObj ? filialObj.name : 'Matriz (La Paz)';
 
         try {
             window.PortalState.addMember({
@@ -216,6 +328,8 @@ class MiembrosManager {
                 telefono,
                 bloque_id: bloqueId,
                 bloque_nombre: bloqueNombre,
+                filial_id: filialId,
+                filial_nombre: filialNombre,
                 rol_fraternal: rol,
                 antiguedad_anios: antiguedad
             });
@@ -226,7 +340,7 @@ class MiembrosManager {
                 if (bsModal) bsModal.hide();
             }
 
-            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en el Padrón Carnaval de Oruro 2027!`);
+            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en ${bloqueNombre} (${filialNombre})!`);
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
         }
@@ -244,10 +358,10 @@ class MiembrosManager {
 
     exportDirectoryCSV() {
         const members = window.PortalState.getMembers();
-        let csv = 'CI,Expedido,Nombres,Apellidos,Bloque,Rol,Antiguedad,Telefono,Email,Tiene_Usuario,Estado\n';
+        let csv = 'CI,Expedido,Nombres,Apellidos,Bloque,Filial,Rol,Antiguedad,Telefono,Email,Tiene_Usuario,Estado\n';
 
         members.forEach(m => {
-            csv += `"${m.ci}","${m.ci_exp}","${m.nombres}","${m.apellidos}","${m.bloque_nombre}","${m.rol_fraternal}","${m.antiguedad_anios}","${m.telefono}","${m.email || ''}","${m.has_user_account ? 'SI' : 'NO'}","${m.estado_fraterno}"\n`;
+            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.bloque_nombre || 'Bloque Hombres'}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${m.antiguedad_anios}","${m.telefono}","${m.email || ''}","${m.has_user_account ? 'SI' : 'NO'}","${m.estado_fraterno}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

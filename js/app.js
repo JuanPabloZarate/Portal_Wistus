@@ -723,7 +723,9 @@ class PortalAppManager {
 
         // Actualizar saludo y datos
         document.getElementById('dashMemberGreeting').textContent = `¡Hola, ${member.nombres.split(' ')[0]}!`;
-        document.getElementById('dashMemberBloque').textContent = member.bloque_nombre;
+        document.getElementById('dashMemberBloque').textContent = member.bloque_nombre || 'Bloque Hombres';
+        const elDashFilial = document.getElementById('dashMemberFilial');
+        if (elDashFilial) elDashFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
         document.getElementById('dashMemberRol').textContent = member.rol_fraternal;
 
         // Asistencias resumen
@@ -857,7 +859,10 @@ class PortalAppManager {
         if (credCI) credCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
 
         const credBloqueBadge = document.getElementById('credBloqueBadge');
-        if (credBloqueBadge) credBloqueBadge.textContent = member.bloque_nombre || 'Bloque Machas Wistus';
+        if (credBloqueBadge) credBloqueBadge.textContent = member.bloque_nombre || 'Bloque Hombres';
+
+        const credFilialBadge = document.getElementById('credFilialBadge');
+        if (credFilialBadge) credFilialBadge.innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i>${member.filial_nombre || 'Matriz (La Paz)'}`;
 
         const credDistincionBadge = document.getElementById('credDistincionBadge');
         if (credDistincionBadge) credDistincionBadge.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i>${member.rol_fraternal || 'Fraterno Titular'}`;
@@ -1330,6 +1335,15 @@ class PortalAppManager {
                     return;
                 }
 
+                const selBloque = document.getElementById('selectProfileBloque');
+                const selFilial = document.getElementById('selectProfileFilial');
+                let bloqueId = selBloque ? selBloque.value : (member.bloque_id || 'hombres');
+                let filialId = selFilial ? selFilial.value : (member.filial_id || 'matriz_lp');
+
+                const bloqueNombre = bloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
+                const filialConfig = (window.DEFAULT_PORTAL_CONFIG.filiales || []).find(f => f.id === filialId);
+                const filialNombre = filialConfig ? filialConfig.name : 'Matriz (La Paz)';
+
                 const updates = {
                     nombres,
                     apellidos,
@@ -1339,7 +1353,11 @@ class PortalAppManager {
                     email,
                     contacto_emergencia: contactoEmergencia,
                     telefono_emergencia: telEmergencia,
-                    talla_traje: tallaTraje
+                    talla_traje: tallaTraje,
+                    bloque_id: bloqueId,
+                    bloque_nombre: bloqueNombre,
+                    filial_id: filialId,
+                    filial_nombre: filialNombre
                 };
 
                 const saveBtn = document.getElementById('btnSaveProfile');
@@ -1362,20 +1380,50 @@ class PortalAppManager {
                     session.nombres = updatedMember.nombres;
                     session.apellidos = updatedMember.apellidos;
                     session.nombre_completo = `${updatedMember.nombres} ${updatedMember.apellidos}`;
+                    session.bloque_id = updatedMember.bloque_id;
+                    session.bloque_nombre = updatedMember.bloque_nombre;
+                    session.filial_id = updatedMember.filial_id;
+                    session.filial_nombre = updatedMember.filial_nombre;
                     window.PortalState.setSession(session);
 
                     // Mostrar mensaje de éxito
                     const alertSuccess = document.getElementById('alertProfileEditSuccess');
                     if (alertSuccess) {
-                        alertSuccess.textContent = '¡Tus datos de perfil han sido actualizados con éxito!';
+                        alertSuccess.textContent = `¡Datos de perfil guardados! Asignado a: ${updatedMember.bloque_nombre} - ${updatedMember.filial_nombre}.`;
                         alertSuccess.classList.remove('d-none');
                         setTimeout(() => alertSuccess.classList.add('d-none'), 5000);
                     }
 
-                    this.showToast('¡Perfil fraternal actualizado exitosamente!', 'success');
+                    this.showToast('¡Perfil fraternal y asignación actualizados exitosamente!', 'success');
                     this.updateProfileCompletionUI(updatedMember);
                 }, 300);
             });
+        }
+    }
+
+    solicitarCambioBloqueFilial() {
+        const session = window.PortalState.getSession();
+        if (!session) return;
+        const member = window.PortalState.getMemberByCI(session.ci);
+        const name = member ? `${member.nombres} ${member.apellidos}` : 'Fraterno';
+        const currentBloque = member ? member.bloque_nombre : 'Bloque Hombres';
+        const currentFilial = member ? member.filial_nombre : 'Matriz (La Paz)';
+        
+        // Registrar en estado local para control
+        if (member) {
+            const solicitud = {
+                fecha: new Date().toISOString(),
+                estado: 'pendiente',
+                bloque_origen: currentBloque,
+                filial_origen: currentFilial
+            };
+            window.PortalState.updateMember(member.ci, { solicitud_traslado: solicitud });
+        }
+
+        const msg = `¡Solicitud registrada para la Mesa Directiva!\n\nFraterno: ${name}\nAsignación registrada: ${currentBloque} (${currentFilial})\n\nTu solicitud de traslado o reasignación de bloque/filial para el Carnaval de Oruro 2027 ha sido enviada para resolución de la Directiva.`;
+        this.showToast('Solicitud de cambio enviada a la Mesa Directiva.', 'info');
+        if (typeof alert === 'function') {
+            alert(msg);
         }
     }
 
@@ -1397,7 +1445,10 @@ class PortalAppManager {
         if (infoCI) infoCI.textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
 
         const infoBloque = document.getElementById('profileInfoBloque');
-        if (infoBloque) infoBloque.textContent = member.bloque_nombre || 'Bloque Tinkus Wistus';
+        if (infoBloque) infoBloque.textContent = member.bloque_nombre || 'Bloque Hombres';
+
+        const infoFilial = document.getElementById('profileInfoFilial');
+        if (infoFilial) infoFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
 
         const infoRol = document.getElementById('profileInfoRol');
         if (infoRol) infoRol.textContent = member.rol_fraternal || 'Fraterno Titular';
@@ -1436,11 +1487,26 @@ class PortalAppManager {
         const selTalla = document.getElementById('selectProfileTallaTraje');
         if (selTalla) selTalla.value = member.talla_traje || '';
 
+        const selBloque = document.getElementById('selectProfileBloque');
+        if (selBloque) selBloque.value = (member.bloque_id === 'mujeres' || member.bloque_id === 'hombres') ? member.bloque_id : 'hombres';
+
+        const selFilial = document.getElementById('selectProfileFilial');
+        if (selFilial) selFilial.value = member.filial_id || 'matriz_lp';
+
         const inBloqueNombre = document.getElementById('inputProfileBloqueNombre');
-        if (inBloqueNombre) inBloqueNombre.value = member.bloque_nombre || '';
+        if (inBloqueNombre) inBloqueNombre.value = member.bloque_nombre || 'Bloque Hombres';
+
+        const inFilialNombre = document.getElementById('inputProfileFilialNombre');
+        if (inFilialNombre) inFilialNombre.value = member.filial_nombre || 'Matriz (La Paz)';
 
         const inRolNombre = document.getElementById('inputProfileRolNombre');
         if (inRolNombre) inRolNombre.value = member.rol_fraternal || '';
+
+        // Actualizar ayuda y estado de asignación oficial
+        const statusHelp = document.getElementById('profileBloqueFilialStatusHelp');
+        if (statusHelp) {
+            statusHelp.innerHTML = `<strong>Asignación actual:</strong> <span class="text-brand fw-semibold">${member.bloque_nombre || 'Bloque Hombres'}</span> &bull; <span class="text-dark fw-semibold">${member.filial_nombre || 'Matriz (La Paz)'}</span>. <span class="badge bg-success-subtle text-success ms-1">Asignado &bull; Oruro 2027</span><br><span class="text-muted" style="font-size:0.75rem;">Para traslados posteriores entre filiales o cambio de tropa, solicítalo con el botón oficial a la Mesa Directiva.</span>`;
+        }
 
         // Ocultar alertas
         const alertSuccess = document.getElementById('alertProfileEditSuccess');
@@ -1467,6 +1533,8 @@ class PortalAppManager {
             contacto_emergencia: document.getElementById('inputProfileContactoEmergencia')?.value || '',
             telefono_emergencia: document.getElementById('inputProfileTelEmergencia')?.value || '',
             talla_traje: document.getElementById('selectProfileTallaTraje')?.value || '',
+            bloque_id: document.getElementById('selectProfileBloque')?.value || currentMember.bloque_id || 'hombres',
+            filial_id: document.getElementById('selectProfileFilial')?.value || currentMember.filial_id || 'matriz_lp'
         };
 
         this.updateProfileCompletionUI(simulatedMember);

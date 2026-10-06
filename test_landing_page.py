@@ -756,14 +756,21 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         self.assertTrue(any(k in combined for k in ["telefono", "phone", "celular", "tel"]), "Falta campo de Teléfono")
 
     def test_f16_04_enquire_form_block_selection_dropdown(self):
-        """F16: Formulario contiene selector <select> con opciones de bloques fraternos."""
+        """F16: Formulario contiene selector <select> con opciones de bloques fraternos oficiales y filiales."""
         soup = self.require_landing_soup()
         dialog = soup.find("dialog", id="enquire")
-        select = dialog.find("select")
+        select = dialog.find("select", id="enquire-bloque") or dialog.find("select")
         self.assertIsNotNone(select, "El formulario debe incluir un <select> para elegir bloque de interés")
         options_text = " ".join(opt.get_text().lower() for opt in select.find_all("option"))
-        self.assertIn("machas", options_text, "Debe incluir opción Bloque Machas")
-        self.assertIn("imillas", options_text, "Debe incluir opción Bloque Imillas")
+        self.assertIn("hombres", options_text, "Debe incluir opción Bloque Hombres")
+        self.assertIn("mujeres", options_text, "Debe incluir opción Bloque Mujeres")
+
+        select_filial = dialog.find("select", id="enquire-filial")
+        self.assertIsNotNone(select_filial, "El formulario debe incluir un <select id='enquire-filial'> para elegir filial oficial")
+        filiales_text = " ".join(opt.get_text().lower() for opt in select_filial.find_all("option"))
+        self.assertIn("la paz", filiales_text)
+        self.assertIn("cochabamba", filiales_text)
+        self.assertIn("santa cruz", filiales_text)
 
     def test_f16_05_enquire_form_submit_button(self):
         """F16: Formulario contiene botón de envío (type='submit' o botón de postulación)."""

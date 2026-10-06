@@ -645,8 +645,10 @@ class PagosManager {
                     ...p,
                     member_ci: m.ci,
                     member_nombre: `${m.nombres} ${m.apellidos}`,
-                    bloque_id: m.bloque_id,
-                    bloque_nombre: m.bloque_nombre,
+                    bloque_id: m.bloque_id || 'hombres',
+                    bloque_nombre: m.bloque_nombre || 'Bloque Hombres',
+                    filial_id: m.filial_id || 'matriz_lp',
+                    filial_nombre: m.filial_nombre || 'Matriz (La Paz)',
                     telefono: m.telefono || ''
                 });
             });
@@ -698,7 +700,7 @@ class PagosManager {
                 </td>
                 <td>
                     <div class="fw-bold text-dark">${p.member_nombre}</div>
-                    <div class="small text-secondary">CI: ${p.member_ci} &bull; <span class="badge bg-surface-2 text-dark border border-subtle">${p.bloque_nombre}</span></div>
+                    <div class="small text-secondary">CI: ${p.member_ci} &bull; <span class="badge bg-surface-2 text-dark border border-subtle">${p.bloque_nombre || 'Bloque Hombres'}</span> <span class="badge bg-surface-2 text-dark border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${p.filial_nombre || 'Matriz (La Paz)'}</span></div>
                 </td>
                 <td class="text-dark">
                     <div>${p.concepto}</div>
@@ -740,7 +742,10 @@ class PagosManager {
                     <div class="fw-bold text-dark">${v.member_nombre}</div>
                     <div class="small text-secondary">CI: ${v.member_ci} ${v.member_telefono ? `&bull; ${v.member_telefono}` : ''}</div>
                 </td>
-                <td><span class="badge bg-surface-2 text-dark border border-subtle">${v.bloque_nombre}</span></td>
+                <td>
+                    <span class="badge bg-surface-2 text-dark border border-subtle mb-1 d-block">${v.bloque_nombre || 'Bloque Hombres'}</span>
+                    <span class="badge bg-surface-2 text-dark border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${v.filial_nombre || 'Matriz (La Paz)'}</span>
+                </td>
                 <td>
                     <div class="fw-semibold text-dark">${v.concepto}</div>
                     <div class="small text-muted font-monospace">${v.banco_origen || 'Banco'} ${v.nro_transaccion ? `&bull; #${v.nro_transaccion}` : ''}</div>
@@ -856,7 +861,7 @@ class PagosManager {
 
         document.getElementById('viewVoucherFraternoNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('viewVoucherFraternoCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
-        document.getElementById('viewVoucherFraternoBloque').textContent = member.bloque_nombre || 'Bloque Tinkus Wistus';
+        document.getElementById('viewVoucherFraternoBloque').textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'}`;
         document.getElementById('viewVoucherCuota').textContent = voucher.concepto;
         document.getElementById('viewVoucherMonto').textContent = `Bs. ${voucher.monto.toLocaleString('es-BO')}`;
         
@@ -1012,7 +1017,7 @@ class PagosManager {
         document.getElementById('reciboFecha').textContent = `${payment.fecha} ${payment.hora || ''}`;
         document.getElementById('reciboFraternoNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('reciboFraternoCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
-        document.getElementById('reciboBloque').textContent = member.bloque_nombre || 'Bloque Tinkus Wistus';
+        document.getElementById('reciboBloque').textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'}`;
         document.getElementById('reciboConcepto').textContent = payment.concepto;
         document.getElementById('reciboMonto').textContent = `Bs. ${payment.monto.toLocaleString('es-BO')}`;
         document.getElementById('reciboMetodo').textContent = payment.metodo;

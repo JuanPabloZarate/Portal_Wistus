@@ -37,12 +37,17 @@ const DEFAULT_PORTAL_CONFIG = {
         }
     },
     bloques: [
-        { id: 'machas', name: 'Bloque Machas Wistus', guia: 'Juan Pablo Quispe', cupos: 60, color: '#e53e3e' },
-        { id: 'imillas', name: 'Bloque Imillas Wistus', guia: 'Maria Elena Flores', cupos: 75, color: '#ec4899' },
-        { id: 'mayores', name: "Bloque Tinkus Wistus Mayores", guia: 'Carlos Mendoza', cupos: 40, color: '#3182ce' },
-        { id: 'choclos', name: "Bloque Choclos", guia: 'Gabriela Vargas', cupos: 50, color: '#38a169' },
-        { id: 'wanllis', name: "Bloque Semillero Wanllis", guia: 'Sonia Choque', cupos: 30, color: '#805ad5' },
-        { id: 'directiva', name: "Directiva y Pasantes Oruro 2027", guia: 'Lic. Roberto Alarcón', cupos: 20, color: '#7c3aed' }
+        { id: 'hombres', name: 'Bloque Hombres', guia: 'Juan Pablo Quispe', cupos: 150, color: '#3b82f6' },
+        { id: 'mujeres', name: 'Bloque Mujeres', guia: 'Maria Elena Flores', cupos: 150, color: '#ec4899' }
+    ],
+    filiales: [
+        { id: 'matriz_lp', name: 'Matriz (La Paz)', pais: 'Bolivia', sede: 'San Pedro, Calle Almirante Grau' },
+        { id: 'cochabamba', name: 'Cochabamba', pais: 'Bolivia', sede: 'Filial Cochabamba' },
+        { id: 'santa_cruz', name: 'Santa Cruz', pais: 'Bolivia', sede: 'Filial Santa Cruz' },
+        { id: 'peru', name: 'Perú', pais: 'Perú', sede: 'Filial Internacional Perú' },
+        { id: 'chile', name: 'Chile', pais: 'Chile', sede: 'Filial Internacional Chile' },
+        { id: 'europa', name: 'Europa', pais: 'España / Europa', sede: 'Filial Internacional Europa' },
+        { id: 'estados_unidos', name: 'Estados Unidos', pais: 'Estados Unidos', sede: 'Filial Internacional Estados Unidos' }
     ],
     cuotas_definidas: [
         { id: 'cuota_1', title: 'Inscripción Oficial Carnaval de Oruro 2027', monto: 300, vencimiento: '2026-11-30', obligatorio: true },
@@ -173,8 +178,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Dra. Rosario Mamani (Madre)',
             telefono_emergencia: '+591 71234567',
             talla_traje: 'L',
-            bloque_id: 'machas',
-            bloque_nombre: 'Bloque Machas Wistus',
+            bloque_id: 'hombres',
+            bloque_nombre: 'Bloque Hombres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Guía de Bloque',
             antiguedad_anios: 5,
             foto: 'assets/img/avatar-default.svg',
@@ -204,8 +211,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Carlos Flores (Hermano)',
             telefono_emergencia: '+591 72345678',
             talla_traje: 'M',
-            bloque_id: 'imillas',
-            bloque_nombre: 'Bloque Imillas Wistus',
+            bloque_id: 'mujeres',
+            bloque_nombre: 'Bloque Mujeres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Guía de Bloque',
             antiguedad_anios: 4,
             foto: 'assets/img/avatar-default.svg',
@@ -243,8 +252,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Secretaría Tinkus Wistus',
             telefono_emergencia: '+591 22490123',
             talla_traje: 'M',
-            bloque_id: 'machas',
-            bloque_nombre: 'Bloque Machas Wistus',
+            bloque_id: 'hombres',
+            bloque_nombre: 'Bloque Hombres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Fraterno Titular',
             antiguedad_anios: 3,
             foto: 'assets/img/avatar-default.svg',
@@ -272,8 +283,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Patricia Alarcón',
             telefono_emergencia: '+591 70654321',
             talla_traje: 'XL',
-            bloque_id: 'mayores',
-            bloque_nombre: 'Bloque Tinkus Wistus Mayores',
+            bloque_id: 'hombres',
+            bloque_nombre: 'Bloque Hombres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Guía de Bloque',
             antiguedad_anios: 8,
             foto: 'assets/img/avatar-default.svg',
@@ -302,8 +315,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Gonzalo Vargas',
             telefono_emergencia: '+591 78901234',
             talla_traje: 'S',
-            bloque_id: 'choclos',
-            bloque_nombre: 'Bloque Choclos',
+            bloque_id: 'mujeres',
+            bloque_nombre: 'Bloque Mujeres',
+            filial_id: 'cochabamba',
+            filial_nombre: 'Cochabamba',
             rol_fraternal: 'Guía de Bloque',
             antiguedad_anios: 3,
             foto: 'assets/img/avatar-default.svg',
@@ -331,8 +346,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Martha Callisaya',
             telefono_emergencia: '+591 71987654',
             talla_traje: 'M',
-            bloque_id: 'wanllis',
-            bloque_nombre: 'Bloque Semillero Wanllis',
+            bloque_id: 'mujeres',
+            bloque_nombre: 'Bloque Mujeres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Guía de Bloque',
             antiguedad_anios: 2,
             foto: 'assets/img/avatar-default.svg',
@@ -359,8 +376,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Directiva Central Wistus',
             telefono_emergencia: '+591 22490123',
             talla_traje: 'L',
-            bloque_id: 'directiva',
-            bloque_nombre: 'Directiva y Pasantes 2027',
+            bloque_id: 'hombres',
+            bloque_nombre: 'Bloque Hombres',
+            filial_id: 'matriz_lp',
+            filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Pasante Mayor 2027',
             antiguedad_anios: 12,
             foto: 'assets/img/avatar-default.svg',
@@ -390,8 +409,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Elena Yujra',
             telefono_emergencia: '+591 76549871',
             talla_traje: 'M',
-            bloque_id: 'machas',
-            bloque_nombre: 'Bloque Machas Wistus',
+            bloque_id: 'hombres',
+            bloque_nombre: 'Bloque Hombres',
+            filial_id: 'cochabamba',
+            filial_nombre: 'Cochabamba',
             rol_fraternal: 'Fraterno Titular',
             antiguedad_anios: 2,
             foto: 'assets/img/avatar-default.svg',
@@ -418,8 +439,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Saul Condori',
             telefono_emergencia: '+591 79123847',
             talla_traje: 'S',
-            bloque_id: 'imillas',
-            bloque_nombre: 'Bloque Imillas Wistus',
+            bloque_id: 'mujeres',
+            bloque_nombre: 'Bloque Mujeres',
+            filial_id: 'santa_cruz',
+            filial_nombre: 'Santa Cruz',
             rol_fraternal: 'Fraterna Titular',
             antiguedad_anios: 1,
             foto: 'assets/img/avatar-default.svg',
@@ -447,8 +470,10 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Carmen Huanca',
             telefono_emergencia: '+591 76401928',
             talla_traje: 'M',
-            bloque_id: 'choclos',
-            bloque_nombre: 'Bloque Choclos',
+            bloque_id: 'mujeres',
+            bloque_nombre: 'Bloque Mujeres',
+            filial_id: 'peru',
+            filial_nombre: 'Perú',
             rol_fraternal: 'Fraterna Aspirante',
             antiguedad_anios: 1,
             foto: 'assets/img/avatar-default.svg',
@@ -529,11 +554,23 @@ class WistusDataGenerator {
         if (options.bloque_id) {
             bloque = bloques.find(b => b.id === options.bloque_id);
         }
-        if (!bloque && bloques.length > 0) {
-            bloque = bloques[Math.floor(Math.random() * Math.max(1, bloques.length - 1))];
-        }
         if (!bloque) {
-            bloque = { id: 'machas', name: 'Bloque Machas Wistus' };
+            const targetId = isFemale ? 'mujeres' : 'hombres';
+            bloque = bloques.find(b => b.id === targetId) || (isFemale ? { id: 'mujeres', name: 'Bloque Mujeres' } : { id: 'hombres', name: 'Bloque Hombres' });
+        }
+
+        const filiales = DEFAULT_PORTAL_CONFIG.filiales || [];
+        let filial = null;
+        if (options.filial_id) {
+            filial = filiales.find(f => f.id === options.filial_id);
+        }
+        if (!filial) {
+            // Asignación ponderada hacia Matriz (La Paz) o aleatoria
+            if (Math.random() < 0.6) {
+                filial = filiales.find(f => f.id === 'matriz_lp') || { id: 'matriz_lp', name: 'Matriz (La Paz)' };
+            } else {
+                filial = filiales[Math.floor(Math.random() * filiales.length)] || { id: 'matriz_lp', name: 'Matriz (La Paz)' };
+            }
         }
 
         const antiguedad = options.antiguedad_anios !== undefined ? options.antiguedad_anios : Math.floor(1 + Math.random() * 6);
@@ -617,6 +654,8 @@ class WistusDataGenerator {
             talla_traje: ['S', 'M', 'L', 'XL'][Math.floor(Math.random() * 4)],
             bloque_id: bloque.id,
             bloque_nombre: bloque.name,
+            filial_id: filial.id,
+            filial_nombre: filial.name,
             rol_fraternal: rol,
             antiguedad_anios: antiguedad,
             foto: 'assets/img/avatar-default.svg',
@@ -649,4 +688,7 @@ class WistusDataGenerator {
 window.DEFAULT_PORTAL_CONFIG = DEFAULT_PORTAL_CONFIG;
 window.WistusDataGenerator = WistusDataGenerator;
 window.BOLIVIAN_BANKS = DEFAULT_PORTAL_CONFIG.bancos_disponibles;
+window.BLOQUES_OFICIALES = DEFAULT_PORTAL_CONFIG.bloques;
+window.FILIALES_OFICIALES = DEFAULT_PORTAL_CONFIG.filiales;
+
 

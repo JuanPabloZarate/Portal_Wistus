@@ -49,8 +49,24 @@ class PortalStateManager {
                     if (!parsed.eventos || parsed.eventos.length === 0) {
                         parsed.eventos = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.eventos));
                     }
-                    if (!parsed.bloques || parsed.bloques.length === 0) {
-                        parsed.bloques = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.bloques));
+                    // Sincronizar bloques y filiales oficiales vigentes
+                    parsed.bloques = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.bloques));
+                    parsed.filiales = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.filiales));
+
+                    // Normalizar miembros al nuevo esquema de 2 bloques y 7 filiales oficiales
+                    if (Array.isArray(parsed.miembros)) {
+                        parsed.miembros.forEach(m => {
+                            if (!m.bloque_id || (m.bloque_id !== 'hombres' && m.bloque_id !== 'mujeres')) {
+                                const bRaw = String(m.bloque_id || '').toLowerCase() + ' ' + String(m.bloque_nombre || '').toLowerCase();
+                                const isFemale = bRaw.includes('imilla') || bRaw.includes('choclo') || bRaw.includes('wanlli') || bRaw.includes('mujer');
+                                m.bloque_id = isFemale ? 'mujeres' : 'hombres';
+                                m.bloque_nombre = isFemale ? 'Bloque Mujeres' : 'Bloque Hombres';
+                            }
+                            if (!m.filial_id) {
+                                m.filial_id = 'matriz_lp';
+                                m.filial_nombre = 'Matriz (La Paz)';
+                            }
+                        });
                     }
 
                     this.saveState(parsed);
@@ -173,8 +189,10 @@ class PortalStateManager {
             contacto_emergencia: memberData.contacto_emergencia || '',
             telefono_emergencia: memberData.telefono_emergencia || '',
             talla_traje: memberData.talla_traje || 'M',
-            bloque_id: memberData.bloque_id || 'machas',
-            bloque_nombre: memberData.bloque_nombre || 'Bloque Machas Wistus',
+            bloque_id: memberData.bloque_id || 'hombres',
+            bloque_nombre: memberData.bloque_nombre || 'Bloque Hombres',
+            filial_id: memberData.filial_id || 'matriz_lp',
+            filial_nombre: memberData.filial_nombre || 'Matriz (La Paz)',
             rol_fraternal: memberData.rol_fraternal || 'Fraterno Titular',
             antiguedad_anios: parseInt(memberData.antiguedad_anios, 10) || 1,
             foto: memberData.foto || 'assets/img/avatar-default.svg',
@@ -615,8 +633,10 @@ class PortalStateManager {
                     member_ci: m.ci,
                     member_nombre: `${m.nombres} ${m.apellidos}`,
                     member_telefono: m.telefono || '',
-                    bloque_id: m.bloque_id,
-                    bloque_nombre: m.bloque_nombre
+                    bloque_id: m.bloque_id || 'hombres',
+                    bloque_nombre: m.bloque_nombre || 'Bloque Hombres',
+                    filial_id: m.filial_id || 'matriz_lp',
+                    filial_nombre: m.filial_nombre || 'Matriz (La Paz)'
                 });
             });
         });
@@ -709,13 +729,15 @@ class PortalStateManager {
         let fraternosAlDia = 0;
         let fraternosConSaldo = 0;
 
-        const bloquesConfig = DEFAULT_PORTAL_CONFIG.bloques || [];
+        const bloquesConfig = (this.state && Array.isArray(this.state.bloques) && this.state.bloques.length > 0)
+            ? this.state.bloques
+            : (DEFAULT_PORTAL_CONFIG.bloques || []);
         const bloquesMap = {};
         bloquesConfig.forEach(b => {
             bloquesMap[b.id] = {
                 id: b.id,
                 name: b.name,
-                color: b.color,
+                color: b.color || '#3b82f6',
                 total_miembros: 0,
                 recaudado: 0,
                 proyectado: 0,
@@ -725,12 +747,12 @@ class PortalStateManager {
         });
 
         members.forEach(m => {
-            const bId = m.bloque_id || 'machas';
+            const bId = (m.bloque_id === 'mujeres' || m.bloque_id === 'hombres') ? m.bloque_id : 'hombres';
             if (!bloquesMap[bId]) {
                 bloquesMap[bId] = {
                     id: bId,
-                    name: m.bloque_nombre || bId,
-                    color: '#7c3aed',
+                    name: m.bloque_nombre || (bId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres'),
+                    color: bId === 'mujeres' ? '#ec4899' : '#3b82f6',
                     total_miembros: 0,
                     recaudado: 0,
                     proyectado: 0,
@@ -774,6 +796,64 @@ class PortalStateManager {
             pendingVouchersMonto: pendingMonto,
             porBloque
         };
+    }
+
+    getBloques() {
+        return (this.state && Array.isArray(this.state.bloques) && this.state.bloques.length > 0)
+            ? this.state.bloques
+            : (DEFAULT_PORTAL_CONFIG.bloques || []);
+    }
+
+    getFiliales() {
+        return (this.state && Array.isArray(this.state.filiales) && this.state.filiales.length > 0)
+            ? this.state.filiales
+            : (DEFAULT_PORTAL_CONFIG.filiales || []);
+    }
+
+    getStatsByFilial() {
+        const members = this.getMembers();
+        const filialesConfig = this.getFiliales();
+        const filialesMap = {};
+
+        filialesConfig.forEach(f => {
+            filialesMap[f.id] = {
+                id: f.id,
+                name: f.name,
+                pais: f.pais || 'Bolivia',
+                sede: f.sede || '',
+                total_miembros: 0,
+                hombres: 0,
+                mujeres: 0,
+                recaudado: 0
+            };
+        });
+
+        members.forEach(m => {
+            const fId = m.filial_id || 'matriz_lp';
+            if (!filialesMap[fId]) {
+                filialesMap[fId] = {
+                    id: fId,
+                    name: m.filial_nombre || fId,
+                    pais: 'Bolivia',
+                    sede: '',
+                    total_miembros: 0,
+                    hombres: 0,
+                    mujeres: 0,
+                    recaudado: 0
+                };
+            }
+            filialesMap[fId].total_miembros++;
+            if (m.bloque_id === 'mujeres') {
+                filialesMap[fId].mujeres++;
+            } else {
+                filialesMap[fId].hombres++;
+            }
+
+            const pagado = (m.pagos || []).reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
+            filialesMap[fId].recaudado += pagado;
+        });
+
+        return Object.values(filialesMap);
     }
 
 

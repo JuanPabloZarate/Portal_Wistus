@@ -548,11 +548,11 @@ class AsistenciasManager {
         csv += `Evento:,"${evTitle}"\n`;
         csv += `Fecha:,"${ev ? ev.fecha : ''}"\n`;
         csv += `Lugar:,"${ev ? ev.lugar : ''}"\n\n`;
-        csv += `CI,Expedido,Nombres,Apellidos,Bloque,Rol,Estado_Asistencia,Hora_Registro,Marcado_Por\n`;
+        csv += `CI,Expedido,Nombres,Apellidos,Bloque,Filial,Rol,Estado_Asistencia,Hora_Registro,Marcado_Por\n`;
 
         members.forEach(m => {
             const reg = (m.asistencias && m.asistencias[this.currentEventId]) || { estado: 'pendiente', hora: '', marcado_por: '' };
-            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.bloque_nombre}","${m.rol_fraternal}","${reg.estado}","${reg.hora || ''}","${reg.marcado_por || ''}"\n`;
+            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.bloque_nombre || 'Bloque Hombres'}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${reg.estado}","${reg.hora || ''}","${reg.marcado_por || ''}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -818,7 +818,7 @@ class AsistenciasManager {
         if (txtCI) txtCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
 
         const txtBloque = document.getElementById('scanResBloque');
-        if (txtBloque) txtBloque.textContent = `${member.bloque_nombre} • ${member.rol_fraternal}`;
+        if (txtBloque) txtBloque.textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'} • ${member.rol_fraternal || 'Fraterno Titular'}`;
 
         const txtHora = document.getElementById('scanResHora');
         if (txtHora) txtHora.textContent = `${hora}`;
