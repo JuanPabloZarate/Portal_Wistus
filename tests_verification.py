@@ -990,6 +990,224 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertIn('Filial Internacional', landing_content)
         self.assertIn('Matriz (La Paz)', landing_content)
 
+    def test_33_mesa_directiva_gestion_edicion_total_y_base_eliminados(self):
+        """Verifica la gestión integral de edición de fraternos y la base de eliminados para la Mesa Directiva."""
+        # 1. Configuración de datos
+        data_js_path = os.path.join(JS_DIR, 'data.js')
+        with open(data_js_path, 'r', encoding='utf-8') as f:
+            data_content = f.read()
+        self.assertIn('eliminados: []', data_content, "DEFAULT_PORTAL_CONFIG debe incluir eliminados: []")
+        self.assertIn('purgados: []', data_content, "DEFAULT_PORTAL_CONFIG debe incluir purgados: []")
+        self.assertIn('ci_modificados: {}', data_content, "DEFAULT_PORTAL_CONFIG debe incluir ci_modificados: {}")
+
+        # 2. Métodos del StateManager
+        state_js_path = os.path.join(JS_DIR, 'state.js')
+        with open(state_js_path, 'r', encoding='utf-8') as f:
+            state_content = f.read()
+        self.assertIn('getEliminados()', state_content)
+        self.assertIn('getEliminadoByCI(', state_content)
+        self.assertIn('deleteMember(', state_content)
+        self.assertIn('restoreMember(', state_content)
+        self.assertIn('permanentlyDeleteEliminado(', state_content)
+        self.assertIn('parsed.eliminados', state_content)
+        self.assertIn('parsed.purgados', state_content)
+        self.assertIn('parsed.ci_modificados', state_content)
+
+        # 2b. Métodos en DBService
+        db_js_path = os.path.join(JS_DIR, 'db-service.js')
+        with open(db_js_path, 'r', encoding='utf-8') as f:
+            db_content = f.read()
+        self.assertIn('deleteFraterno(', db_content)
+        self.assertIn('restoreFraterno(', db_content)
+        self.assertIn('purgeEliminado(', db_content)
+        self.assertIn('oldCI = null', db_content)
+
+        # 3. Métodos en MiembrosManager
+        miembros_js_path = os.path.join(JS_DIR, 'miembros.js')
+        with open(miembros_js_path, 'r', encoding='utf-8') as f:
+            miembros_content = f.read()
+        self.assertIn('openEditMemberModal(', miembros_content)
+        self.assertIn('submitEditMember()', miembros_content)
+        self.assertIn('promptDeleteMember(', miembros_content)
+        self.assertIn('submitDeleteMember()', miembros_content)
+        self.assertIn('openEliminadosModal()', miembros_content)
+        self.assertIn('renderEliminadosTable()', miembros_content)
+        self.assertIn('restoreMember(', miembros_content)
+        self.assertIn('permanentlyDeleteMember(', miembros_content)
+        self.assertIn('openEditFromKardex()', miembros_content)
+        self.assertIn('promptDeleteFromKardex()', miembros_content)
+
+        # 4. Contratos DOM en index.html
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Botón y badges en la cabecera del padrón
+        self.assertIn('id="btnOpenBaseEliminados"', index_content)
+        self.assertIn('id="badgeCountEliminados"', index_content)
+
+        # Acciones de edición y baja en kardex
+        self.assertIn('onclick="window.Miembros.openEditFromKardex()"', index_content)
+        self.assertIn('onclick="window.Miembros.promptDeleteFromKardex()"', index_content)
+
+        # Modal de edición completa con todos los campos
+        self.assertIn('id="modalEditMember"', index_content)
+        self.assertIn('id="editMemberOriginalCI"', index_content)
+        self.assertIn('id="editMemberCI"', index_content)
+        self.assertIn('id="editMemberExp"', index_content)
+        self.assertIn('id="editMemberFechaNac"', index_content)
+        self.assertIn('id="editMemberTalla"', index_content)
+        self.assertIn('id="editMemberNombres"', index_content)
+        self.assertIn('id="editMemberApellidos"', index_content)
+        self.assertIn('id="editMemberFoto"', index_content)
+        self.assertIn('id="editMemberTelefono"', index_content)
+        self.assertIn('id="editMemberEmail"', index_content)
+        self.assertIn('id="editMemberContactoEmergencia"', index_content)
+        self.assertIn('id="editMemberTelefonoEmergencia"', index_content)
+        self.assertIn('id="editMemberFilial"', index_content)
+        self.assertIn('id="editMemberRol"', index_content)
+        self.assertIn('id="editMemberAntiguedad"', index_content)
+        self.assertIn('id="editMemberEstado"', index_content)
+        self.assertIn('onclick="window.Miembros.submitEditMember()"', index_content)
+        self.assertIn('value="Guía General"', index_content, "editMemberRol debe incluir rol Guía General")
+
+        # Modal de confirmación de baja
+        self.assertIn('id="modalConfirmDeleteMember"', index_content)
+        self.assertIn('id="confirmDeleteMemberName"', index_content)
+        self.assertIn('id="confirmDeleteMemberCI"', index_content)
+        self.assertIn('id="confirmDeleteMemberFilial"', index_content)
+        self.assertIn('id="inputDeleteMemberMotivo"', index_content)
+        self.assertIn('onclick="window.Miembros.submitDeleteMember()"', index_content)
+
+        # Modal de Base de Eliminados
+        self.assertIn('id="modalBaseEliminados"', index_content)
+        self.assertIn('id="countEliminadosTotal"', index_content)
+        self.assertIn('id="searchEliminadosInput"', index_content)
+        self.assertIn('id="tableBaseEliminadosBody"', index_content)
+
+        # 5. Simulación funcional en Python de las transiciones de estado
+        class MockPortalStateManager:
+            def __init__(self):
+                self.default_miembros = [
+                    {
+                        'ci': '4839201', 'ci_exp': 'LP', 'nombres': 'Juan Pablo', 'apellidos': 'Quispe Mamani',
+                        'filial_id': 'matriz_lp', 'filial_nombre': 'Matriz (La Paz)', 'rol_fraternal': 'Guía General',
+                        'antiguedad_anios': 5, 'estado_fraterno': 'activo', 'telefono': '+591 76543210',
+                        'email': 'juan@wistus.bo', 'fecha_nacimiento': '1995-04-18', 'talla_traje': 'L',
+                        'contacto_emergencia': 'Mama', 'telefono_emergencia': '71234567',
+                        'asistencias': {'ev_1': {'estado': 'presente'}}, 'pagos': [{'monto': 250}]
+                    }
+                ]
+                self.miembros = [dict(self.default_miembros[0])]
+                self.eliminados = []
+                self.purgados = []
+                self.ci_modificados = {}
+
+            def update_member(self, ci, updates):
+                m = next((x for x in self.miembros if x['ci'] == ci), None)
+                if not m: raise ValueError("No encontrado")
+                if 'ci' in updates and updates['ci'] != m['ci']:
+                    new_ci = updates['ci']
+                    if any(x['ci'] == new_ci for x in self.miembros if x != m):
+                        raise ValueError("Colisión en padrón activo")
+                    if any(x['ci'] == new_ci for x in self.eliminados):
+                        raise ValueError("Colisión con eliminados")
+                    old_ci = m['ci']
+                    m['ci_original'] = m.get('ci_original', old_ci)
+                    self.ci_modificados[old_ci] = new_ci
+                m.update(updates)
+                return m
+
+            def delete_member(self, ci, motivo="Baja directiva"):
+                idx = next((i for i, x in enumerate(self.miembros) if x['ci'] == ci), -1)
+                if idx == -1: raise ValueError("No encontrado")
+                m = self.miembros.pop(idx)
+                rec = {**m, 'estado_fraterno': 'eliminado', 'motivo_eliminacion': motivo, 'eliminado_por': 'Mesa Directiva'}
+                self.eliminados.insert(0, rec)
+                return rec
+
+            def restore_member(self, ci):
+                idx = next((i for i, x in enumerate(self.eliminados) if x['ci'] == ci), -1)
+                if idx == -1: raise ValueError("No encontrado en eliminados")
+                rec = self.eliminados.pop(idx)
+                restored = {**rec, 'estado_fraterno': 'activo'}
+                if ci in self.purgados:
+                    self.purgados.remove(ci)
+                self.miembros.insert(0, restored)
+                return restored
+
+            def permanently_delete_eliminado(self, ci):
+                idx = next((i for i, x in enumerate(self.eliminados) if x['ci'] == ci), -1)
+                if idx == -1: return False
+                purged = self.eliminados.pop(idx)
+                if ci not in self.purgados:
+                    self.purgados.append(ci)
+                if purged.get('ci_original') and purged['ci_original'] not in self.purgados:
+                    self.purgados.append(purged['ci_original'])
+                return True
+
+            def reload_state(self):
+                # Simula la reconciliación de loadState() sin revivir modificados, eliminados ni purgados
+                for defaultM in self.default_miembros:
+                    d_ci = defaultM['ci']
+                    is_elim = any(e['ci'] == d_ci or e.get('ci_original') == d_ci for e in self.eliminados)
+                    is_purg = d_ci in self.purgados or self.ci_modificados.get(d_ci) in self.purgados
+                    is_renom = any(m['ci'] == d_ci or m.get('ci_original') == d_ci or self.ci_modificados.get(d_ci) == m['ci'] for m in self.miembros)
+                    if not (is_elim or is_purg or is_renom):
+                        self.miembros.insert(0, dict(defaultM))
+
+        mgr = MockPortalStateManager()
+        # Edición total de fraterno con cambio de CI
+        updated = mgr.update_member('4839201', {
+            'ci': '5555555',
+            'nombres': 'Juan Pablo Modificado',
+            'talla_traje': 'XL',
+            'filial_id': 'cochabamba',
+            'filial_nombre': 'Cochabamba',
+            'antiguedad_anios': 6
+        })
+        self.assertEqual(updated['ci'], '5555555')
+        self.assertEqual(updated['nombres'], 'Juan Pablo Modificado')
+        self.assertEqual(updated['talla_traje'], 'XL')
+        self.assertEqual(updated['filial_nombre'], 'Cochabamba')
+        self.assertEqual(updated['antiguedad_anios'], 6)
+
+        # Verificar que el reload no duplique el miembro con el CI viejo
+        mgr.reload_state()
+        self.assertEqual(len(mgr.miembros), 1, "No debe duplicarse el miembro con su CI antiguo")
+        self.assertEqual(mgr.miembros[0]['ci'], '5555555')
+
+        # Pasar a base de eliminados
+        elim_rec = mgr.delete_member('5555555', 'Retiro temporal solicitado')
+        self.assertEqual(len(mgr.miembros), 0)
+        self.assertEqual(len(mgr.eliminados), 1)
+        self.assertEqual(elim_rec['estado_fraterno'], 'eliminado')
+        self.assertEqual(elim_rec['motivo_eliminacion'], 'Retiro temporal solicitado')
+        self.assertEqual(elim_rec['asistencias']['ev_1']['estado'], 'presente', "El historial debe conservarse intacto")
+        self.assertEqual(len(elim_rec['pagos']), 1, "Los pagos deben conservarse")
+
+        # Verificar que el reload no reviva el miembro eliminado
+        mgr.reload_state()
+        self.assertEqual(len(mgr.miembros), 0, "No debe revivir el miembro eliminado")
+
+        # Restaurar desde base de eliminados
+        restored = mgr.restore_member('5555555')
+        self.assertEqual(len(mgr.miembros), 1)
+        self.assertEqual(len(mgr.eliminados), 0)
+        self.assertEqual(restored['estado_fraterno'], 'activo')
+        self.assertEqual(restored['nombres'], 'Juan Pablo Modificado')
+
+        # Pasar nuevamente a eliminados y purgar permanentemente
+        mgr.delete_member('5555555', 'Baja definitiva')
+        purged = mgr.permanently_delete_eliminado('5555555')
+        self.assertTrue(purged)
+        self.assertEqual(len(mgr.eliminados), 0)
+        self.assertEqual(len(mgr.miembros), 0)
+
+        # Verificar que tras purga definitiva, el reload NO reviva el miembro base
+        mgr.reload_state()
+        self.assertEqual(len(mgr.miembros), 0, "No debe revivir tras purga permanente")
+
 if __name__ == '__main__':
     unittest.main()
 

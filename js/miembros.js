@@ -75,6 +75,10 @@ class MiembrosManager {
         const elTotalCount = document.getElementById('dirCountTotal');
         if (elTotalCount) elTotalCount.textContent = total;
 
+        const countEliminados = (window.PortalState && window.PortalState.getEliminados) ? window.PortalState.getEliminados().length : 0;
+        const elEliminadosBadge = document.getElementById('badgeCountEliminados');
+        if (elEliminadosBadge) elEliminadosBadge.textContent = countEliminados;
+
         const filialesBadgesContainer = document.getElementById('distFilialesBadgesContainer');
         if (filialesBadgesContainer) {
             let fHtml = '';
@@ -160,8 +164,11 @@ class MiembrosManager {
                 </td>
                 <td class="text-end">
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Gestionar Filial">
+                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Kardex">
                             <i class="bi bi-person-gear"></i> Ficha & Filial
+                        </button>
+                        <button class="btn btn-outline-warning text-dark" onclick="window.Miembros.openEditMemberModal('${m.ci}')" title="Editar Fraterno en su totalidad (Directiva)">
+                            <i class="bi bi-pencil-square"></i> Editar
                         </button>
                         <button class="btn btn-outline-success" onclick="window.Pagos.openRegisterPaymentModal('${m.ci}')" title="Cobrar Cuota">
                             <i class="bi bi-cash"></i> Cobrar
@@ -183,10 +190,11 @@ class MiembrosManager {
     }
 
     viewMemberDetails(ci) {
-        const member = window.PortalState.getMemberByCI(ci);
+        const member = window.PortalState.getMemberByCI(ci) || (window.PortalState.getEliminadoByCI ? window.PortalState.getEliminadoByCI(ci) : null);
         if (!member) return;
 
         this.currentKardexCI = member.ci;
+        const isEliminado = member.estado_fraterno === 'eliminado';
 
         document.getElementById('kardexNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('kardexCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
@@ -194,7 +202,10 @@ class MiembrosManager {
         if (elBloque) elBloque.textContent = member.filial_nombre || 'Matriz (La Paz)';
         const elFilial = document.getElementById('kardexFilial');
         if (elFilial) elFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
-        document.getElementById('kardexRol').textContent = member.rol_fraternal || 'Fraterno Titular';
+        const elRol = document.getElementById('kardexRol');
+        if (elRol) {
+            elRol.textContent = isEliminado ? `${member.rol_fraternal || 'Fraterno Titular'} (Baja Directiva)` : (member.rol_fraternal || 'Fraterno Titular');
+        }
         document.getElementById('kardexAntiguedad').textContent = `${member.antiguedad_anios || 1} años`;
         document.getElementById('kardexTelefono').textContent = member.telefono || 'Sin teléfono';
         document.getElementById('kardexFoto').src = member.foto || 'assets/img/avatar-default.svg';
@@ -236,7 +247,7 @@ class MiembrosManager {
 
         const modalEl = document.getElementById('modalMemberKardex');
         if (modalEl && window.bootstrap) {
-            const bsModal = new bootstrap.Modal(modalEl);
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
             bsModal.show();
         }
     }
@@ -353,6 +364,405 @@ class MiembrosManager {
         document.body.removeChild(link);
 
         window.PortalApp.showToast('Padrón descargado en formato CSV compatible con Excel.');
+    }
+
+    openEditFromKardex() {
+        if (!this.currentKardexCI) return;
+        const targetCI = this.currentKardexCI;
+        const modalEl = document.getElementById('modalMemberKardex');
+        if (modalEl && window.bootstrap) {
+            const bsModal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+            if (bsModal) bsModal.hide();
+        }
+        setTimeout(() => {
+            this.openEditMemberModal(targetCI);
+        }, 150);
+    }
+
+    promptDeleteFromKardex() {
+        if (!this.currentKardexCI) return;
+        const targetCI = this.currentKardexCI;
+        const modalEl = document.getElementById('modalMemberKardex');
+        if (modalEl && window.bootstrap) {
+            const bsModal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+            if (bsModal) bsModal.hide();
+        }
+        setTimeout(() => {
+            this.promptDeleteMember(targetCI);
+        }, 150);
+    }
+
+    openEditMemberModal(ci) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede editar la ficha completa de un fraterno.', 'danger');
+            return;
+        }
+
+        const member = window.PortalState.getMemberByCI(ci) || (window.PortalState.getEliminadoByCI ? window.PortalState.getEliminadoByCI(ci) : null);
+        if (!member) {
+            if (window.PortalApp) window.PortalApp.showToast('Fraterno no encontrado para edición.', 'danger');
+            return;
+        }
+        this.currentEditCI = member.ci;
+
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (val !== undefined && val !== null) ? val : '';
+        };
+
+        setVal('editMemberOriginalCI', member.ci);
+        setVal('editMemberCI', member.ci);
+        setVal('editMemberExp', member.ci_exp || 'LP');
+        setVal('editMemberNombres', member.nombres || '');
+        setVal('editMemberApellidos', member.apellidos || '');
+        setVal('editMemberTelefono', member.telefono || '');
+        setVal('editMemberEmail', member.email || '');
+        setVal('editMemberFechaNac', member.fecha_nacimiento || '');
+        setVal('editMemberFoto', member.foto || '');
+        setVal('editMemberContactoEmergencia', member.contacto_emergencia || '');
+        setVal('editMemberTelefonoEmergencia', member.telefono_emergencia || '');
+        setVal('editMemberAntiguedad', member.antiguedad_anios || 1);
+        setVal('editMemberEstado', member.estado_fraterno || 'activo');
+
+        // Manejo dinámico seguro de talla
+        const tallaSel = document.getElementById('editMemberTalla');
+        if (tallaSel) {
+            const targetTalla = member.talla_traje || 'M';
+            let exists = Array.from(tallaSel.options).some(o => o.value === targetTalla);
+            if (!exists && targetTalla) {
+                const opt = document.createElement('option');
+                opt.value = targetTalla;
+                opt.textContent = targetTalla;
+                tallaSel.appendChild(opt);
+            }
+            tallaSel.value = targetTalla;
+        }
+
+        // Manejo dinámico seguro de rol fraternal (evita pérdida de Guía General u otros)
+        const rolSel = document.getElementById('editMemberRol');
+        if (rolSel) {
+            const targetRol = member.rol_fraternal || 'Fraterno Titular';
+            let exists = Array.from(rolSel.options).some(o => o.value === targetRol);
+            if (!exists && targetRol) {
+                const opt = document.createElement('option');
+                opt.value = targetRol;
+                opt.textContent = targetRol;
+                rolSel.appendChild(opt);
+            }
+            rolSel.value = targetRol;
+        }
+
+        // Manejo seguro de filial oficial
+        const filialSel = document.getElementById('editMemberFilial');
+        if (filialSel) {
+            const targetFilial = member.filial_id || 'matriz_lp';
+            let exists = Array.from(filialSel.options).some(o => o.value === targetFilial);
+            if (!exists && targetFilial) {
+                const opt = document.createElement('option');
+                opt.value = targetFilial;
+                opt.textContent = member.filial_nombre || targetFilial;
+                filialSel.appendChild(opt);
+            }
+            filialSel.value = targetFilial;
+        }
+
+        const modalEl = document.getElementById('modalEditMember');
+        if (modalEl && window.bootstrap) {
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bsModal.show();
+        }
+    }
+
+    submitEditMember() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede modificar datos oficiales.', 'danger');
+            return;
+        }
+
+        const origCI = (document.getElementById('editMemberOriginalCI') ? document.getElementById('editMemberOriginalCI').value : this.currentEditCI) || '';
+        if (!origCI) return;
+
+        const newCI = (document.getElementById('editMemberCI') ? document.getElementById('editMemberCI').value.trim() : '');
+        const exp = document.getElementById('editMemberExp') ? document.getElementById('editMemberExp').value : 'LP';
+        const nombres = document.getElementById('editMemberNombres') ? document.getElementById('editMemberNombres').value.trim() : '';
+        const apellidos = document.getElementById('editMemberApellidos') ? document.getElementById('editMemberApellidos').value.trim() : '';
+        const telefono = document.getElementById('editMemberTelefono') ? document.getElementById('editMemberTelefono').value.trim() : '';
+        const email = document.getElementById('editMemberEmail') ? document.getElementById('editMemberEmail').value.trim() : '';
+        const fechaNac = document.getElementById('editMemberFechaNac') ? document.getElementById('editMemberFechaNac').value : '';
+        const talla = document.getElementById('editMemberTalla') ? document.getElementById('editMemberTalla').value : 'M';
+        const foto = document.getElementById('editMemberFoto') ? document.getElementById('editMemberFoto').value.trim() : '';
+        const contactoEmergencia = document.getElementById('editMemberContactoEmergencia') ? document.getElementById('editMemberContactoEmergencia').value.trim() : '';
+        const telEmergencia = document.getElementById('editMemberTelefonoEmergencia') ? document.getElementById('editMemberTelefonoEmergencia').value.trim() : '';
+        const filialId = document.getElementById('editMemberFilial') ? document.getElementById('editMemberFilial').value : 'matriz_lp';
+        const rol = document.getElementById('editMemberRol') ? document.getElementById('editMemberRol').value : 'Fraterno Titular';
+        const antiguedad = document.getElementById('editMemberAntiguedad') ? parseInt(document.getElementById('editMemberAntiguedad').value, 10) || 1 : 1;
+        const estado = document.getElementById('editMemberEstado') ? document.getElementById('editMemberEstado').value : 'activo';
+
+        if (!newCI || !nombres || !apellidos) {
+            window.PortalApp.showToast('CI, nombres y apellidos son campos obligatorios.', 'warning');
+            return;
+        }
+
+        const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
+        const filialObj = filialesDef.find(f => f.id === filialId);
+        const filialNombre = filialObj ? filialObj.name : 'Matriz (La Paz)';
+
+        const updates = {
+            ci: newCI,
+            ci_exp: exp,
+            nombres,
+            apellidos,
+            telefono,
+            email,
+            fecha_nacimiento: fechaNac,
+            talla_traje: talla,
+            foto: foto || 'assets/img/avatar-default.svg',
+            contacto_emergencia: contactoEmergencia,
+            telefono_emergencia: telEmergencia,
+            filial_id: filialId,
+            filial_nombre: filialNombre,
+            rol_fraternal: rol,
+            antiguedad_anios: antiguedad,
+            estado_fraterno: estado
+        };
+
+        try {
+            const updated = window.PortalState.updateMember(origCI, updates);
+
+            // Sincronizar referencias internas
+            this.currentEditCI = updated.ci;
+            if (this.currentKardexCI === origCI) this.currentKardexCI = updated.ci;
+            const origEl = document.getElementById('editMemberOriginalCI');
+            if (origEl) origEl.value = updated.ci;
+
+            const modalEl = document.getElementById('modalEditMember');
+            if (modalEl && window.bootstrap) {
+                const bsModal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+                if (bsModal) bsModal.hide();
+            }
+
+            this.renderControlDirectory();
+            window.PortalApp.showToast(`¡Fraterno ${updated.nombres} ${updated.apellidos} actualizado exitosamente!`, 'success');
+        } catch (err) {
+            window.PortalApp.showToast(err.message, 'danger');
+        }
+    }
+
+    promptDeleteMember(ci) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede dar de baja fraternos.', 'danger');
+            return;
+        }
+
+        const origInputCI = document.getElementById('editMemberOriginalCI') ? document.getElementById('editMemberOriginalCI').value : null;
+        const targetCI = ci || origInputCI || this.currentEditCI || this.currentKardexCI;
+        if (!targetCI) return;
+        const member = window.PortalState.getMemberByCI(targetCI);
+        if (!member) {
+            window.PortalApp.showToast('Fraterno no encontrado para dar de baja.', 'danger');
+            return;
+        }
+
+        this.pendingDeleteCI = member.ci;
+        const nombreEl = document.getElementById('confirmDeleteMemberName');
+        const ciEl = document.getElementById('confirmDeleteMemberCI');
+        const filialEl = document.getElementById('confirmDeleteMemberFilial');
+        const motivoInput = document.getElementById('inputDeleteMemberMotivo');
+
+        if (nombreEl) nombreEl.textContent = `${member.nombres} ${member.apellidos}`;
+        if (ciEl) ciEl.textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
+        if (filialEl) filialEl.textContent = member.filial_nombre || 'Matriz (La Paz)';
+        if (motivoInput) motivoInput.value = 'Baja aprobada por Mesa Directiva - Carnaval de Oruro 2027';
+
+        // Cerrar modal de edición o kardex si están abiertos
+        const editModalEl = document.getElementById('modalEditMember');
+        if (editModalEl && window.bootstrap) {
+            const bsEdit = bootstrap.Modal.getInstance(editModalEl) || bootstrap.Modal.getOrCreateInstance(editModalEl);
+            if (bsEdit) bsEdit.hide();
+        }
+        const kardexModalEl = document.getElementById('modalMemberKardex');
+        if (kardexModalEl && window.bootstrap) {
+            const bsKardex = bootstrap.Modal.getInstance(kardexModalEl) || bootstrap.Modal.getOrCreateInstance(kardexModalEl);
+            if (bsKardex) bsKardex.hide();
+        }
+
+        setTimeout(() => {
+            const modalConfirm = document.getElementById('modalConfirmDeleteMember');
+            if (modalConfirm && window.bootstrap) {
+                const bsConfirm = bootstrap.Modal.getOrCreateInstance(modalConfirm);
+                bsConfirm.show();
+            } else {
+                if (confirm(`¿Confirma dar de baja y pasar a la Base de Eliminados al fraterno ${member.nombres} ${member.apellidos} (CI: ${member.ci})?`)) {
+                    this.submitDeleteMember();
+                }
+            }
+        }, 150);
+    }
+
+    submitDeleteMember() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede procesar bajas.', 'danger');
+            return;
+        }
+
+        const ci = this.pendingDeleteCI || this.currentEditCI;
+        if (!ci) return;
+        const motivoInput = document.getElementById('inputDeleteMemberMotivo');
+        const motivo = motivoInput ? motivoInput.value.trim() : 'Baja aprobada por Mesa Directiva';
+
+        try {
+            const removed = window.PortalState.deleteMember(ci, motivo);
+
+            this.pendingDeleteCI = null;
+            this.currentEditCI = null;
+            if (this.currentKardexCI === ci) this.currentKardexCI = null;
+
+            const modalConfirm = document.getElementById('modalConfirmDeleteMember');
+            if (modalConfirm && window.bootstrap) {
+                const bsConfirm = bootstrap.Modal.getInstance(modalConfirm) || bootstrap.Modal.getOrCreateInstance(modalConfirm);
+                if (bsConfirm) bsConfirm.hide();
+            }
+
+            this.renderControlDirectory();
+            window.PortalApp.showToast(`¡Fraterno ${removed.nombres} ${removed.apellidos} pasado a la Base de Eliminados!`, 'warning');
+        } catch (err) {
+            window.PortalApp.showToast(err.message, 'danger');
+        }
+    }
+
+    openEliminadosModal() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva tiene acceso a la Base de Eliminados.', 'danger');
+            return;
+        }
+
+        this.renderEliminadosTable();
+        const modalEl = document.getElementById('modalBaseEliminados');
+        if (modalEl && window.bootstrap) {
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bsModal.show();
+        }
+    }
+
+    renderEliminadosTable() {
+        const container = document.getElementById('tableBaseEliminadosBody');
+        if (!container) return;
+
+        const eliminados = window.PortalState.getEliminados ? window.PortalState.getEliminados() : [];
+        const searchInput = document.getElementById('searchEliminadosInput');
+        const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        const filtered = eliminados.filter(m => {
+            const fullName = `${m.nombres || ''} ${m.apellidos || ''}`.toLowerCase();
+            const ciStr = String(m.ci || '');
+            const motivo = String(m.motivo_eliminacion || '').toLowerCase();
+            const filial = String(m.filial_nombre || '').toLowerCase();
+            const rol = String(m.rol_fraternal || '').toLowerCase();
+            return !term || fullName.includes(term) || ciStr.includes(term) || motivo.includes(term) || filial.includes(term) || rol.includes(term);
+        });
+
+        const countEl = document.getElementById('countEliminadosTotal');
+        if (countEl) countEl.textContent = eliminados.length;
+        const badgeEl = document.getElementById('badgeCountEliminados');
+        if (badgeEl) badgeEl.textContent = eliminados.length;
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">
+                <i class="bi bi-folder-x fs-3 d-block mb-2 text-secondary opacity-50"></i>
+                No hay fraternos en la base de eliminados${term ? ' que coincidan con la búsqueda' : ''}.
+            </td></tr>`;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(m => {
+            const fechaStr = m.fecha_eliminacion ? new Date(m.fecha_eliminacion).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Fecha no registrada';
+            html += `
+            <tr class="align-middle">
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="${m.foto || 'assets/img/avatar-default.svg'}" class="rounded-circle border border-danger opacity-75" width="36" height="36" alt="Avatar">
+                        <div>
+                            <div class="fw-bold text-dark">${m.nombres} ${m.apellidos}</div>
+                            <div class="small text-muted">${m.telefono || 'Sin teléfono'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="fw-bold text-brand font-monospace">${m.ci} ${m.ci_exp || 'LP'}</span>
+                </td>
+                <td>
+                    <span class="badge bg-secondary bg-opacity-10 text-dark border border-subtle">
+                        ${m.filial_nombre || 'Matriz (La Paz)'}
+                    </span>
+                    <div class="text-muted small mt-1" style="font-size:0.75rem;">${m.rol_fraternal || 'Fraterno Titular'}</div>
+                </td>
+                <td>
+                    <div class="small text-dark fw-semibold">${fechaStr}</div>
+                    <div class="text-muted" style="font-size:0.75rem;">Por: ${m.eliminado_por || 'Mesa Directiva'}</div>
+                </td>
+                <td>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle text-wrap" style="max-width:220px;text-align:left;">
+                        ${m.motivo_eliminacion || 'Baja por Mesa Directiva'}
+                    </span>
+                </td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-success" onclick="window.Miembros.restoreMember('${m.ci}')" title="Restaurar al Padrón Activo">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Restaurar
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="window.Miembros.permanentlyDeleteMember('${m.ci}')" title="Purgar definitivamente de la base">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    restoreMember(ci) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede restaurar fraternos.', 'danger');
+            return;
+        }
+
+        try {
+            const restored = window.PortalState.restoreMember(ci);
+            this.renderControlDirectory();
+            this.renderEliminadosTable();
+            window.PortalApp.showToast(`¡Fraterno ${restored.nombres} ${restored.apellidos} restaurado con éxito al Padrón activo!`, 'success');
+        } catch (err) {
+            window.PortalApp.showToast(err.message, 'danger');
+        }
+    }
+
+    permanentlyDeleteMember(ci) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || session.role !== 'control') {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede purgar registros.', 'danger');
+            return;
+        }
+
+        if (!confirm(`¿Está seguro de eliminar definitivamente al fraterno con CI ${ci}? Esta acción no se puede deshacer.`)) {
+            return;
+        }
+        const ok = window.PortalState.permanentlyDeleteEliminado(ci);
+        if (ok) {
+            this.renderEliminadosTable();
+            const badgeEl = document.getElementById('badgeCountEliminados');
+            if (badgeEl && window.PortalState.getEliminados) {
+                badgeEl.textContent = window.PortalState.getEliminados().length;
+            }
+            window.PortalApp.showToast('Registro purgado permanentemente de la base de datos.', 'info');
+        }
     }
 }
 

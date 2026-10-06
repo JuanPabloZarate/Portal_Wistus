@@ -37,6 +37,9 @@ const DEFAULT_PORTAL_CONFIG = {
         }
     },
     bloques: [],
+    eliminados: [],
+    purgados: [],
+    ci_modificados: {},
     filiales: [
         { id: 'matriz_lp', name: 'Matriz (La Paz)', pais: 'Bolivia', sede: 'San Pedro, Calle Almirante Grau' },
         { id: 'cochabamba', name: 'Cochabamba', pais: 'Bolivia', sede: 'Filial Cochabamba' },

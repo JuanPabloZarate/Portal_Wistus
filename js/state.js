@@ -23,13 +23,53 @@ class PortalStateManager {
                     parsed.themes = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.themes));
                     parsed.control_user = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.control_user));
                     
-                    // Asegurar que los miembros oficiales base estén sincronizados
+                    if (!parsed.eliminados || !Array.isArray(parsed.eliminados)) {
+                        parsed.eliminados = [];
+                    }
+                    if (!parsed.purgados || !Array.isArray(parsed.purgados)) {
+                        parsed.purgados = [];
+                    }
+                    if (!parsed.ci_modificados || typeof parsed.ci_modificados !== 'object') {
+                        parsed.ci_modificados = {};
+                    }
+
+                    // Asegurar que los miembros oficiales base estén sincronizados sin revivir eliminados, purgados o modificados
                     if (DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
                         DEFAULT_PORTAL_CONFIG.miembros.forEach(defaultM => {
-                            const idx = parsed.miembros.findIndex(m => String(m.ci).trim() === String(defaultM.ci).trim());
-                            if (idx === -1) {
+                            const dCI = String(defaultM.ci || '').trim();
+                            const dClean = dCI.replace(/[^0-9]/g, '');
+
+                            const isEliminado = parsed.eliminados && parsed.eliminados.some(e => {
+                                const eRaw = String(e.ci || '').trim();
+                                const eOrig = String(e.ci_original || '').trim();
+                                const eClean = eRaw.replace(/[^0-9]/g, '');
+                                return eRaw.toLowerCase() === dCI.toLowerCase() || (dClean && eClean === dClean) ||
+                                       (eOrig && eOrig.toLowerCase() === dCI.toLowerCase());
+                            });
+
+                            const isPurgado = parsed.purgados && parsed.purgados.some(p => {
+                                const pRaw = String(p || '').trim();
+                                const pClean = pRaw.replace(/[^0-9]/g, '');
+                                return pRaw.toLowerCase() === dCI.toLowerCase() || (dClean && pClean === dClean);
+                            });
+
+                            const isRenombrado = (parsed.ci_modificados && parsed.ci_modificados[dCI]) ||
+                                (parsed.miembros && parsed.miembros.some(m => {
+                                    const mOrig = String(m.ci_original || '').trim();
+                                    return mOrig && mOrig.toLowerCase() === dCI.toLowerCase();
+                                }));
+
+                            const idx = parsed.miembros.findIndex(m => {
+                                const mRaw = String(m.ci || '').trim();
+                                const mOrig = String(m.ci_original || '').trim();
+                                const mClean = mRaw.replace(/[^0-9]/g, '');
+                                return mRaw.toLowerCase() === dCI.toLowerCase() || (dClean && mClean === dClean) ||
+                                       (mOrig && mOrig.toLowerCase() === dCI.toLowerCase());
+                            });
+
+                            if (idx === -1 && !isEliminado && !isPurgado && !isRenombrado) {
                                 parsed.miembros.unshift(JSON.parse(JSON.stringify(defaultM)));
-                            } else {
+                            } else if (idx !== -1) {
                                 // Enriquecer con campos base si faltaran
                                 parsed.miembros[idx] = {
                                     fecha_nacimiento: defaultM.fecha_nacimiento || '',
@@ -168,19 +208,46 @@ class PortalStateManager {
         let member = this.getMembers().find(m => {
             const mRaw = String(m.ci || '').trim();
             const mClean = mRaw.replace(/[^0-9]/g, '');
-            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+            const mOrig = String(m.ci_original || '').trim();
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI) ||
+                   (mOrig && mOrig.toLowerCase() === rawCI.toLowerCase());
         });
 
+        // Revisar si el CI fue renombrado
+        if (!member && this.state && this.state.ci_modificados && this.state.ci_modificados[rawCI]) {
+            const mappedCI = this.state.ci_modificados[rawCI];
+            member = this.getMembers().find(m => String(m.ci || '').trim().toLowerCase() === String(mappedCI).trim().toLowerCase());
+        }
+
         if (!member && DEFAULT_PORTAL_CONFIG && Array.isArray(DEFAULT_PORTAL_CONFIG.miembros)) {
-            member = DEFAULT_PORTAL_CONFIG.miembros.find(m => {
-                const mRaw = String(m.ci || '').trim();
-                const mClean = mRaw.replace(/[^0-9]/g, '');
-                return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+            const isEliminado = this.state.eliminados && this.state.eliminados.some(e => {
+                const eRaw = String(e.ci || '').trim();
+                const eClean = eRaw.replace(/[^0-9]/g, '');
+                const eOrig = String(e.ci_original || '').trim();
+                return eRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && eClean === cleanCI) ||
+                       (eOrig && eOrig.toLowerCase() === rawCI.toLowerCase());
             });
-            if (member) {
-                if (!this.state.miembros) this.state.miembros = [];
-                this.state.miembros.push(JSON.parse(JSON.stringify(member)));
-                this.saveState();
+
+            const isPurgado = this.state.purgados && this.state.purgados.some(p => {
+                const pRaw = String(p || '').trim();
+                const pClean = pRaw.replace(/[^0-9]/g, '');
+                return pRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && pClean === cleanCI);
+            });
+
+            const isRenombrado = (this.state.ci_modificados && this.state.ci_modificados[rawCI]) ||
+                this.getMembers().some(m => String(m.ci_original || '').trim().toLowerCase() === rawCI.toLowerCase());
+
+            if (!isEliminado && !isPurgado && !isRenombrado) {
+                member = DEFAULT_PORTAL_CONFIG.miembros.find(m => {
+                    const mRaw = String(m.ci || '').trim();
+                    const mClean = mRaw.replace(/[^0-9]/g, '');
+                    return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+                });
+                if (member) {
+                    if (!this.state.miembros) this.state.miembros = [];
+                    this.state.miembros.push(JSON.parse(JSON.stringify(member)));
+                    this.saveState();
+                }
             }
         }
         return member;
@@ -242,17 +309,239 @@ class PortalStateManager {
         return 0;
     }
 
+    getEliminados() {
+        return (this.state && Array.isArray(this.state.eliminados)) ? this.state.eliminados : [];
+    }
+
+    getEliminadoByCI(ci) {
+        if (!ci || !String(ci).trim()) return null;
+        const rawCI = String(ci).trim();
+        const cleanCI = rawCI.replace(/[^0-9]/g, '');
+        return this.getEliminados().find(m => {
+            const mRaw = String(m.ci || '').trim();
+            const mClean = mRaw.replace(/[^0-9]/g, '');
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+        }) || null;
+    }
+
     updateMember(ci, updates) {
         const member = this.getMemberByCI(ci);
         if (!member) throw new Error('Miembro no encontrado');
+
+        let oldCI = null;
+
+        // Validar cambio de CI si se incluye en los updates
+        if (updates.ci && String(updates.ci).trim() !== String(member.ci).trim()) {
+            const newCI = String(updates.ci).trim();
+            const cleanNewCI = newCI.replace(/[^0-9]/g, '');
+
+            // Verificar colisión en padrón activo
+            const conflict = this.getMembers().find(m => {
+                if (m === member) return false;
+                const mRaw = String(m.ci || '').trim();
+                const mClean = mRaw.replace(/[^0-9]/g, '');
+                return mRaw.toLowerCase() === newCI.toLowerCase() || (cleanNewCI && mClean === cleanNewCI);
+            });
+            if (conflict) {
+                throw new Error(`El CI ${newCI} ya está registrado para el fraterno ${conflict.nombres} ${conflict.apellidos}.`);
+            }
+
+            // Verificar colisión con eliminados
+            const conflictEliminado = this.getEliminados().find(e => {
+                const eRaw = String(e.ci || '').trim();
+                const eClean = eRaw.replace(/[^0-9]/g, '');
+                return eRaw.toLowerCase() === newCI.toLowerCase() || (cleanNewCI && eClean === cleanNewCI);
+            });
+            if (conflictEliminado) {
+                throw new Error(`El CI ${newCI} pertenece a un fraterno en la Base de Eliminados (${conflictEliminado.nombres} ${conflictEliminado.apellidos}). Restáurelo o use un CI diferente.`);
+            }
+
+            oldCI = String(member.ci).trim();
+            member.ci_original = member.ci_original || oldCI;
+
+            if (!this.state.ci_modificados) this.state.ci_modificados = {};
+            this.state.ci_modificados[oldCI] = newCI;
+
+            member.ci = newCI;
+
+            // Actualizar pagos del miembro si tenían referencia a su CI
+            if (Array.isArray(member.pagos)) {
+                member.pagos.forEach(p => { p.ci = newCI; });
+            }
+
+            // Actualizar vouchers si tenían referencia
+            if (Array.isArray(member.vouchers_pendientes)) {
+                member.vouchers_pendientes.forEach(v => { v.member_ci = newCI; if (v.ci) v.ci = newCI; });
+            }
+
+            // Actualizar sesión activa si corresponde al miembro editado
+            const session = this.getSession();
+            if (session && session.ci && String(session.ci).trim() === String(oldCI).trim()) {
+                session.ci = newCI;
+                this.setSession(session);
+            }
+        }
+
+        // Sincronizar nombre de filial oficial si cambia filial_id
+        if (updates.filial_id && !updates.filial_nombre) {
+            const filialesDef = (DEFAULT_PORTAL_CONFIG && DEFAULT_PORTAL_CONFIG.filiales) ? DEFAULT_PORTAL_CONFIG.filiales : [];
+            const filialObj = filialesDef.find(f => f.id === updates.filial_id);
+            if (filialObj) {
+                updates.filial_nombre = filialObj.name;
+            }
+        }
+
+        // Parsear antigüedad si viene como string
+        if (updates.antiguedad_anios !== undefined) {
+            updates.antiguedad_anios = parseInt(updates.antiguedad_anios, 10) || 1;
+        }
+
         Object.assign(member, updates);
         this.saveState();
 
         if (window.DBService && window.DBService.isCloudActive) {
-            window.DBService.saveFraterno(member, false).catch(err => console.warn(err));
+            window.DBService.saveFraterno(member, false, oldCI).catch(err => console.warn(err));
         }
 
         return member;
+    }
+
+    deleteMember(ci, motivo = 'Baja solicitada por Mesa Directiva') {
+        const member = this.getMemberByCI(ci);
+        if (!member) {
+            throw new Error(`Fraterno con CI ${ci} no encontrado en el padrón activo.`);
+        }
+
+        if (!this.state.miembros) this.state.miembros = [];
+        const idx = this.state.miembros.indexOf(member);
+        if (idx === -1) {
+            const rawCI = String(ci || '').trim();
+            const cleanCI = rawCI.replace(/[^0-9]/g, '');
+            const fallbackIdx = this.state.miembros.findIndex(m => {
+                const mRaw = String(m.ci || '').trim();
+                const mClean = mRaw.replace(/[^0-9]/g, '');
+                return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+            });
+            if (fallbackIdx === -1) {
+                throw new Error(`Fraterno con CI ${ci} no encontrado en el padrón activo.`);
+            }
+            this.state.miembros.splice(fallbackIdx, 1);
+        } else {
+            this.state.miembros.splice(idx, 1);
+        }
+
+        const session = this.getSession();
+        const auditor = (session && (session.nombre_completo || session.username)) ? (session.nombre_completo || session.username) : 'Mesa Directiva';
+
+        const recordEliminado = {
+            ...member,
+            estado_fraterno: 'eliminado',
+            fecha_eliminacion: new Date().toISOString(),
+            eliminado_por: auditor,
+            motivo_eliminacion: motivo || 'Baja solicitada por Mesa Directiva'
+        };
+
+        if (!this.state.eliminados || !Array.isArray(this.state.eliminados)) {
+            this.state.eliminados = [];
+        }
+        this.state.eliminados.unshift(recordEliminado);
+
+        // Si la sesión activa pertenecía al miembro dado de baja, cerrar sesión
+        if (session && session.ci && String(session.ci).trim() === String(member.ci).trim()) {
+            this.clearSession();
+        } else {
+            this.saveState();
+        }
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.deleteFraterno(member.ci, recordEliminado).catch(err => console.warn(err));
+        }
+
+        return recordEliminado;
+    }
+
+    restoreMember(ci) {
+        const rawCI = String(ci || '').trim();
+        const cleanCI = rawCI.replace(/[^0-9]/g, '');
+        if (!this.state.eliminados || !Array.isArray(this.state.eliminados)) {
+            this.state.eliminados = [];
+        }
+
+        const idx = this.state.eliminados.findIndex(m => {
+            const mRaw = String(m.ci || '').trim();
+            const mClean = mRaw.replace(/[^0-9]/g, '');
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+        });
+
+        if (idx === -1) {
+            throw new Error(`Fraterno con CI ${ci} no encontrado en la base de eliminados.`);
+        }
+
+        // Verificar colisión con padrón activo
+        const conflict = this.getMembers().find(m => {
+            const mRaw = String(m.ci || '').trim();
+            const mClean = mRaw.replace(/[^0-9]/g, '');
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+        });
+        if (conflict) {
+            throw new Error(`Ya existe un fraterno activo con el CI ${ci} (${conflict.nombres} ${conflict.apellidos}).`);
+        }
+
+        const [removedEliminado] = this.state.eliminados.splice(idx, 1);
+        const restored = { ...removedEliminado };
+        restored.estado_fraterno = 'activo';
+        restored.fecha_restauracion = new Date().toISOString();
+        delete restored.fecha_eliminacion;
+        delete restored.motivo_eliminacion;
+        delete restored.eliminado_por;
+
+        if (this.state.purgados && Array.isArray(this.state.purgados)) {
+            this.state.purgados = this.state.purgados.filter(p => String(p).trim() !== rawCI);
+        }
+
+        if (!this.state.miembros) this.state.miembros = [];
+        this.state.miembros.unshift(restored);
+
+        this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.restoreFraterno(restored.ci, restored).catch(err => console.warn(err));
+        }
+
+        return restored;
+    }
+
+    permanentlyDeleteEliminado(ci) {
+        const rawCI = String(ci || '').trim();
+        const cleanCI = rawCI.replace(/[^0-9]/g, '');
+        if (!this.state.eliminados || !Array.isArray(this.state.eliminados)) return false;
+
+        const idx = this.state.eliminados.findIndex(m => {
+            const mRaw = String(m.ci || '').trim();
+            const mClean = mRaw.replace(/[^0-9]/g, '');
+            return mRaw.toLowerCase() === rawCI.toLowerCase() || (cleanCI && mClean === cleanCI);
+        });
+
+        if (idx === -1) return false;
+        const [purged] = this.state.eliminados.splice(idx, 1);
+
+        if (!this.state.purgados || !Array.isArray(this.state.purgados)) {
+            this.state.purgados = [];
+        }
+        if (!this.state.purgados.includes(rawCI)) {
+            this.state.purgados.push(rawCI);
+        }
+        if (purged.ci_original && !this.state.purgados.includes(purged.ci_original)) {
+            this.state.purgados.push(purged.ci_original);
+        }
+
+        this.saveState();
+
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.purgeEliminado(rawCI).catch(err => console.warn(err));
+        }
+
+        return true;
     }
 
     calculateProfileCompletion(member) {

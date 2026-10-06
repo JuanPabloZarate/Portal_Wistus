@@ -1510,6 +1510,9 @@
                 <p class="text-secondary small mb-0">Directorio oficial de fraternos registrados para el Carnaval de Oruro 2027.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-danger rounded-3" id="btnOpenBaseEliminados" onclick="window.Miembros.openEliminadosModal()" title="Ver y gestionar Base de Fraternos Eliminados">
+                    <i class="bi bi-person-x me-1"></i> Base de Eliminados <span class="badge bg-danger text-white ms-1" id="badgeCountEliminados">0</span>
+                </button>
                 <button class="btn btn-outline-brand rounded-3" style="width: auto;" onclick="window.Miembros.seedSampleFraternos(10)" title="Generar 10 fraternos adicionales de prueba">
                     <i class="bi bi-magic me-1"></i> +10 Demo
                 </button>
@@ -1946,9 +1949,13 @@
                             <label class="form-label small text-secondary">Rol Fraternal:</label>
                             <select id="newMemberRol" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="Fraterno Titular">Fraterno Titular</option>
+                                <option value="Fraterna Titular">Fraterna Titular</option>
                                 <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                <option value="Guía General">Guía General</option>
                                 <option value="Guía de Fila">Guía de Fila</option>
+                                <option value="Fraterno Guía">Fraterno Guía</option>
                                 <option value="Fundador Honorario">Fundador Honorario</option>
+                                <option value="Directiva">Directiva</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -1976,14 +1983,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <img src="assets/img/avatar-default.svg" id="kardexFoto" width="65" height="65" class="rounded-3 border border-secondary" alt="Avatar">
-                        <div>
-                            <h5 class="fw-bold text-dark mb-1" id="kardexNombre">Nombre</h5>
-                            <div class="text-brand font-mono fw-semibold small" id="kardexCI">CI: ---</div>
-                            <div class="text-secondary small">
-                                <span id="kardexFilial" class="text-brand fw-semibold">Filial</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="assets/img/avatar-default.svg" id="kardexFoto" width="65" height="65" class="rounded-3 border border-secondary" alt="Avatar">
+                            <div>
+                                <h5 class="fw-bold text-dark mb-1" id="kardexNombre">Nombre</h5>
+                                <div class="text-brand font-mono fw-semibold small" id="kardexCI">CI: ---</div>
+                                <div class="text-secondary small">
+                                    <span id="kardexFilial" class="text-brand fw-semibold">Filial</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
+                                </div>
                             </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-warning text-dark btn-sm rounded-3" onclick="window.Miembros.openEditFromKardex()" title="Editar todos los datos del fraterno">
+                                <i class="bi bi-pencil-square me-1"></i> Editar Fraterno
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-3" onclick="window.Miembros.promptDeleteFromKardex()" title="Pasar a Base de Eliminados">
+                                <i class="bi bi-trash3 me-1"></i> Dar de Baja
+                            </button>
                         </div>
                     </div>
 
@@ -2029,6 +2046,258 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7B: EDICIÓN INTEGRAL DE FRATERNO (ROL MESA DIRECTIVA) -->
+    <div class="modal fade" id="modalEditMember" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="bi bi-person-gear text-brand me-2"></i>Edición Integral de Fraterno &bull; Mesa Directiva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-secondary small mb-3">
+                        Actualice los datos institucionales, personales y de filiación del fraterno. Todos los cambios se guardan con validez oficial para el Carnaval de Oruro 2027.
+                    </p>
+                    <input type="hidden" id="editMemberOriginalCI">
+
+                    <!-- SECCIÓN 1: IDENTIFICACIÓN Y DATOS PERSONALES -->
+                    <h6 class="fw-bold text-brand small text-uppercase mb-2">
+                        <i class="bi bi-person-badge me-1"></i> Identificación y Datos Personales
+                    </h6>
+                    <div class="row g-3 mb-3 p-3 bg-surface-2 rounded-3 border border-subtle">
+                        <div class="col-md-4">
+                            <label class="form-label small text-secondary fw-semibold">Número de CI: <span class="text-danger">*</span></label>
+                            <input type="text" id="editMemberCI" class="form-control bg-surface-1 text-dark border-subtle rounded-3" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-secondary fw-semibold">Expedido:</label>
+                            <select id="editMemberExp" class="form-select bg-surface-1 text-dark border-subtle rounded-3">
+                                <option value="LP">LP</option>
+                                <option value="CB">CB</option>
+                                <option value="SC">SC</option>
+                                <option value="OR">OR</option>
+                                <option value="PT">PT</option>
+                                <option value="CH">CH</option>
+                                <option value="TJ">TJ</option>
+                                <option value="BN">BN</option>
+                                <option value="PA">PA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-secondary fw-semibold">Fecha Nacimiento:</label>
+                            <input type="date" id="editMemberFechaNac" class="form-control bg-surface-1 text-dark border-subtle rounded-3">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-secondary fw-semibold">Talla Traje Oficial:</label>
+                            <select id="editMemberTalla" class="form-select bg-surface-1 text-dark border-subtle rounded-3">
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Nombres: <span class="text-danger">*</span></label>
+                            <input type="text" id="editMemberNombres" class="form-control bg-surface-1 text-dark border-subtle rounded-3" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Apellidos: <span class="text-danger">*</span></label>
+                            <input type="text" id="editMemberApellidos" class="form-control bg-surface-1 text-dark border-subtle rounded-3" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-secondary fw-semibold">URL de Foto / Avatar:</label>
+                            <input type="text" id="editMemberFoto" class="form-control bg-surface-1 text-dark border-subtle rounded-3" placeholder="assets/img/avatar-default.svg">
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 2: CONTACTO Y EMERGENCIA -->
+                    <h6 class="fw-bold text-brand small text-uppercase mb-2">
+                        <i class="bi bi-telephone-fill me-1"></i> Contacto y Emergencia
+                    </h6>
+                    <div class="row g-3 mb-3 p-3 bg-surface-2 rounded-3 border border-subtle">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Teléfono / WhatsApp:</label>
+                            <input type="text" id="editMemberTelefono" class="form-control bg-surface-1 text-dark border-subtle rounded-3" placeholder="+591 ...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Correo Electrónico:</label>
+                            <input type="email" id="editMemberEmail" class="form-control bg-surface-1 text-dark border-subtle rounded-3" placeholder="nombre@correo.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Contacto de Emergencia:</label>
+                            <input type="text" id="editMemberContactoEmergencia" class="form-control bg-surface-1 text-dark border-subtle rounded-3" placeholder="Nombre completo y parentesco">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Teléfono de Emergencia:</label>
+                            <input type="text" id="editMemberTelefonoEmergencia" class="form-control bg-surface-1 text-dark border-subtle rounded-3" placeholder="+591 ...">
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 3: FILIAL OFICIAL, ROL Y ESTADO -->
+                    <h6 class="fw-bold text-brand small text-uppercase mb-2">
+                        <i class="bi bi-shield-check me-1"></i> Filiación y Jerarquía Fraternal
+                    </h6>
+                    <div class="row g-3 mb-3 p-3 bg-surface-2 rounded-3 border border-subtle">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Filial Oficial:</label>
+                            <select id="editMemberFilial" class="form-select bg-surface-1 text-dark border-subtle rounded-3">
+                                <option value="matriz_lp">Matriz (La Paz)</option>
+                                <option value="cochabamba">Cochabamba</option>
+                                <option value="santa_cruz">Santa Cruz</option>
+                                <option value="peru">Perú</option>
+                                <option value="chile">Chile</option>
+                                <option value="europa">Europa</option>
+                                <option value="estados_unidos">Estados Unidos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Rol Fraternal:</label>
+                            <select id="editMemberRol" class="form-select bg-surface-1 text-dark border-subtle rounded-3">
+                                <option value="Guía General">Guía General</option>
+                                <option value="Guía de Fila">Guía de Fila</option>
+                                <option value="Fraterno Guía">Fraterno Guía</option>
+                                <option value="Fraterno Titular">Fraterno Titular</option>
+                                <option value="Fraterna Titular">Fraterna Titular</option>
+                                <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                <option value="Fundador Honorario">Fundador Honorario</option>
+                                <option value="Directiva">Directiva</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Antigüedad (Años en Carnaval):</label>
+                            <input type="number" id="editMemberAntiguedad" class="form-control bg-surface-1 text-dark border-subtle rounded-3" min="1" max="50">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary fw-semibold">Estado en el Padrón:</label>
+                            <select id="editMemberEstado" class="form-select bg-surface-1 text-dark border-subtle rounded-3">
+                                <option value="activo">Activo (Habilitado)</option>
+                                <option value="licencia">Con Licencia</option>
+                                <option value="inactivo">Inactivo / En Observación</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 4: ACCIÓN DIRECTIVA - BASE DE ELIMINADOS -->
+                    <div class="p-3 bg-danger-subtle border border-danger border-opacity-25 rounded-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <div class="fw-bold text-danger small">
+                                <i class="bi bi-person-x-fill me-1"></i> Pasar a Base de Eliminados
+                            </div>
+                            <div class="text-danger-emphasis small" style="font-size:0.78rem;">
+                                Da de baja al fraterno del padrón activo conservando su historial de asistencias y pagos en la base de auditoría.
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-3" onclick="window.Miembros.promptDeleteMember()">
+                            <i class="bi bi-trash3 me-1"></i> Pasar a Base de Eliminados
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-portal-primary rounded-3 px-4" style="width: auto;" onclick="window.Miembros.submitEditMember()">
+                        <i class="bi bi-check2 me-1"></i> Guardar Cambios Oficiales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7C: CONFIRMAR BAJA Y PASAR A BASE DE ELIMINADOS -->
+    <div class="modal fade" id="modalConfirmDeleteMember" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-danger border-opacity-25 rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-danger-subtle py-3 px-4">
+                    <h6 class="modal-title fw-bold text-danger mb-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Baja de Fraterno
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-dark small mb-3">
+                        ¿Está seguro de pasar al siguiente fraterno a la <strong>Base de Eliminados</strong> de la Fraternidad Tinkus Wistus?
+                    </p>
+                    <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
+                        <div class="fw-bold text-dark fs-6" id="confirmDeleteMemberName">---</div>
+                        <div class="text-brand font-mono small fw-semibold" id="confirmDeleteMemberCI">CI: ---</div>
+                        <div class="text-secondary small mt-1">Filial: <span id="confirmDeleteMemberFilial" class="fw-semibold text-dark">---</span></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary fw-semibold">Motivo de la Baja / Eliminación:</label>
+                        <input type="text" id="inputDeleteMemberMotivo" class="form-control bg-surface-2 text-dark border-subtle rounded-3" placeholder="Ej: Baja voluntaria, traslado no regularizado, falta grave...">
+                    </div>
+                    <div class="alert alert-warning py-2 px-3 small border-0 mb-0">
+                        <i class="bi bi-info-circle me-1"></i> El registro dejará de figurar en el padrón activo pero podrá ser restaurado en cualquier momento desde la <em>Base de Eliminados</em>.
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger rounded-3 px-3" style="width: auto;" onclick="window.Miembros.submitDeleteMember()">
+                        <i class="bi bi-person-x me-1"></i> Confirmar y Pasar a Eliminados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7D: BASE DE FRATERNOS ELIMINADOS (AUDITORÍA & RESTAURACIÓN) -->
+    <div class="modal fade" id="modalBaseEliminados" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2 py-3 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-archive-fill text-danger fs-5"></i>
+                        <div>
+                            <h5 class="modal-title fw-bold text-dark mb-0">Base de Fraternos Eliminados &bull; Mesa Directiva</h5>
+                            <span class="text-secondary small">Archivo histórico y auditoría de bajas del Carnaval de Oruro 2027</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-danger text-white rounded-pill px-3 py-2 fw-bold">
+                            Total Eliminados: <span id="countEliminadosTotal">0</span>
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-2 mb-3 align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-wrapper-portal py-1 px-3">
+                                <i class="bi bi-search text-brand"></i>
+                                <input type="text" id="searchEliminadosInput" class="form-control-portal py-1 small" placeholder="Buscar eliminados por CI, nombre o motivo..." oninput="window.Miembros.renderEliminadosTable()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end text-muted small">
+                            <i class="bi bi-info-circle text-primary me-1"></i>Puedes restaurar a cualquier fraterno en cualquier momento manteniendo su historial.
+                        </div>
+                    </div>
+
+                    <div class="table-responsive bg-surface-2 rounded-3 border border-subtle p-2">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>Fraterno</th>
+                                    <th>CI</th>
+                                    <th>Filial / Rol Previo</th>
+                                    <th>Fecha de Baja</th>
+                                    <th>Motivo de Baja</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBaseEliminadosBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-subtle">
+                    <button type="button" class="btn btn-brand-subtle rounded-3" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>

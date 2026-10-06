@@ -134,15 +134,57 @@ const DBService = {
     /**
      * Métodos de Persistencia Unificada (Cloud + Local)
      */
-    async saveFraterno(fraterno, syncLocal = false) {
+    async saveFraterno(fraterno, syncLocal = false, oldCI = null) {
         if (syncLocal && window.StateManager) {
             StateManager.addOrUpdateFraterno(fraterno);
         }
         if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
             try {
-                await window.WistusFirebase.db.collection('fraternos').doc(String(fraterno.ci)).set(fraterno, { merge: true });
+                const db = window.WistusFirebase.db;
+                if (oldCI && String(oldCI).trim() !== String(fraterno.ci).trim()) {
+                    await db.collection('fraternos').doc(String(oldCI).trim()).delete();
+                }
+                await db.collection('fraternos').doc(String(fraterno.ci)).set(fraterno, { merge: true });
             } catch (e) {
                 console.warn("Error guardando fraterno en Firestore:", e);
+            }
+        }
+    },
+
+    async deleteFraterno(ci, eliminadoRecord) {
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
+            try {
+                const db = window.WistusFirebase.db;
+                await db.collection('fraternos').doc(String(ci)).delete();
+                if (eliminadoRecord) {
+                    await db.collection('eliminados').doc(String(ci)).set(eliminadoRecord, { merge: true });
+                }
+            } catch (e) {
+                console.warn("Error eliminando fraterno en Firestore:", e);
+            }
+        }
+    },
+
+    async restoreFraterno(ci, restoredRecord) {
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
+            try {
+                const db = window.WistusFirebase.db;
+                await db.collection('eliminados').doc(String(ci)).delete();
+                if (restoredRecord) {
+                    await db.collection('fraternos').doc(String(ci)).set(restoredRecord, { merge: true });
+                }
+            } catch (e) {
+                console.warn("Error restaurando fraterno en Firestore:", e);
+            }
+        }
+    },
+
+    async purgeEliminado(ci) {
+        if (this.isCloudActive && window.WistusFirebase && window.WistusFirebase.db) {
+            try {
+                await window.WistusFirebase.db.collection('eliminados').doc(String(ci)).delete();
+            } catch (e) {
+                console.warn("Error purgando eliminado en Firestore:", e);
             }
         }
     },
