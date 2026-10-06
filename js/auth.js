@@ -126,22 +126,48 @@ class AuthManager {
             });
         }
 
-        // Limpiar alertas al cambiar de pestaña
+        // Limpiar alertas y alternar entre acceso fraterno y control directivo
         const tabFraternoBtn = document.getElementById('tab-fraterno-btn');
         const tabControlBtn = document.getElementById('tab-control-btn');
         if (tabFraternoBtn) {
-            const onTabFraterno = () => {
-                const alertEl = document.getElementById('alertFraternoLogin');
-                this.hideAlert(alertEl);
+            const onTabFraterno = (e) => {
+                if (e && e.preventDefault) e.preventDefault();
+                const tabControlPane = document.getElementById('tab-control');
+                const tabFraternoPane = document.getElementById('tab-fraterno');
+                if (tabControlPane) tabControlPane.classList.remove('show', 'active');
+                if (tabFraternoPane) tabFraternoPane.classList.add('show', 'active');
+                if (tabFraternoBtn) {
+                    tabFraternoBtn.setAttribute('aria-expanded', 'true');
+                    tabFraternoBtn.setAttribute('aria-selected', 'true');
+                }
+                if (tabControlBtn) {
+                    tabControlBtn.setAttribute('aria-expanded', 'false');
+                    tabControlBtn.setAttribute('aria-selected', 'false');
+                }
+                this.hideAlert(document.getElementById('alertFraternoLogin'));
+                this.hideAlert(document.getElementById('alertControlLogin'));
                 if (ciInput) ciInput.focus();
             };
             tabFraternoBtn.addEventListener('shown.bs.tab', onTabFraterno);
             tabFraternoBtn.addEventListener('click', onTabFraterno);
         }
         if (tabControlBtn) {
-            const onTabControl = () => {
-                const alertEl = document.getElementById('alertControlLogin');
-                this.hideAlert(alertEl);
+            const onTabControl = (e) => {
+                if (e && e.preventDefault) e.preventDefault();
+                const tabFraternoPane = document.getElementById('tab-fraterno');
+                const tabControlPane = document.getElementById('tab-control');
+                if (tabFraternoPane) tabFraternoPane.classList.remove('show', 'active');
+                if (tabControlPane) tabControlPane.classList.add('show', 'active');
+                if (tabControlBtn) {
+                    tabControlBtn.setAttribute('aria-expanded', 'true');
+                    tabControlBtn.setAttribute('aria-selected', 'true');
+                }
+                if (tabFraternoBtn) {
+                    tabFraternoBtn.setAttribute('aria-expanded', 'false');
+                    tabFraternoBtn.setAttribute('aria-selected', 'false');
+                }
+                this.hideAlert(document.getElementById('alertControlLogin'));
+                this.hideAlert(document.getElementById('alertFraternoLogin'));
                 const userInput = document.getElementById('inputControlUser');
                 if (userInput) userInput.focus();
             };
@@ -314,6 +340,14 @@ class AuthManager {
         }
         this.hideAlert(alertFraterno);
         this.hideAlert(alertControl);
+
+        // Asegurar que la vista de login quede en la pestaña principal de fraterno
+        const tabControlPane = document.getElementById('tab-control');
+        const tabFraternoPane = document.getElementById('tab-fraterno');
+        if (tabControlPane && tabFraternoPane) {
+            tabControlPane.classList.remove('show', 'active');
+            tabFraternoPane.classList.add('show', 'active');
+        }
     }
 
     showAlert(el, msg) {

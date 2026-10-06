@@ -873,6 +873,47 @@ class TestPortalProcessesAndData(unittest.TestCase):
         for test_ci in cis_validos:
             self.assertIn(test_ci, data_content, f"El CI {test_ci} debe estar en el padrón de data.js")
 
+    def test_31_fraterno_friendly_login_and_discrete_directiva_access(self):
+        """Verifica que el panel principal esté enfocado en fraternos de forma amena,
+        con acceso directivo discreto y retorno 2027 institucional."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Panel de fraterno ameno y acogedor
+        self.assertIn("login-fraterno-welcome", index_content)
+        self.assertIn("fraterno-welcome-badge", index_content)
+        self.assertIn("¡Bienvenido, Fraterno!", index_content)
+        self.assertIn("Cédula de Identidad (CI)", index_content)
+        self.assertIn("Ingresar a mi Portal Fraternal", index_content)
+
+        # Acceso discreto para directiva (no como pestaña prominente principal)
+        self.assertIn("btn-link-discrete", index_content)
+        self.assertIn("login-directiva-discreet", index_content)
+        self.assertIn("Mesa Directiva", index_content)
+        self.assertIn("tab-control-btn", index_content)
+        self.assertIn("tab-fraterno-btn", index_content)
+        self.assertIn("login-bg-decorations", index_content)
+
+        # Evitar crash de Bootstrap por data-bs-toggle en botones fuera de .nav
+        self.assertNotIn('id="tab-control-btn" data-bs-toggle="pill"', index_content)
+        self.assertNotIn('id="tab-fraterno-btn" data-bs-toggle="pill"', index_content)
+
+        # Enlace footer Oruro 2027
+        self.assertIn("Ir a la Portada Institucional &bull; Carnaval de Oruro 2027 &rarr;", index_content)
+        self.assertNotIn("Ir a la Portada Institucional 2026", index_content)
+
+        # Estilos asociados en style.css
+        style_path = os.path.join(WORKSPACE_DIR, 'css', 'style.css')
+        with open(style_path, 'r', encoding='utf-8') as f:
+            style_content = f.read()
+
+        self.assertIn(".login-fraterno-welcome", style_content)
+        self.assertIn(".fraterno-welcome-badge", style_content)
+        self.assertIn(".btn-link-discrete", style_content)
+        self.assertIn(".login-directiva-discreet", style_content)
+        self.assertIn(".login-bg-decorations", style_content)
+
 if __name__ == '__main__':
     unittest.main()
 

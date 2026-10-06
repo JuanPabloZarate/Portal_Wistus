@@ -2,7 +2,7 @@
   "metadata": {
     "agent": "challenger_2",
     "role": "critic, specialist",
-    "timestamp": "2026-10-05T22:55:52Z",
+    "timestamp": "2026-10-05T23:58:41Z",
     "project_root": "C:\\Users\\juan.zarate\\OneDrive - bancofie.com.bo\\Escritorio\\Goal - Portal"
   },
   "tests": {
@@ -26,12 +26,12 @@
       "inbound_count_in_index": 4,
       "inbound_details": [
         {
-          "text": "\u2190 Convocatoria 2026",
+          "text": "\u2190 Carnaval de Oruro 2027",
           "href": "http://localhost:8089/landing.html",
           "parent_tag": "div"
         },
         {
-          "text": "Ir a la Portada Institucional 2026 \u2192",
+          "text": "Ir a la Portada Institucional \u2022 Carnaval de Oruro 2027 \u2192",
           "href": "http://localhost:8089/landing.html",
           "parent_tag": "div"
         },
@@ -244,7 +244,7 @@
     },
     "T6_3d_card_physics": {
       "initial_transform": "",
-      "hover_transform": "perspective(1000px) rotateX(10.9116deg) rotateY(-12.2991deg) scale3d(1.02, 1.02, 1.02)",
+      "hover_transform": "perspective(1000px) rotateX(10.9894deg) rotateY(-12.2991deg) scale3d(1.02, 1.02, 1.02)",
       "hover_glare_opacity": "1",
       "reset_transform": "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
       "reset_glare_opacity": "0",
@@ -266,13 +266,13 @@
       "success": true
     },
     "T9_performance_and_dom_metrics": {
-      "load_time_seconds": 1.037,
+      "load_time_seconds": 1.008,
       "dom_node_count": 369,
       "scripts_count": 4,
       "stylesheets_count": 5,
       "navigation_timing_ms": {
-        "domContentLoaded": 753.6999999880791,
-        "loadComplete": 1013.2999999523163
+        "domContentLoaded": 745.1999999880791,
+        "loadComplete": 988.1999999880791
       },
       "dom_is_lean": true
     },
