@@ -215,7 +215,7 @@
         <a href="#metadatos" class="nav-link-item hover:opacity-60 transition-opacity">Ensayos</a>
         <a href="#galeria" class="nav-link-item hover:opacity-60 transition-opacity">Galería</a>
         <a href="#credencial" class="nav-link-item hover:opacity-60 transition-opacity">Credencial 2027</a>
-        <a href="#bloques" class="nav-link-item hover:opacity-60 transition-opacity">Nuestros Bloques</a>
+        <a href="#filiales" class="nav-link-item hover:opacity-60 transition-opacity">Nuestras Filiales</a>
       </nav>
 
       <!-- Barra de Acciones Superior: Portal Fraterno, Postular y Hamburger -->
@@ -274,7 +274,7 @@
         <a href="#metadatos" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">02. Horarios y Locales de Ensayo</a>
         <a href="#galeria" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">03. Galería Fotográfica</a>
         <a href="#credencial" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">04. Credencial Digital 3D</a>
-        <a href="#bloques" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">05. Nuestros Bloques</a>
+        <a href="#filiales" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-[#111111] hover:text-wistus-purple transition-colors" onclick="closeMenuDrawer()">05. Nuestras Filiales</a>
         <a href="index.html" class="block font-serif text-2xl sm:text-4xl lg:text-5xl text-wistus-gold hover:text-wistus-gold-light transition-colors">06. Ingresar al Portal Fraterno &rarr;</a>
         <button data-open-enquire onclick="closeMenuDrawer()" class="block text-left font-serif text-2xl sm:text-4xl lg:text-5xl text-wistus-purple hover:text-wistus-purple-dark transition-colors w-full">07. Postular (Carnaval de Oruro 2027) &rarr;</button>
       </div>
@@ -588,9 +588,9 @@
                   <div class="flex items-center gap-2 sm:gap-4 mt-0.5 sm:mt-2 font-mono text-[9px] sm:text-xs text-wistus-gold flex-wrap">
                     <span>CI: 8492041 LP</span>
                     <span>&bull;</span>
-                    <span>BLOQUE: HOMBRES</span>
+                    <span>ROL: FRATERNO TITULAR</span>
                     <span>&bull;</span>
-                    <span>FILIAL: MATRIZ (LA PAZ)</span>
+                    <span class="font-bold">FILIAL: MATRIZ (LA PAZ)</span>
                   </div>
                 </div>
 
@@ -618,42 +618,41 @@
     </aside>
 
     <!-- ========================================================================= -->
-    <!-- R4. CARRUSEL DE BLOQUES FRATERNOS ([data-block="listing-carousel"])       -->
+    <!-- R4. CARRUSEL DE FILIALES FRATERNAS ([data-block="listing-carousel"])      -->
     <!-- ========================================================================= -->
-    <section id="bloques" data-block="listing-carousel" class="py-16 lg:py-28 bg-[#f5f0ea] text-[#111111]">
+    <section id="filiales" data-block="listing-carousel" class="py-16 lg:py-28 bg-[#f5f0ea] text-[#111111]">
       <div class="max-w-7xl mx-auto px-5 lg:px-10 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#717171] block mb-2">Estructura Fraterna</span>
-          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">Nuestros Bloques</h2>
+          <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#717171] block mb-2">Estructura Fraterna &bull; Red Oficial</span>
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">Nuestras Filiales</h2>
         </div>
         <p class="font-sans text-sm text-[#717171] max-w-md">
-          Cada bloque representa una faceta viva de la danza del Tinku: desde la bravura guerrera hasta la elegancia ritual.
+          Siete sedes oficiales unidas por una misma devoción y energía rumbo al Carnaval de Oruro 2027: 3 sedes nacionales y 4 representaciones internacionales de Tinkus Wistus.
         </p>
       </div>
 
-      <!-- Carrusel Swiper de Bloques -->
+      <!-- Carrusel Swiper de Filiales -->
       <div class="max-w-7xl mx-auto px-5 lg:px-10">
-        <div id="bloques-swiper" class="swiper w-full">
+        <div id="filiales-swiper" class="swiper w-full">
           <div class="swiper-wrapper">
             
-            <!-- Bloque 1: Bloque Hombres -->
+            <!-- Filial 1: Matriz (La Paz) -->
             <div class="swiper-slide h-auto">
               <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
-                <!-- Fondo visual temático -->
                 <div class="absolute inset-0 bg-gradient-to-br from-[#7f1d1d] via-[#450a0a] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-escudo.svg" alt="Escudo Heráldico Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
                 <div class="relative z-10 space-y-3">
                   <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-wistus-gold text-charcoal font-semibold">
-                    Vanguardia Guerrera & Tradición
+                    Sede Central & Cuna Histórica
                   </span>
-                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Hombres</h3>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Matriz (La Paz)</h3>
                   <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
-                    Fuerza indomable, saltos enérgicos y bravura tradicional del Tinku potosino. Integra la trayectoria de Machas, la agilidad de Sambos y la estirpe de Ñaupas en una sola hermandad masculina.
+                    Fundación histórica y centro neurálgico de la fraternidad. Sede Social en San Pedro (Calle Almirante Grau #450). Ensayos centrales, coordinación general y devoción rumbo a Oruro 2027.
                   </p>
                   <div class="pt-2 flex items-center justify-between border-t border-white/20">
-                    <span class="font-mono text-xs text-wistus-gold">Cupos Oruro 2027: 150 fraternos</span>
-                    <button data-open-enquire data-bloque="Bloque Hombres" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                    <span class="font-mono text-xs text-wistus-gold">Sede Central • La Paz</span>
+                    <button data-open-enquire data-filial="matriz_lp" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
                       Postular &rarr;
                     </button>
                   </div>
@@ -661,7 +660,55 @@
               </div>
             </div>
 
-            <!-- Bloque 2: Bloque Mujeres -->
+            <!-- Filial 2: Cochabamba -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-indigo-300 text-charcoal font-semibold">
+                    Corazón del Valle
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Cochabamba</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Fuerza y gallardía en la Llajta. Ensayos coordinados y delegación unificada para hacer temblar la ruta del Carnaval de Oruro con ritmo y energía inconfundibles.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Cochabamba • Valle</span>
+                    <button data-open-enquire data-filial="cochabamba" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filial 3: Santa Cruz -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] via-[#047857] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-emerald-300 text-charcoal font-semibold">
+                    Fuerza del Oriente
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Santa Cruz</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Presencia vibrante en el oriente boliviano. La hermandad cruceña aporta entusiasmo, juventud y sincronía para representar a los mejores Tinkus de Bolivia.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Santa Cruz • Oriente</span>
+                    <button data-open-enquire data-filial="santa_cruz" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filial 4: Perú -->
             <div class="swiper-slide h-auto">
               <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
                 <div class="absolute inset-0 bg-gradient-to-br from-[#831843] via-[#500724] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
@@ -669,15 +716,15 @@
                 
                 <div class="relative z-10 space-y-3">
                   <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-pink-400 text-charcoal font-semibold">
-                    Gracia, Devoción & Fuerza
+                    Hermandad del Altiplano
                   </span>
-                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Bloque Mujeres</h3>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Perú</h3>
                   <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
-                    Elegancia ritual, sincronía coreográfica y el donaire inconfundible de nuestras Imillas. Polleras bordadas, zapateo vibrante y devoción profunda hacia la Virgen del Socavón.
+                    Hermandad internacional activa en Lima y Puno. Fraternos comprometidos que cruzan fronteras cada año para rendir homenaje a la Virgen del Socavón en Oruro.
                   </p>
                   <div class="pt-2 flex items-center justify-between border-t border-white/20">
-                    <span class="font-mono text-xs text-wistus-gold">Cupos Oruro 2027: 150 fraternas</span>
-                    <button data-open-enquire data-bloque="Bloque Mujeres" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Internacional • Perú</span>
+                    <button data-open-enquire data-filial="peru" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
                       Postular &rarr;
                     </button>
                   </div>
@@ -685,23 +732,23 @@
               </div>
             </div>
 
-            <!-- Bloque 3: Filiales Nacionales -->
+            <!-- Filial 5: Chile -->
             <div class="swiper-slide h-auto">
               <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-[#0284c7] via-[#0369a1] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-logo-w.svg" alt="Emblema Wistus Chakana Andina" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
                 <div class="relative z-10 space-y-3">
-                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-indigo-300 text-charcoal font-semibold">
-                    Territorio Nacional
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-sky-300 text-charcoal font-semibold">
+                    Presencia en el Pacífico
                   </span>
-                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filiales Nacionales</h3>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Chile</h3>
                   <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
-                    Presencia viva en Bolivia: Matriz (La Paz), Filial Cochabamba y Filial Santa Cruz. Ensayos coordinados y logística unificada para hacer temblar la ruta del Carnaval.
+                    Fervor folklórico en Iquique, Arica y Santiago. Participación en entradas andinas y comitiva oficial preparada para el Carnaval de Oruro 2027.
                   </p>
                   <div class="pt-2 flex items-center justify-between border-t border-white/20">
-                    <span class="font-mono text-xs text-wistus-gold">3 Filiales Oficiales</span>
-                    <button data-open-enquire data-bloque="Bloque Hombres" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Internacional • Chile</span>
+                    <button data-open-enquire data-filial="chile" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
                       Postular &rarr;
                     </button>
                   </div>
@@ -709,23 +756,47 @@
               </div>
             </div>
 
-            <!-- Bloque 4: Filiales Internacionales -->
+            <!-- Filial 6: Europa -->
             <div class="swiper-slide h-auto">
               <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] via-[#047857] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-[#7c3aed] via-[#5b21b6] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
                 <img src="assets/img/wistus-badge.svg" alt="Insignia Oficial Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
                 
                 <div class="relative z-10 space-y-3">
-                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-emerald-300 text-charcoal font-semibold">
-                    Red Internacional
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-purple-300 text-charcoal font-semibold">
+                    Viejo Continente
                   </span>
-                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filiales Internacionales</h3>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Europa</h3>
                   <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
-                    Orgullo boliviano en el exterior: Filial Perú, Filial Chile, Filial Europa y Filial Estados Unidos. Conectando a los fraternos del mundo con la devoción de Oruro 2027.
+                    Nuestra comitiva europea con fraternos en Madrid, Barcelona e Italia. Embajadores de la cultura boliviana que viajan miles de kilómetros por su devoción.
                   </p>
                   <div class="pt-2 flex items-center justify-between border-t border-white/20">
-                    <span class="font-mono text-xs text-wistus-gold">4 Filiales en el Exterior</span>
-                    <button data-open-enquire data-bloque="Bloque Mujeres" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Internacional • Europa</span>
+                    <button data-open-enquire data-filial="europa" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
+                      Postular &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filial 7: Estados Unidos -->
+            <div class="swiper-slide h-auto">
+              <div class="aspect-[520/607] rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 sm:p-6 lg:p-8 bg-gradient-to-t from-black via-black/60 to-transparent text-[#f5f0ea] shadow-lg group">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#b45309] via-[#78350f] to-[#111111] opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
+                <img src="assets/img/wistus-escudo.svg" alt="Escudo Heráldico Tinkus Wistus" class="absolute top-6 right-6 w-16 h-16 opacity-30 object-contain">
+                
+                <div class="relative z-10 space-y-3">
+                  <span class="inline-block px-3 py-1 rounded-full text-2xs font-mono uppercase tracking-widest bg-amber-300 text-charcoal font-semibold">
+                    Norteamérica
+                  </span>
+                  <h3 class="font-serif text-2xl lg:text-3xl font-bold text-white">Filial Estados Unidos</h3>
+                  <p class="font-sans text-xs sm:text-sm text-[#ddd8d2] leading-relaxed">
+                    Comunidad fraterna en Virginia, Maryland y Nueva York. Organización activa, ensayos y viaje conjunto para vibrar en el Carnaval de Oruro 2027.
+                  </p>
+                  <div class="pt-2 flex items-center justify-between border-t border-white/20">
+                    <span class="font-mono text-xs text-wistus-gold">Filial Internacional • EE.UU.</span>
+                    <button data-open-enquire data-filial="estados_unidos" class="text-xs font-mono uppercase tracking-wider text-white hover:text-wistus-gold underline underline-offset-4">
                       Postular &rarr;
                     </button>
                   </div>
@@ -836,18 +907,8 @@
         </div>
 
         <div>
-          <label for="enquire-bloque" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
-            Bloque de Interés <span class="text-red-500">*</span>
-          </label>
-          <select id="enquire-bloque" name="bloque" required class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
-            <option value="Bloque Hombres">Bloque Hombres (Fuerza, bravura y tradición Machas & Sambos)</option>
-            <option value="Bloque Mujeres">Bloque Mujeres (Gracia, devoción y elegancia Imillas)</option>
-          </select>
-        </div>
-
-        <div>
           <label for="enquire-filial" class="block text-xs font-mono uppercase tracking-wider text-[#717171] mb-1">
-            Filial de Pertenencia <span class="text-red-500">*</span>
+            Filial de Postulación / Residencia <span class="text-red-500">*</span>
           </label>
           <select id="enquire-filial" name="filial" required class="w-full bg-white border border-[#b9b1a4] rounded-lg px-4 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:ring-2 focus:ring-wistus-purple">
             <option value="matriz_lp">Matriz (La Paz)</option>
@@ -912,7 +973,7 @@
           <div><a href="#metadatos" class="hover:text-wistus-gold transition-colors">Horarios de Ensayo</a></div>
           <div><a href="#galeria" class="hover:text-wistus-gold transition-colors">Galería Fotográfica</a></div>
           <div><a href="#credencial" class="hover:text-wistus-gold transition-colors">Credencial Digital 3D</a></div>
-          <div><a href="#bloques" class="hover:text-wistus-gold transition-colors">Nuestros Bloques</a></div>
+          <div><a href="#filiales" class="hover:text-wistus-gold transition-colors">Nuestras Filiales</a></div>
           <div><a href="index.html" class="text-wistus-gold hover:underline">Acceso Portal Fraterno &rarr;</a></div>
           <div><button data-open-enquire class="text-left uppercase text-wistus-gold hover:underline">Postular (Carnaval de Oruro 2027) &rarr;</button></div>
         </div>
@@ -1033,7 +1094,7 @@
       document.body.classList.remove('overflow-hidden');
     }
 
-    function openEnquireDrawer(bloqueName) {
+    function openEnquireDrawer(filialName) {
       // find-a-table close modal transition logic to prevent dialogue collision
       if (findATableModal && findATableModal.open) {
         findATableModal.close();
@@ -1041,21 +1102,14 @@
       closeModal();
       closeMenuDrawer();
       if (enquireDrawer && typeof enquireDrawer.showModal === 'function') {
-        if (bloqueName) {
-          const select = document.getElementById('enquire-bloque');
+        if (filialName) {
+          const select = document.getElementById('enquire-filial');
           if (select) {
-            const raw = String(bloqueName).trim();
-            const lower = raw.toLowerCase();
-            if (lower.includes('mujer') || lower.includes('imilla')) {
-              select.value = 'Bloque Mujeres';
-            } else if (lower.includes('hombre') || lower.includes('macha') || lower.includes('sambo') || lower.includes('ñaupa') || lower.includes('naupa')) {
-              select.value = 'Bloque Hombres';
-            } else {
-              for (let opt of select.options) {
-                if (opt.value === raw || opt.value.toLowerCase() === lower) {
-                  select.value = opt.value;
-                  break;
-                }
+            const raw = String(filialName).trim().toLowerCase();
+            for (let opt of select.options) {
+              if (opt.value.toLowerCase() === raw || opt.text.toLowerCase().includes(raw)) {
+                select.value = opt.value;
+                break;
               }
             }
           }
@@ -1078,8 +1132,8 @@
     // Escucha de todos los botones data-open-enquire
     document.querySelectorAll('[data-open-enquire]').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const bloque = btn.getAttribute('data-bloque') || '';
-        openEnquireDrawer(bloque);
+        const filial = btn.getAttribute('data-filial') || btn.getAttribute('data-bloque') || '';
+        openEnquireDrawer(filial);
       });
     });
 
@@ -1158,9 +1212,10 @@
         });
       }
 
-      // Swiper de Bloques Fraternos
-      if (typeof Swiper !== 'undefined' && document.getElementById('bloques-swiper')) {
-        new Swiper('#bloques-swiper', {
+      // Swiper de Filiales Fraternas
+      const filialesSwiperEl = document.getElementById('filiales-swiper') || document.getElementById('bloques-swiper');
+      if (typeof Swiper !== 'undefined' && filialesSwiperEl) {
+        new Swiper(filialesSwiperEl, {
           slidesPerView: 1.15,
           spaceBetween: 20,
           grabCursor: true,
@@ -1205,11 +1260,9 @@
         const feedback = document.getElementById('enquire-feedback');
         const submitBtn = document.getElementById('btn-submit-enquire');
         if (feedback) {
-          const selBloque = document.getElementById('enquire-bloque');
           const selFilial = document.getElementById('enquire-filial');
-          const bVal = selBloque ? selBloque.value : 'Bloque Hombres';
           const fText = selFilial ? selFilial.options[selFilial.selectedIndex].text : 'Matriz (La Paz)';
-          feedback.innerHTML = `¡Postulación recibida para <strong>${bVal}</strong> &bull; <strong>${fText}</strong>! La directiva se comunicará contigo vía WhatsApp al <strong>${telefono}</strong> rumbo a Oruro 2027.`;
+          feedback.innerHTML = `¡Postulación recibida para <strong>Filial ${fText}</strong>! La directiva se comunicará contigo vía WhatsApp al <strong>${telefono}</strong> rumbo a Oruro 2027.`;
           feedback.classList.remove('hidden');
           if (submitBtn) submitBtn.classList.add('hidden');
           setTimeout(() => {

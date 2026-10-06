@@ -398,7 +398,6 @@
             <div>
                 <h3 class="fw-bold text-white mb-1" id="dashMemberGreeting">¡Hola, Fraterno!</h3>
                 <div class="text-secondary small">
-                    <span class="text-brand fw-semibold" id="dashMemberBloque">Bloque</span> &bull; 
                     <span class="text-white-50 fw-semibold" id="dashMemberFilial">Filial</span> &bull; 
                     <span id="dashMemberRol">Fraterno Titular</span> &bull; 
                     <span class="font-mono member-val-ci">CI: ---</span>
@@ -619,7 +618,7 @@
                         <img src="assets/img/wistus-badge.svg" width="34" height="34" alt="Insignia" id="credEscudo" class="rounded-circle border border-light">
                         <div>
                             <div class="fw-bold text-dark small" id="credFratName">Tinkus Wistus</div>
-                            <div class="text-secondary" style="font-size: 0.7rem;" id="credFratDanza">Tinkus</div>
+                            <div class="text-secondary" style="font-size: 0.7rem;" id="credFratDanza">Padrón Oficial &bull; Carnaval de Oruro 2027</div>
                         </div>
                     </div>
                     <div class="text-end d-flex align-items-center gap-1">
@@ -640,8 +639,7 @@
                         <h4 class="fw-bold text-dark mb-1 text-break" id="credNombre">Juan Pablo Quispe</h4>
                         <div class="text-brand font-mono fw-bold fs-6 mb-1" id="credCI">CI: 4839201 LP</div>
                         <div class="d-flex flex-wrap gap-1" id="credDistincionDetails">
-                            <span class="badge bg-brand-subtle text-brand border border-subtle" id="credBloqueBadge">Bloque Hombres</span>
-                            <span class="badge bg-surface-2 text-dark border border-subtle" id="credFilialBadge"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Matriz (La Paz)</span>
+                            <span class="badge pvc-filial-badge border border-subtle" id="credFilialBadge"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Filial Matriz (La Paz)</span>
                             <span class="badge badge-socavon-gold" id="credDistincionBadge"><i class="bi bi-star-fill text-warning me-1"></i>Fraterno Titular</span>
                         </div>
                     </div>
@@ -719,10 +717,6 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-secondary small">Documento CI:</span>
                             <span class="fw-bold text-brand font-mono" id="profileInfoCI">---</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-secondary small">Bloque:</span>
-                            <span class="badge bg-brand-subtle text-brand fw-semibold" id="profileInfoBloque">---</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-secondary small">Filial:</span>
@@ -866,15 +860,7 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label for="selectProfileBloque" class="form-label small fw-semibold">Bloque Fraternal <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-portal" id="selectProfileBloque" name="bloque_id" onchange="window.PortalApp.calculateLiveProfileCompletion()">
-                                    <option value="hombres">Bloque Hombres</option>
-                                    <option value="mujeres">Bloque Mujeres</option>
-                                </select>
-                                <input type="hidden" id="inputProfileBloqueNombre">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="selectProfileFilial" class="form-label small fw-semibold">Filial de Pertenencia <span class="text-danger">*</span></label>
+                                <label for="selectProfileFilial" class="form-label small fw-semibold">Filial Oficial <span class="text-danger">*</span></label>
                                 <select class="form-select form-select-portal" id="selectProfileFilial" name="filial_id" onchange="window.PortalApp.calculateLiveProfileCompletion()">
                                     <option value="matriz_lp">Matriz (La Paz)</option>
                                     <option value="cochabamba">Cochabamba</option>
@@ -891,18 +877,18 @@
                                 <input type="text" class="form-control form-control-portal bg-surface-2 text-muted" id="inputProfileRolNombre" readonly>
                             </div>
                             <div class="col-12 mt-2">
-                                <div class="p-3 bg-surface-2 rounded-3 border border-subtle d-flex align-items-center justify-content-between flex-wrap gap-2" id="boxProfileBloqueFilialControlled">
+                                <div class="p-3 bg-surface-2 rounded-3 border border-subtle d-flex align-items-center justify-content-between flex-wrap gap-2" id="boxProfileFilialControlled">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="bi bi-shield-check text-brand fs-5"></i>
                                         <div>
-                                            <div class="small fw-semibold text-dark">Asignación Oficial de Bloque y Filial</div>
-                                            <div class="text-secondary small" id="profileBloqueFilialStatusHelp" style="font-size: 0.8rem;">
-                                                Selecciona y confirma tu Bloque y Filial en tu perfil. Para cambios posteriores a la asignación confirmada, debes solicitar aprobación a la Mesa Directiva.
+                                            <div class="small fw-semibold text-dark">Asignación Oficial de Filial</div>
+                                            <div class="text-secondary small" id="profileFilialStatusHelp" style="font-size: 0.8rem;">
+                                                Selecciona y confirma tu Filial oficial en tu perfil. Para cambios posteriores a la asignación confirmada, debes solicitar aprobación a la Mesa Directiva.
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-outline-brand btn-sm" id="btnRequestTransferDirectiva" onclick="window.PortalApp.solicitarCambioBloqueFilial()">
-                                        <i class="bi bi-chat-left-dots me-1"></i> Solicitar Cambio a Directiva
+                                    <button type="button" class="btn btn-outline-brand btn-sm" id="btnRequestTransferDirectiva" onclick="window.PortalApp.solicitarCambioFilial()">
+                                        <i class="bi bi-chat-left-dots me-1"></i> Solicitar traslado de Filial
                                     </button>
                                 </div>
                             </div>
@@ -1181,7 +1167,7 @@
                                 <div>
                                     <h5 class="fw-bold text-dark mb-1 text-break" id="scanResNombre">Nombre Fraterno</h5>
                                     <div class="text-brand fw-bold font-mono small" id="scanResCI">CI: ---</div>
-                                    <div class="small text-secondary fw-semibold" id="scanResBloque">Bloque</div>
+                                    <div class="small text-secondary fw-semibold" id="scanResFilial">Filial</div>
                                 </div>
                             </div>
 
@@ -1215,10 +1201,10 @@
 
             <!-- PESTAÑA 2: TABLERO DE GESTIÓN & PASE DE LISTA MANUAL -->
             <div class="tab-pane fade" id="tab-manual" role="tabpanel">
-                <!-- Avance por Bloque -->
+                <!-- Avance por Filial -->
                 <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-3 shadow-sm">
                     <h6 class="fw-bold text-dark text-uppercase small letter-spacing-1 mb-3">
-                        <i class="bi bi-bar-chart-fill text-brand me-2"></i>Asistencia por Bloques de Tinkus Wistus
+                        <i class="bi bi-bar-chart-fill text-brand me-2"></i>Asistencia por Filiales de Tinkus Wistus
                     </h6>
                     <div id="controlBlockAttendanceBars"></div>
                 </div>
@@ -1233,10 +1219,15 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-select form-select-sm bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Asistencias.selectedBlockFilter = this.value; window.Asistencias.renderManualPassList();">
-                                <option value="all">-- Todos los Bloques --</option>
-                                <option value="hombres">Bloque Hombres</option>
-                                <option value="mujeres">Bloque Mujeres</option>
+                            <select id="controlManualFilterFilial" class="form-select form-select-sm bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Asistencias.selectedBlockFilter = this.value; window.Asistencias.selectedFilialFilter = this.value; window.Asistencias.renderManualPassList();">
+                                <option value="all">-- Todas las Filiales --</option>
+                                <option value="matriz_lp">Matriz (La Paz)</option>
+                                <option value="cochabamba">Cochabamba</option>
+                                <option value="santa_cruz">Santa Cruz</option>
+                                <option value="peru">Perú</option>
+                                <option value="chile">Chile</option>
+                                <option value="europa">Europa</option>
+                                <option value="estados_unidos">Estados Unidos</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -1276,7 +1267,7 @@
                             <thead>
                                 <tr>
                                     <th>Fraterno</th>
-                                    <th>Bloque & Rol</th>
+                                    <th>Filial Oficial</th>
                                     <th>Estado Asistencia</th>
                                     <th class="text-end">Marcaje Rápido Directiva</th>
                                 </tr>
@@ -1294,7 +1285,7 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <div>
                 <h4 class="fw-bold text-white mb-1"><i class="bi bi-wallet2 text-brand me-2"></i>Libro Mayor de Cuotas & Conciliación</h4>
-                <p class="text-secondary small mb-0">Control de ingresos, verificación de transferencias, saldos por bloque y emisión de recibos oficiales.</p>
+                <p class="text-secondary small mb-0">Control de ingresos, verificación de transferencias, saldos por filial y emisión de recibos oficiales.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
                 <button class="btn btn-brand-subtle rounded-3" onclick="window.Pagos.exportPaymentsCSV()">
@@ -1353,12 +1344,12 @@
             </div>
         </div>
 
-        <!-- Resumen de Recaudación por Bloque -->
+        <!-- Resumen de Recaudación por Filial Oficial -->
         <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-4 shadow-sm">
             <h6 class="fw-bold text-dark text-uppercase small letter-spacing-1 mb-2">
-                <i class="bi bi-bar-chart-fill text-brand me-1"></i> Estado de Recaudación por Bloque / Tropa
+                <i class="bi bi-bar-chart-fill text-brand me-1"></i> Estado de Recaudación por Filial Oficial
             </h6>
-            <div class="row g-2" id="controlFinBloquesContainer"></div>
+            <div class="row g-2" id="controlFinFilialesContainer"></div>
         </div>
 
         <!-- Nav Pills Pestañas Directiva -->
@@ -1394,10 +1385,15 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <select id="ctrlPaymentsFilterBloque" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.bloque = this.value; window.Pagos.renderControlPaymentsTable();">
-                                    <option value="all">-- Todos los Bloques --</option>
-                                    <option value="hombres">Bloque Hombres</option>
-                                    <option value="mujeres">Bloque Mujeres</option>
+                                <select id="ctrlPaymentsFilterFilial" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.filial = this.value; window.Pagos.renderControlPaymentsTable();">
+                                    <option value="all">-- Todas las Filiales --</option>
+                                    <option value="matriz_lp">Matriz (La Paz)</option>
+                                    <option value="cochabamba">Cochabamba</option>
+                                    <option value="santa_cruz">Santa Cruz</option>
+                                    <option value="peru">Perú</option>
+                                    <option value="chile">Chile</option>
+                                    <option value="europa">Europa</option>
+                                    <option value="estados_unidos">Estados Unidos</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -1457,7 +1453,7 @@
                             <thead>
                                 <tr>
                                     <th>Fraterno / CI</th>
-                                    <th>Bloque</th>
+                                    <th>Filial</th>
                                     <th>Concepto de Cuota</th>
                                     <th>Monto Reportado</th>
                                     <th>Fecha Envío</th>
@@ -1526,41 +1522,18 @@
             </div>
         </div>
 
-        <!-- Métricas y Tarjetas de Distribución por Bloque y Filial -->
+        <!-- Métricas y Tarjetas de Distribución por Filial Oficial -->
         <div class="row g-3 mb-4" id="padronDistributionCards">
-            <div class="col-lg-5">
-                <div class="card bg-surface-1 border border-subtle rounded-4 p-3 h-100 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-secondary small text-uppercase fw-semibold">
-                            <i class="bi bi-people-fill text-brand me-1"></i> Distribución por Bloques
-                        </span>
-                        <span class="badge bg-brand-subtle text-brand fw-bold" id="distBloquesTotalBadge">2 Bloques Oficiales</span>
-                    </div>
-                    <div class="row g-2 text-center" id="distBloquesCardsContainer">
-                        <div class="col-6">
-                            <div class="p-2 rounded-3 bg-surface-2 border border-subtle">
-                                <div class="text-secondary small">Bloque Hombres</div>
-                                <div class="fs-4 fw-bold text-primary" id="distCountHombres">0</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">Fraternos Titulares</div>
-                            </div>
+            <div class="col-12">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="text-secondary small text-uppercase fw-semibold d-block">
+                                <i class="bi bi-globe-americas text-brand me-1"></i> Red de Filiales Oficiales de Tinkus Wistus
+                            </span>
+                            <h5 class="fw-bold text-dark mb-0">Distribución Oficial del Padrón por Filiales (7 Sedes)</h5>
                         </div>
-                        <div class="col-6">
-                            <div class="p-2 rounded-3 bg-surface-2 border border-subtle">
-                                <div class="text-secondary small">Bloque Mujeres</div>
-                                <div class="fs-4 fw-bold text-danger" id="distCountMujeres">0</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">Fraternas Titulares</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <div class="card bg-surface-1 border border-subtle rounded-4 p-3 h-100 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-secondary small text-uppercase fw-semibold">
-                            <i class="bi bi-globe-americas text-brand me-1"></i> Red de Filiales Oficiales (7 Sedes)
-                        </span>
-                        <span class="badge bg-surface-2 text-dark border border-subtle" id="distFilialesCountBadge">7 Filiales</span>
+                        <span class="badge bg-brand text-dark px-3 py-2 rounded-pill fw-bold" id="distFilialesCountBadge">7 Filiales Oficiales</span>
                     </div>
                     <div class="d-flex flex-wrap gap-2 pt-1" id="distFilialesBadgesContainer">
                         <!-- Generado dinámicamente con badges por cada filial -->
@@ -1575,15 +1548,8 @@
                 <div class="col-md-4">
                     <div class="input-wrapper-portal py-1 px-3">
                         <i class="bi bi-search text-brand"></i>
-                        <input type="text" id="searchDirectoryMember" class="form-control-portal py-1 small" placeholder="Buscar por CI, nombre, filial o bloque..." oninput="window.Miembros.renderControlDirectory()">
+                        <input type="text" id="searchDirectoryMember" class="form-control-portal py-1 small" placeholder="Buscar por CI, nombre, filial o rol..." oninput="window.Miembros.renderControlDirectory()">
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <select id="filterDirectoryBlock" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.selectedBlock = this.value; window.Miembros.renderControlDirectory();">
-                        <option value="all">-- Todos los Bloques --</option>
-                        <option value="hombres">Bloque Hombres</option>
-                        <option value="mujeres">Bloque Mujeres</option>
-                    </select>
                 </div>
                 <div class="col-md-3">
                     <select id="filterDirectoryFilial" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.selectedFilial = this.value; window.Miembros.renderControlDirectory();">
@@ -1595,6 +1561,16 @@
                         <option value="chile">Chile</option>
                         <option value="europa">Europa</option>
                         <option value="estados_unidos">Estados Unidos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="filterDirectoryRol" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.selectedRol = this.value; window.Miembros.renderControlDirectory();">
+                        <option value="all">-- Todos los Roles --</option>
+                        <option value="Fraterno Titular">Fraterno Titular</option>
+                        <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                        <option value="Guía de Fila">Guía de Fila</option>
+                        <option value="Fundador Honorario">Fundador Honorario</option>
+                        <option value="Directiva">Directiva</option>
                     </select>
                 </div>
                 <div class="col-md-2 text-end">
@@ -1613,7 +1589,6 @@
                         <tr>
                             <th>Fraterno</th>
                             <th>CI</th>
-                            <th>Bloque</th>
                             <th>Filial</th>
                             <th>Rol</th>
                             <th>% Asistencia</th>
@@ -1722,7 +1697,7 @@
                         </div>
                     </div>
 
-                    <!-- Datos del Fraterno y Bloque -->
+                    <!-- Datos del Fraterno y Filial Oficial -->
                     <div class="row g-3 p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
                         <div class="col-md-6">
                             <span class="text-secondary small d-block">Fraterno / Titular:</span>
@@ -1733,8 +1708,8 @@
                             <span class="font-mono text-brand fw-bold" id="reciboFraternoCI">---</span>
                         </div>
                         <div class="col-md-3">
-                            <span class="text-secondary small d-block">Bloque / Tropa:</span>
-                            <span class="badge bg-surface-1 text-dark border border-subtle" id="reciboBloque">---</span>
+                            <span class="text-secondary small d-block">Filial Oficial:</span>
+                            <span class="badge bg-surface-1 text-dark border border-subtle" id="reciboFilial">---</span>
                         </div>
                     </div>
 
@@ -1956,13 +1931,6 @@
                             <input type="text" id="newMemberApellidos" class="form-control bg-surface-2 text-dark border-subtle rounded-3" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small text-secondary">Bloque Fraternal:</label>
-                            <select id="newMemberBloque" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
-                                <option value="hombres">Bloque Hombres</option>
-                                <option value="mujeres">Bloque Mujeres</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label small text-secondary">Filial Oficial:</label>
                             <select id="newMemberFilial" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="matriz_lp">Matriz (La Paz)</option>
@@ -1974,7 +1942,7 @@
                                 <option value="estados_unidos">Estados Unidos</option>
                             </select>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <label class="form-label small text-secondary">Rol Fraternal:</label>
                             <select id="newMemberRol" class="form-select bg-surface-2 text-dark border-subtle rounded-3">
                                 <option value="Fraterno Titular">Fraterno Titular</option>
@@ -1983,7 +1951,7 @@
                                 <option value="Fundador Honorario">Fundador Honorario</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label small text-secondary">Antigüedad (Años):</label>
                             <input type="number" id="newMemberAntiguedad" class="form-control bg-surface-2 text-dark border-subtle rounded-3" value="1" min="1" max="50">
                         </div>
@@ -2014,7 +1982,7 @@
                             <h5 class="fw-bold text-dark mb-1" id="kardexNombre">Nombre</h5>
                             <div class="text-brand font-mono fw-semibold small" id="kardexCI">CI: ---</div>
                             <div class="text-secondary small">
-                                <span id="kardexBloque">Bloque</span> &bull; <span id="kardexFilial" class="text-brand fw-semibold">Filial</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
+                                <span id="kardexFilial" class="text-brand fw-semibold">Filial</span> &bull; <span id="kardexRol">Rol</span> &bull; <span id="kardexAntiguedad">Antigüedad</span> &bull; <span id="kardexTelefono">Tel</span>
                             </div>
                         </div>
                     </div>
@@ -2030,26 +1998,19 @@
                         </div>
                     </div>
 
-                    <!-- Panel de Gestión y Reasignación de Bloque / Filial (Directiva) -->
+                    <!-- Panel de Gestión y Reasignación de Filial (Directiva) -->
                     <div class="p-3 bg-surface-2 rounded-3 border border-subtle">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6 class="fw-bold text-dark small text-uppercase mb-0">
-                                <i class="bi bi-gear-fill text-brand me-1"></i> Gestión de Bloque y Filial (Directiva)
+                                <i class="bi bi-gear-fill text-brand me-1"></i> Gestión de Filial Oficial (Directiva)
                             </h6>
                             <span class="badge bg-brand-subtle text-brand small">Edición Oficial</span>
                         </div>
                         <p class="text-secondary small mb-3" style="font-size: 0.8rem;">
-                            Como administrador de la Directiva, puedes reasignar o corregir el Bloque y la Filial oficial de este fraterno.
+                            Como administrador de la Directiva, puedes reasignar o actualizar la Filial oficial de este fraterno.
                         </p>
                         <div class="row g-2 align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label small text-secondary fw-semibold">Bloque Fraternal:</label>
-                                <select id="kardexEditBloque" class="form-select form-select-sm bg-surface-1 text-dark border-subtle rounded-3">
-                                    <option value="hombres">Bloque Hombres</option>
-                                    <option value="mujeres">Bloque Mujeres</option>
-                                </select>
-                            </div>
-                            <div class="col-md-5">
+                            <div class="col-md-9">
                                 <label class="form-label small text-secondary fw-semibold">Filial Oficial:</label>
                                 <select id="kardexEditFilial" class="form-select form-select-sm bg-surface-1 text-dark border-subtle rounded-3">
                                     <option value="matriz_lp">Matriz (La Paz)</option>
@@ -2061,8 +2022,8 @@
                                     <option value="estados_unidos">Estados Unidos</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-portal-primary btn-sm w-100 rounded-3" onclick="window.Miembros.submitReassignBloqueFilial()">
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-portal-primary btn-sm w-100 rounded-3" onclick="window.Miembros.submitReassignFilial()">
                                     <i class="bi bi-check2"></i> Guardar
                                 </button>
                             </div>
@@ -2192,8 +2153,8 @@
                                         <span id="viewVoucherFraternoCI" class="text-brand font-mono fw-bold">---</span>
                                     </div>
                                     <div class="col-6">
-                                        <span class="text-secondary small d-block">Bloque:</span>
-                                        <span id="viewVoucherFraternoBloque" class="badge bg-surface-1 text-dark border border-subtle">---</span>
+                                        <span class="text-secondary small d-block">Filial:</span>
+                                        <span id="viewVoucherFraternoFilial" class="badge bg-surface-1 text-brand border border-subtle">---</span>
                                     </div>
                                 </div>
                                 <div class="mb-2">

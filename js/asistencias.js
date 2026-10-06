@@ -386,11 +386,12 @@ class AsistenciasManager {
 
     renderBlockBreakdown(stats) {
         const container = document.getElementById('controlBlockAttendanceBars');
-        if (!container || !stats.blockBreakdown) return;
+        const breakdown = stats.filialBreakdown || stats.blockBreakdown;
+        if (!container || !breakdown) return;
 
-        const blocks = Object.values(stats.blockBreakdown);
+        const filiales = Object.values(breakdown);
         let html = '';
-        blocks.forEach(b => {
+        filiales.forEach(b => {
             const marked = b.presentes + b.atrasos + b.licencias;
             const pct = b.total > 0 ? Math.round((marked / b.total) * 100) : 0;
             html += `
@@ -416,19 +417,22 @@ class AsistenciasManager {
         const searchInput = document.getElementById('searchManualPassMember');
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
+        const filterFilialEl = document.getElementById('controlManualFilterFilial') || document.getElementById('controlManualFilterBlock');
+        const selectedFilial = filterFilialEl ? filterFilialEl.value : (this.selectedBlockFilter || 'all');
+
         const filtered = members.filter(m => {
             const matchesSearch = !searchTerm || 
                 m.ci.includes(searchTerm) || 
                 `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchTerm) ||
-                m.bloque_nombre.toLowerCase().includes(searchTerm);
+                (m.filial_nombre && m.filial_nombre.toLowerCase().includes(searchTerm));
             
-            const matchesBlock = this.selectedBlockFilter === 'all' || m.bloque_id === this.selectedBlockFilter;
+            const matchesFilial = selectedFilial === 'all' || m.filial_id === selectedFilial;
 
             const reg = (m.asistencias && m.asistencias[this.currentEventId]) || { estado: 'pendiente' };
             const status = reg.estado || 'pendiente';
             const matchesStatus = this.selectedStatusFilter === 'all' || status === this.selectedStatusFilter;
 
-            return matchesSearch && matchesBlock && matchesStatus;
+            return matchesSearch && matchesFilial && matchesStatus;
         });
 
         let html = '';
@@ -449,7 +453,9 @@ class AsistenciasManager {
                     </div>
                 </td>
                 <td>
-                    <span class="badge bg-surface-2 border border-subtle text-primary fw-semibold">${m.bloque_nombre}</span>
+                    <span class="badge bg-surface-2 border border-subtle text-brand fw-semibold">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>${m.filial_nombre || 'Matriz (La Paz)'}
+                    </span>
                 </td>
                 <td>
                     ${this.getStatusBadgeHtml(reg.estado)}
@@ -533,10 +539,14 @@ class AsistenciasManager {
         window.PortalApp.showToast(`Se marcaron ${count} inasistencias (faltas) por cierre de lista.`, 'info');
     }
 
-    markBlockAsPresent(bloqueId) {
-        const count = window.PortalState.markBlockAttendance(this.currentEventId, bloqueId, 'presente', 'Directiva de Bloque');
+    markFilialAsPresent(filialId) {
+        const count = window.PortalState.markFilialAttendance(this.currentEventId, filialId, 'presente', 'Directiva Oficial');
         this.renderControlAttendances();
-        window.PortalApp.showToast(`Se registraron ${count} asistencias para el bloque seleccionado.`, 'success');
+        window.PortalApp.showToast(`Se registraron ${count} asistencias para la filial seleccionada.`, 'success');
+    }
+
+    markBlockAsPresent(bloqueId) {
+        return this.markFilialAsPresent(bloqueId);
     }
 
     exportAttendanceCSV() {
@@ -548,11 +558,11 @@ class AsistenciasManager {
         csv += `Evento:,"${evTitle}"\n`;
         csv += `Fecha:,"${ev ? ev.fecha : ''}"\n`;
         csv += `Lugar:,"${ev ? ev.lugar : ''}"\n\n`;
-        csv += `CI,Expedido,Nombres,Apellidos,Bloque,Filial,Rol,Estado_Asistencia,Hora_Registro,Marcado_Por\n`;
+        csv += `CI,Expedido,Nombres,Apellidos,Filial,Rol,Estado_Asistencia,Hora_Registro,Marcado_Por\n`;
 
         members.forEach(m => {
             const reg = (m.asistencias && m.asistencias[this.currentEventId]) || { estado: 'pendiente', hora: '', marcado_por: '' };
-            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.bloque_nombre || 'Bloque Hombres'}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${reg.estado}","${reg.hora || ''}","${reg.marcado_por || ''}"\n`;
+            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${reg.estado}","${reg.hora || ''}","${reg.marcado_por || ''}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -575,7 +585,7 @@ class AsistenciasManager {
         if (!sel) return;
         const members = window.PortalState.getMembers();
         sel.innerHTML = '<option value="">-- Seleccionar fraterno para validar QR al instante --</option>' + 
-            members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci}) - ${m.bloque_nombre}</option>`).join('');
+            members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci}) - ${m.filial_nombre || 'Matriz (La Paz)'}</option>`).join('');
     }
 
     extractCIFromPayload(rawText) {
@@ -770,7 +780,7 @@ class AsistenciasManager {
             ci: member.ci,
             nombre: `${member.nombres} ${member.apellidos}`,
             foto: member.foto || 'assets/img/avatar-default.svg',
-            bloque: member.bloque_nombre,
+            filial: member.filial_nombre || 'Matriz (La Paz)',
             hora: horaMarcada,
             estado: targetStatus,
             ya_estaba: alreadyRegistered
@@ -817,8 +827,8 @@ class AsistenciasManager {
         const txtCI = document.getElementById('scanResCI');
         if (txtCI) txtCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
 
-        const txtBloque = document.getElementById('scanResBloque');
-        if (txtBloque) txtBloque.textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'} • ${member.rol_fraternal || 'Fraterno Titular'}`;
+        const txtFilial = document.getElementById('scanResFilial') || document.getElementById('scanResBloque');
+        if (txtFilial) txtFilial.textContent = `${member.filial_nombre || 'Matriz (La Paz)'} • ${member.rol_fraternal || 'Fraterno Titular'}`;
 
         const txtHora = document.getElementById('scanResHora');
         if (txtHora) txtHora.textContent = `${hora}`;
@@ -889,7 +899,7 @@ class AsistenciasManager {
                         <img src="${item.foto}" width="30" height="30" class="rounded-circle border border-brand" alt="Foto">
                         <div>
                             <div class="fw-bold text-dark small">${item.nombre}</div>
-                            <div class="text-secondary" style="font-size: 0.72rem;">CI: ${item.ci} &bull; ${item.bloque}</div>
+                            <div class="text-secondary" style="font-size: 0.72rem;">CI: ${item.ci} &bull; ${item.filial || item.filial_nombre || ''}</div>
                         </div>
                     </div>
                     <div class="text-end">

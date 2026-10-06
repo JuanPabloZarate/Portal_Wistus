@@ -34,7 +34,7 @@ class MiembrosManager {
         // Inyectar datos en la vista de Credencial y Perfil
         document.querySelectorAll('.member-val-nombre').forEach(el => el.textContent = `${member.nombres} ${member.apellidos}`);
         document.querySelectorAll('.member-val-ci').forEach(el => el.textContent = `${member.ci} ${member.ci_exp || 'LP'}`);
-        document.querySelectorAll('.member-val-bloque').forEach(el => el.textContent = member.bloque_nombre || 'Bloque Hombres');
+        document.querySelectorAll('.member-val-bloque').forEach(el => el.textContent = member.filial_nombre || 'Matriz (La Paz)');
         document.querySelectorAll('.member-val-filial').forEach(el => el.textContent = member.filial_nombre || 'Matriz (La Paz)');
         document.querySelectorAll('.member-val-rol').forEach(el => el.textContent = member.rol_fraternal || 'Fraterno Titular');
         document.querySelectorAll('.member-val-antiguedad').forEach(el => el.textContent = `${member.antiguedad_anios || 1} años en Carnaval de Oruro`);
@@ -54,10 +54,8 @@ class MiembrosManager {
         const searchInput = document.getElementById('searchDirectoryMember');
         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-        // Contadores y distribución de bloques
+        // Contadores y distribución por filiales oficiales
         let total = members.length;
-        let countHombres = 0;
-        let countMujeres = 0;
         const filialCounts = {};
 
         const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
@@ -66,9 +64,6 @@ class MiembrosManager {
         });
 
         members.forEach(m => {
-            if (m.bloque_id === 'mujeres') countMujeres++;
-            else countHombres++;
-
             const fid = m.filial_id || 'matriz_lp';
             if (!filialCounts[fid]) {
                 filialCounts[fid] = { id: fid, name: m.filial_nombre || fid, count: 0 };
@@ -79,12 +74,6 @@ class MiembrosManager {
         // Actualizar badges de conteo y métricas de distribución
         const elTotalCount = document.getElementById('dirCountTotal');
         if (elTotalCount) elTotalCount.textContent = total;
-
-        const elHombres = document.getElementById('distCountHombres');
-        if (elHombres) elHombres.textContent = countHombres;
-
-        const elMujeres = document.getElementById('distCountMujeres');
-        if (elMujeres) elMujeres.textContent = countMujeres;
 
         const filialesBadgesContainer = document.getElementById('distFilialesBadgesContainer');
         if (filialesBadgesContainer) {
@@ -101,23 +90,29 @@ class MiembrosManager {
             filialesBadgesContainer.innerHTML = fHtml;
         }
 
+        // Leer filtros
+        const filterRolEl = document.getElementById('filterDirectoryRol');
+        const selectedRol = filterRolEl ? filterRolEl.value : (this.selectedRol || 'all');
+        const filterFilialEl = document.getElementById('filterDirectoryFilial');
+        const selectedFilial = filterFilialEl ? filterFilialEl.value : (this.selectedFilial || 'all');
+
         // Filtrar
         const filtered = members.filter(m => {
             const fullName = `${m.nombres || ''} ${m.apellidos || ''}`.toLowerCase();
             const ciStr = String(m.ci || '');
-            const bName = String(m.bloque_nombre || '').toLowerCase();
             const fName = String(m.filial_nombre || '').toLowerCase();
+            const rName = String(m.rol_fraternal || '').toLowerCase();
 
             const matchesSearch = !searchTerm ||
                 ciStr.includes(searchTerm) ||
                 fullName.includes(searchTerm) ||
-                bName.includes(searchTerm) ||
-                fName.includes(searchTerm);
+                fName.includes(searchTerm) ||
+                rName.includes(searchTerm);
 
-            let matchesBlock = this.selectedBlock === 'all' || m.bloque_id === this.selectedBlock;
-            let matchesFilial = this.selectedFilial === 'all' || m.filial_id === this.selectedFilial;
+            let matchesFilial = selectedFilial === 'all' || m.filial_id === selectedFilial;
+            let matchesRol = selectedRol === 'all' || m.rol_fraternal === selectedRol;
 
-            return matchesSearch && matchesBlock && matchesFilial;
+            return matchesSearch && matchesFilial && matchesRol;
         });
 
         let html = '';
@@ -131,7 +126,6 @@ class MiembrosManager {
                 });
             }
             const attPct = totalEvents > 0 ? Math.round((attended / totalEvents) * 100) : 0;
-            const isMujer = m.bloque_id === 'mujeres';
 
             html += `
             <tr class="align-middle">
@@ -148,17 +142,12 @@ class MiembrosManager {
                     <span class="fw-bold text-brand font-monospace">${m.ci} ${m.ci_exp || 'LP'}</span>
                 </td>
                 <td>
-                    <span class="badge ${isMujer ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'} border border-subtle fw-semibold">
-                        ${m.bloque_nombre || (isMujer ? 'Bloque Mujeres' : 'Bloque Hombres')}
-                    </span>
-                </td>
-                <td>
                     <span class="badge bg-surface-2 text-dark border border-subtle fw-semibold">
                         <i class="bi bi-geo-alt-fill text-danger me-1"></i>${m.filial_nombre || 'Matriz (La Paz)'}
                     </span>
                 </td>
                 <td>
-                    <div class="small text-white fw-medium">${m.rol_fraternal || 'Fraterno Titular'}</div>
+                    <div class="small text-dark fw-semibold">${m.rol_fraternal || 'Fraterno Titular'}</div>
                     <div class="text-muted" style="font-size:0.75rem;">${m.antiguedad_anios || 1} años</div>
                 </td>
                 <td>
@@ -171,8 +160,8 @@ class MiembrosManager {
                 </td>
                 <td class="text-end">
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Gestionar Bloque/Filial">
-                            <i class="bi bi-person-gear"></i> Ficha & Bloque
+                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Gestionar Filial">
+                            <i class="bi bi-person-gear"></i> Ficha & Filial
                         </button>
                         <button class="btn btn-outline-success" onclick="window.Pagos.openRegisterPaymentModal('${m.ci}')" title="Cobrar Cuota">
                             <i class="bi bi-cash"></i> Cobrar
@@ -201,7 +190,8 @@ class MiembrosManager {
 
         document.getElementById('kardexNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('kardexCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
-        document.getElementById('kardexBloque').textContent = member.bloque_nombre || 'Bloque Hombres';
+        const elBloque = document.getElementById('kardexBloque');
+        if (elBloque) elBloque.textContent = member.filial_nombre || 'Matriz (La Paz)';
         const elFilial = document.getElementById('kardexFilial');
         if (elFilial) elFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
         document.getElementById('kardexRol').textContent = member.rol_fraternal || 'Fraterno Titular';
@@ -210,9 +200,6 @@ class MiembrosManager {
         document.getElementById('kardexFoto').src = member.foto || 'assets/img/avatar-default.svg';
 
         // Set form values in reassign section
-        const editBloque = document.getElementById('kardexEditBloque');
-        if (editBloque) editBloque.value = (member.bloque_id === 'mujeres' || member.bloque_id === 'hombres') ? member.bloque_id : 'hombres';
-
         const editFilial = document.getElementById('kardexEditFilial');
         if (editFilial) editFilial.value = member.filial_id || 'matriz_lp';
 
@@ -254,38 +241,35 @@ class MiembrosManager {
         }
     }
 
-    submitReassignBloqueFilial() {
+    submitReassignFilial() {
         if (!this.currentKardexCI) return;
         const ci = this.currentKardexCI;
-        const editBloque = document.getElementById('kardexEditBloque');
         const editFilial = document.getElementById('kardexEditFilial');
-
-        const newBloqueId = editBloque ? editBloque.value : 'hombres';
         const newFilialId = editFilial ? editFilial.value : 'matriz_lp';
 
-        const bloqueNombre = newBloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
         const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
         const filialObj = filialesDef.find(f => f.id === newFilialId);
         const filialNombre = filialObj ? filialObj.name : 'Matriz (La Paz)';
 
         try {
             const updated = window.PortalState.updateMember(ci, {
-                bloque_id: newBloqueId,
-                bloque_nombre: bloqueNombre,
                 filial_id: newFilialId,
                 filial_nombre: filialNombre
             });
 
             // Actualizar etiquetas en el modal
-            document.getElementById('kardexBloque').textContent = bloqueNombre;
             const elFilial = document.getElementById('kardexFilial');
             if (elFilial) elFilial.textContent = filialNombre;
 
             this.renderControlDirectory();
-            window.PortalApp.showToast(`¡Asignación actualizada para ${updated.nombres}! ${bloqueNombre} &bull; ${filialNombre}`, 'success');
+            window.PortalApp.showToast(`¡Asignación oficial actualizada para ${updated.nombres}! Filial: ${filialNombre}`, 'success');
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
         }
+    }
+
+    submitReassignBloqueFilial() {
+        return this.submitReassignFilial();
     }
 
     openNewMemberModal() {
@@ -302,8 +286,6 @@ class MiembrosManager {
         const nombres = document.getElementById('newMemberNombres').value.trim();
         const apellidos = document.getElementById('newMemberApellidos').value.trim();
         const telefono = document.getElementById('newMemberTelefono').value.trim();
-        const bloqueEl = document.getElementById('newMemberBloque');
-        const bloqueId = bloqueEl ? bloqueEl.value : 'hombres';
         const filialEl = document.getElementById('newMemberFilial');
         const filialId = filialEl ? filialEl.value : 'matriz_lp';
         const rol = document.getElementById('newMemberRol').value;
@@ -314,7 +296,6 @@ class MiembrosManager {
             return;
         }
 
-        const bloqueNombre = bloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
         const filialesDef = (window.DEFAULT_PORTAL_CONFIG && window.DEFAULT_PORTAL_CONFIG.filiales) ? window.DEFAULT_PORTAL_CONFIG.filiales : [];
         const filialObj = filialesDef.find(f => f.id === filialId);
         const filialNombre = filialObj ? filialObj.name : 'Matriz (La Paz)';
@@ -326,8 +307,6 @@ class MiembrosManager {
                 nombres,
                 apellidos,
                 telefono,
-                bloque_id: bloqueId,
-                bloque_nombre: bloqueNombre,
                 filial_id: filialId,
                 filial_nombre: filialNombre,
                 rol_fraternal: rol,
@@ -340,7 +319,7 @@ class MiembrosManager {
                 if (bsModal) bsModal.hide();
             }
 
-            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en ${bloqueNombre} (${filialNombre})!`);
+            window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en Filial ${filialNombre}!`);
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
         }
@@ -358,10 +337,10 @@ class MiembrosManager {
 
     exportDirectoryCSV() {
         const members = window.PortalState.getMembers();
-        let csv = 'CI,Expedido,Nombres,Apellidos,Bloque,Filial,Rol,Antiguedad,Telefono,Email,Tiene_Usuario,Estado\n';
+        let csv = 'CI,Expedido,Nombres,Apellidos,Filial,Rol,Antiguedad,Telefono,Email,Tiene_Usuario,Estado\n';
 
         members.forEach(m => {
-            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.bloque_nombre || 'Bloque Hombres'}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${m.antiguedad_anios}","${m.telefono}","${m.email || ''}","${m.has_user_account ? 'SI' : 'NO'}","${m.estado_fraterno}"\n`;
+            csv += `"${m.ci}","${m.ci_exp || 'LP'}","${m.nombres}","${m.apellidos}","${m.filial_nombre || 'Matriz (La Paz)'}","${m.rol_fraternal}","${m.antiguedad_anios}","${m.telefono}","${m.email || ''}","${m.has_user_account ? 'SI' : 'NO'}","${m.estado_fraterno}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

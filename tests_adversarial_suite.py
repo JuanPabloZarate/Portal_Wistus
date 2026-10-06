@@ -460,7 +460,7 @@ class AdversarialStressTestSuite(unittest.TestCase):
         """3.3 Verifica la estructura, visibilidad y slides de los carruseles de fotos y bloques."""
         driver = self.driver
         gallery_swiper = driver.find_element(By.ID, "gallery-swiper")
-        bloques_swiper = driver.find_element(By.ID, "bloques-swiper")
+        bloques_swiper = driver.find_element(By.CSS_SELECTOR, "#filiales-swiper, #bloques-swiper")
 
         self.assertTrue(gallery_swiper.is_displayed())
         self.assertTrue(bloques_swiper.is_displayed())

@@ -224,8 +224,9 @@ class AuthManager {
                     nombres: member.nombres,
                     apellidos: member.apellidos,
                     nombre_completo: `${member.nombres} ${member.apellidos}`,
-                    bloque_id: member.bloque_id,
-                    bloque_nombre: member.bloque_nombre,
+                    filial_id: member.filial_id || 'matriz_lp',
+                    filial_nombre: member.filial_nombre || 'Matriz (La Paz)',
+                    rol_fraternal: member.rol_fraternal || 'Fraterno Titular',
                     foto: member.foto
                 });
 

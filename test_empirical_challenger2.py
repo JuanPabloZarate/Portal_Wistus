@@ -359,27 +359,27 @@ def run_stress_suite():
         driver.quit()
 
     # =========================================================================
-    # T5: BLOQUE PRESELECTION IN ENQUIRE DRAWER
+    # T5: FILIAL PRESELECTION IN ENQUIRE DRAWER
     # =========================================================================
-    print(">>> [T5] Testing Bloque Postular Preselection Flow...")
+    print(">>> [T5] Testing Filial Postular Preselection Flow...")
     driver = get_driver(1440, 900)
     try:
         driver.get(f"{base_url}/landing.html")
         time.sleep(1)
 
-        bloques = ["Machas", "Imillas", "Ñaupas", "Sambos"]
+        filiales = ["matriz_lp", "cochabamba", "santa_cruz", "peru", "chile", "europa", "estados_unidos"]
         preselection_results = {}
-        for b_name in bloques:
-            # Find the button for this bloque
-            btn = driver.find_element(By.CSS_SELECTOR, f"button[data-open-enquire][data-bloque='{b_name}']")
+        for f_id in filiales:
+            # Find the button for this filial
+            btn = driver.find_element(By.CSS_SELECTOR, f"button[data-open-enquire][data-filial='{f_id}']")
             driver.execute_script("arguments[0].click();", btn)
             time.sleep(0.3)
             
             # Check select dropdown value
-            select = driver.find_element(By.ID, "enquire-bloque")
+            select = driver.find_element(By.ID, "enquire-filial")
             selected_val = select.get_attribute("value")
-            is_match = (selected_val == b_name)
-            preselection_results[b_name] = {"selected_val": selected_val, "match": is_match}
+            is_match = (selected_val == f_id)
+            preselection_results[f_id] = {"selected_val": selected_val, "match": is_match}
             
             # Close drawer
             close_btn = driver.find_element(By.ID, "btn-drawer-close")
@@ -392,11 +392,11 @@ def run_stress_suite():
             "success": all_preselect_ok
         }
         if not all_preselect_ok:
-            report["failures"].append("Bloque preselection failed for one or more blocks")
+            report["failures"].append("Filial preselection failed for one or more filiales")
 
     except Exception as ex:
         report["tests"]["T5_block_preselection"]["error"] = str(ex)
-        report["failures"].append(f"T5 Bloque preselection exception: {ex}")
+        report["failures"].append(f"T5 Filial preselection exception: {ex}")
     finally:
         driver.quit()
 

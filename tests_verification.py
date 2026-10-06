@@ -25,14 +25,14 @@ class TestPortalProcessesAndData(unittest.TestCase):
             self.assertGreater(os.path.getsize(file_path), 500, f"El archivo {f} es demasiado pequeño o está vacío.")
 
     def test_02_default_portal_config_structure(self):
-        """Verifica la estructura de DEFAULT_PORTAL_CONFIG en data.js (2 bloques oficiales y 7 filiales)."""
+        """Verifica la estructura de DEFAULT_PORTAL_CONFIG en data.js (organización por 7 filiales oficiales, sin bloques)."""
         data_js_path = os.path.join(JS_DIR, 'data.js')
         with open(data_js_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Extraer los 2 bloques oficiales
-        self.assertIn("'hombres'", content)
-        self.assertIn("'mujeres'", content)
+        # Bloques eliminados y vaciados
+        self.assertIn("bloques: []", content)
+        self.assertIn("window.BLOQUES_OFICIALES", content)
 
         # Extraer las 7 filiales oficiales
         self.assertIn("'matriz_lp'", content)
@@ -59,7 +59,6 @@ class TestPortalProcessesAndData(unittest.TestCase):
             content = f.read()
 
         self.assertNotIn("galanes", content.lower(), "state.js contiene fallback residual 'galanes'")
-        self.assertIn("bloque hombres", content.lower())
         self.assertIn("calculateProfileCompletion", content)
         self.assertIn("markAttendance", content)
         self.assertIn("registerPayment", content)
@@ -241,8 +240,6 @@ class TestPortalProcessesAndData(unittest.TestCase):
             'contacto_emergencia': 'Familiar Quisbert',
             'telefono_emergencia': '+591 70011223',
             'talla_traje': 'L',
-            'bloque_id': 'hombres',
-            'bloque_nombre': 'Bloque Hombres',
             'filial_id': 'matriz_lp',
             'filial_nombre': 'Matriz (La Paz)',
             'rol_fraternal': 'Fraterno Titular',
@@ -261,7 +258,6 @@ class TestPortalProcessesAndData(unittest.TestCase):
 
         # Validaciones de contrato
         self.assertTrue(sample_fraterno['ci'].isdigit())
-        self.assertIn(sample_fraterno['bloque_id'], ['hombres', 'mujeres'])
         self.assertIn(sample_fraterno['filial_id'], ['matriz_lp', 'cochabamba', 'santa_cruz', 'peru', 'chile', 'europa', 'estados_unidos'])
         self.assertTrue(sample_fraterno['telefono'].startswith('+591'))
         self.assertIsInstance(sample_fraterno['asistencias'], dict)
@@ -320,8 +316,8 @@ class TestPortalProcessesAndData(unittest.TestCase):
                 self.members = []
                 self.events = [{'id': 'ev_1', 'obligatorio': True}, {'id': 'ev_2', 'obligatorio': True}]
 
-            def add_member(self, ci, nombre, bloque):
-                m = {'ci': ci, 'nombre': nombre, 'bloque': bloque, 'asistencias': {}, 'pagos': []}
+            def add_member(self, ci, nombre, filial):
+                m = {'ci': ci, 'nombre': nombre, 'filial': filial, 'asistencias': {}, 'pagos': []}
                 self.members.append(m)
                 return m
 
@@ -338,7 +334,7 @@ class TestPortalProcessesAndData(unittest.TestCase):
                 return m
 
         state = MockState()
-        m = state.add_member('7890123', 'Carlos Mendoza', 'Bloque Tinkus Wistus Mayores')
+        m = state.add_member('7890123', 'Carlos Mendoza', 'matriz_lp')
         self.assertEqual(len(state.members), 1)
 
         state.mark_attendance('7890123', 'ev_1', 'presente')
@@ -504,15 +500,15 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertTrue(all(len(m['pagos']) == 1 for m in members))
 
     def test_20_financial_summary_aggregation(self):
-        """Verifica el cálculo de recaudación global, proyección y estado por bloque."""
+        """Verifica el cálculo de recaudación global, proyección y estado por filial."""
         cuotas = [{'monto': 250}, {'monto': 350}, {'monto': 800}, {'monto': 200}] # Total individual = 1600 Bs
         cuota_ind = sum(c['monto'] for c in cuotas)
 
         members = [
-            {'ci': '1', 'bloque': 'machas', 'pagos': [{'monto': 1600}]}, # al día
-            {'ci': '2', 'bloque': 'machas', 'pagos': [{'monto': 600}]},  # con saldo
-            {'ci': '3', 'bloque': 'imillas', 'pagos': [{'monto': 1600}]}, # al día
-            {'ci': '4', 'bloque': 'imillas', 'pagos': [{'monto': 0}]}     # con saldo
+            {'ci': '1', 'filial': 'matriz_lp', 'pagos': [{'monto': 1600}]}, # al día
+            {'ci': '2', 'filial': 'matriz_lp', 'pagos': [{'monto': 600}]},  # con saldo
+            {'ci': '3', 'filial': 'cochabamba', 'pagos': [{'monto': 1600}]}, # al día
+            {'ci': '4', 'filial': 'cochabamba', 'pagos': [{'monto': 0}]}     # con saldo
         ]
 
         total_recaudado = sum(sum(p['monto'] for p in m['pagos']) for m in members)
@@ -714,13 +710,13 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertFalse(res3['success'])
 
     def test_27_attendance_dashboard_kpis_and_bulk_operations(self):
-        """Verifica el cálculo de KPIs de asistencia, desglose por bloque y operaciones por lote."""
+        """Verifica el cálculo de KPIs de asistencia, desglose por filial y operaciones por lote."""
         members = [
-            {'ci': '1', 'bloque_id': 'machas', 'bloque_nombre': 'Bloque Machas', 'asistencias': {'ev_1': {'estado': 'presente'}}},
-            {'ci': '2', 'bloque_id': 'machas', 'bloque_nombre': 'Bloque Machas', 'asistencias': {'ev_1': {'estado': 'atraso'}}},
-            {'ci': '3', 'bloque_id': 'imillas', 'bloque_nombre': 'Bloque Imillas', 'asistencias': {'ev_1': {'estado': 'falta'}}},
-            {'ci': '4', 'bloque_id': 'imillas', 'bloque_nombre': 'Bloque Imillas', 'asistencias': {'ev_1': {'estado': 'licencia'}}},
-            {'ci': '5', 'bloque_id': 'mayores', 'bloque_nombre': 'Bloque Mayores', 'asistencias': {}} # pendiente
+            {'ci': '1', 'filial_id': 'matriz_lp', 'filial_nombre': 'Matriz (La Paz)', 'asistencias': {'ev_1': {'estado': 'presente'}}},
+            {'ci': '2', 'filial_id': 'matriz_lp', 'filial_nombre': 'Matriz (La Paz)', 'asistencias': {'ev_1': {'estado': 'atraso'}}},
+            {'ci': '3', 'filial_id': 'cochabamba', 'filial_nombre': 'Cochabamba', 'asistencias': {'ev_1': {'estado': 'falta'}}},
+            {'ci': '4', 'filial_id': 'cochabamba', 'filial_nombre': 'Cochabamba', 'asistencias': {'ev_1': {'estado': 'licencia'}}},
+            {'ci': '5', 'filial_id': 'santa_cruz', 'filial_nombre': 'Santa Cruz', 'asistencias': {}} # pendiente
         ]
 
         def get_stats(event_id, member_list):
@@ -923,14 +919,13 @@ class TestPortalProcessesAndData(unittest.TestCase):
         self.assertIn(".login-bg-decorations", style_content)
 
     def test_32_bloques_and_filiales_architecture_verification(self):
-        """Valida rigurosamente la arquitectura de 2 bloques oficiales y 7 filiales en todo el sistema."""
+        """Valida rigurosamente la arquitectura de 7 filiales oficiales en todo el sistema sin bloques."""
         data_js_path = os.path.join(JS_DIR, 'data.js')
         with open(data_js_path, 'r', encoding='utf-8') as f:
             data_content = f.read()
 
-        # 1. Exactamente 2 bloques en la configuración oficial
-        self.assertIn("id: 'hombres'", data_content)
-        self.assertIn("id: 'mujeres'", data_content)
+        # 1. Sin bloques en la configuración oficial, 7 filiales oficiales
+        self.assertIn("bloques: []", data_content)
         self.assertIn("window.BLOQUES_OFICIALES", data_content)
         self.assertIn("window.FILIALES_OFICIALES", data_content)
 
@@ -944,7 +939,6 @@ class TestPortalProcessesAndData(unittest.TestCase):
         with open(state_js_path, 'r', encoding='utf-8') as f:
             state_content = f.read()
 
-        self.assertIn("getBloques()", state_content)
         self.assertIn("getFiliales()", state_content)
         self.assertIn("getStatsByFilial()", state_content)
 
@@ -954,37 +948,47 @@ class TestPortalProcessesAndData(unittest.TestCase):
             index_content = f.read()
 
         # Perfil y credencial
-        self.assertIn('id="selectProfileBloque"', index_content)
         self.assertIn('id="selectProfileFilial"', index_content)
         self.assertIn('id="btnRequestTransferDirectiva"', index_content)
-        self.assertIn('id="credBloqueBadge"', index_content)
         self.assertIn('id="credFilialBadge"', index_content)
+        self.assertNotIn('id="selectProfileBloque"', index_content)
+        self.assertNotIn('id="credBloqueBadge"', index_content)
 
         # Padrón, filtros y distribución
-        self.assertIn('id="filterDirectoryBlock"', index_content)
         self.assertIn('id="filterDirectoryFilial"', index_content)
-        self.assertIn('id="padronDistributionCards"', index_content)
-        self.assertIn('id="distCountHombres"', index_content)
-        self.assertIn('id="distCountMujeres"', index_content)
+        self.assertIn('id="filterDirectoryRol"', index_content)
         self.assertIn('id="distFilialesBadgesContainer"', index_content)
+        self.assertNotIn('id="filterDirectoryBlock"', index_content)
+        self.assertNotIn('<th>Bloque & Rol</th>', index_content)
+        self.assertIn('<th>Filial Oficial</th>', index_content)
 
-        # Kardex y nuevo miembro
-        self.assertIn('id="kardexEditBloque"', index_content)
+        # Kardex, escáner, tesorería y nuevo miembro
         self.assertIn('id="kardexEditFilial"', index_content)
-        self.assertIn('id="newMemberBloque"', index_content)
         self.assertIn('id="newMemberFilial"', index_content)
+        self.assertIn('id="scanResFilial"', index_content)
+        self.assertIn('id="reciboFilial"', index_content)
+        self.assertIn('id="controlFinFilialesContainer"', index_content)
+        self.assertNotIn('saldos por bloque', index_content.lower())
+        self.assertNotIn('id="kardexEditBloque"', index_content)
+        self.assertNotIn('id="newMemberBloque"', index_content)
 
-        # 5. Contratos DOM en landing.html
+        # 5. Contratos de autenticación en auth.js
+        auth_js_path = os.path.join(JS_DIR, 'auth.js')
+        with open(auth_js_path, 'r', encoding='utf-8') as f:
+            auth_content = f.read()
+        self.assertIn('filial_id: member.filial_id', auth_content)
+        self.assertNotIn('bloque_id: member.bloque_id', auth_content)
+
+        # 6. Contratos DOM en landing.html
         landing_path = os.path.join(WORKSPACE_DIR, 'landing.html')
         with open(landing_path, 'r', encoding='utf-8') as f:
             landing_content = f.read()
 
-        self.assertIn('id="enquire-bloque"', landing_content)
         self.assertIn('id="enquire-filial"', landing_content)
-        self.assertIn('Bloque Hombres', landing_content)
-        self.assertIn('Bloque Mujeres', landing_content)
-        self.assertIn('Filiales Nacionales', landing_content)
-        self.assertIn('Filiales Internacionales', landing_content)
+        self.assertNotIn('id="enquire-bloque"', landing_content)
+        self.assertIn('Nuestras Filiales', landing_content)
+        self.assertIn('Filial Internacional', landing_content)
+        self.assertIn('Matriz (La Paz)', landing_content)
 
 if __name__ == '__main__':
     unittest.main()

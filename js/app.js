@@ -185,7 +185,7 @@ class PortalAppManager {
         const displayName = session.nombre_completo || session.username || 'Fraterno';
         const displayRole = session.role === 'control' 
             ? 'Directiva & Control' 
-            : (session.bloque_nombre || 'Fraterno Titular');
+            : (session.filial_nombre || session.rol_fraternal || 'Fraterno Titular');
         const initial = (session.nombre_completo || session.username || 'W').charAt(0).toUpperCase();
 
         // Actualizar datos de usuario en la barra superior básica
@@ -468,7 +468,7 @@ class PortalAppManager {
         // 1. Catálogo de Vistas según rol
         const viewsCatalog = isControl ? [
             { id: 'control-dashboard', title: 'Métricas Globales', desc: 'Panel resumen de fraternos y recaudación', icon: 'bi-bar-chart-line', badge: 'Vista' },
-            { id: 'control-asistencias', title: 'Terminal de Asistencias', desc: 'Escáner QR y pase de lista por bloque', icon: 'bi-qr-code-scan', badge: 'Vista' },
+            { id: 'control-asistencias', title: 'Terminal de Asistencias', desc: 'Escáner QR y pase de lista por filial', icon: 'bi-qr-code-scan', badge: 'Vista' },
             { id: 'control-pagos', title: 'Libro de Cuotas', desc: 'Registro de aportes y cobro rápido', icon: 'bi-journal-text', badge: 'Vista' },
             { id: 'control-directorio', title: 'Cobros & Directorio', desc: 'Padrón oficial y kardex individual', icon: 'bi-people', badge: 'Vista' },
             { id: 'control-eventos', title: 'Gestión de Eventos', desc: 'Crear y programar ensayos y recorridos', icon: 'bi-calendar-event', badge: 'Vista' }
@@ -493,7 +493,7 @@ class PortalAppManager {
                 m.ci.toLowerCase().includes(q) ||
                 m.nombres.toLowerCase().includes(q) ||
                 m.apellidos.toLowerCase().includes(q) ||
-                (m.bloque_nombre && m.bloque_nombre.toLowerCase().includes(q))
+                (m.filial_nombre && m.filial_nombre.toLowerCase().includes(q))
             ).slice(0, 5); // Límite de 5 resultados
         }
 
@@ -535,7 +535,7 @@ class PortalAppManager {
                         <i class="bi bi-person-badge"></i>
                         <div>
                             <div class="item-title">${m.nombres} ${m.apellidos}</div>
-                            <div class="item-sub">CI: ${m.ci} &bull; Bloque: ${m.bloque_nombre}</div>
+                            <div class="item-sub">CI: ${m.ci} &bull; Filial: ${m.filial_nombre || 'Matriz (La Paz)'}</div>
                         </div>
                         <span class="badge bg-secondary-subtle text-secondary item-badge font-mono">CI ${m.ci}</span>
                     </div>
@@ -723,7 +723,8 @@ class PortalAppManager {
 
         // Actualizar saludo y datos
         document.getElementById('dashMemberGreeting').textContent = `¡Hola, ${member.nombres.split(' ')[0]}!`;
-        document.getElementById('dashMemberBloque').textContent = member.bloque_nombre || 'Bloque Hombres';
+        const elDashBloque = document.getElementById('dashMemberBloque');
+        if (elDashBloque) elDashBloque.textContent = member.filial_nombre || 'Matriz (La Paz)';
         const elDashFilial = document.getElementById('dashMemberFilial');
         if (elDashFilial) elDashFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
         document.getElementById('dashMemberRol').textContent = member.rol_fraternal;
@@ -859,10 +860,10 @@ class PortalAppManager {
         if (credCI) credCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
 
         const credBloqueBadge = document.getElementById('credBloqueBadge');
-        if (credBloqueBadge) credBloqueBadge.textContent = member.bloque_nombre || 'Bloque Hombres';
+        if (credBloqueBadge) credBloqueBadge.style.display = 'none';
 
         const credFilialBadge = document.getElementById('credFilialBadge');
-        if (credFilialBadge) credFilialBadge.innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i>${member.filial_nombre || 'Matriz (La Paz)'}`;
+        if (credFilialBadge) credFilialBadge.innerHTML = `<i class="bi bi-geo-alt-fill text-purple me-1"></i>${member.filial_nombre || 'Matriz (La Paz)'}`;
 
         const credDistincionBadge = document.getElementById('credDistincionBadge');
         if (credDistincionBadge) credDistincionBadge.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i>${member.rol_fraternal || 'Fraterno Titular'}`;
@@ -1335,12 +1336,9 @@ class PortalAppManager {
                     return;
                 }
 
-                const selBloque = document.getElementById('selectProfileBloque');
                 const selFilial = document.getElementById('selectProfileFilial');
-                let bloqueId = selBloque ? selBloque.value : (member.bloque_id || 'hombres');
                 let filialId = selFilial ? selFilial.value : (member.filial_id || 'matriz_lp');
 
-                const bloqueNombre = bloqueId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres';
                 const filialConfig = (window.DEFAULT_PORTAL_CONFIG.filiales || []).find(f => f.id === filialId);
                 const filialNombre = filialConfig ? filialConfig.name : 'Matriz (La Paz)';
 
@@ -1354,8 +1352,6 @@ class PortalAppManager {
                     contacto_emergencia: contactoEmergencia,
                     telefono_emergencia: telEmergencia,
                     talla_traje: tallaTraje,
-                    bloque_id: bloqueId,
-                    bloque_nombre: bloqueNombre,
                     filial_id: filialId,
                     filial_nombre: filialNombre
                 };
@@ -1380,8 +1376,6 @@ class PortalAppManager {
                     session.nombres = updatedMember.nombres;
                     session.apellidos = updatedMember.apellidos;
                     session.nombre_completo = `${updatedMember.nombres} ${updatedMember.apellidos}`;
-                    session.bloque_id = updatedMember.bloque_id;
-                    session.bloque_nombre = updatedMember.bloque_nombre;
                     session.filial_id = updatedMember.filial_id;
                     session.filial_nombre = updatedMember.filial_nombre;
                     window.PortalState.setSession(session);
@@ -1389,42 +1383,44 @@ class PortalAppManager {
                     // Mostrar mensaje de éxito
                     const alertSuccess = document.getElementById('alertProfileEditSuccess');
                     if (alertSuccess) {
-                        alertSuccess.textContent = `¡Datos de perfil guardados! Asignado a: ${updatedMember.bloque_nombre} - ${updatedMember.filial_nombre}.`;
+                        alertSuccess.textContent = `¡Datos de perfil guardados! Filial oficial: ${updatedMember.filial_nombre}.`;
                         alertSuccess.classList.remove('d-none');
                         setTimeout(() => alertSuccess.classList.add('d-none'), 5000);
                     }
 
-                    this.showToast('¡Perfil fraternal y asignación actualizados exitosamente!', 'success');
+                    this.showToast('¡Perfil fraternal y asignación oficial actualizados exitosamente!', 'success');
                     this.updateProfileCompletionUI(updatedMember);
                 }, 300);
             });
         }
     }
 
-    solicitarCambioBloqueFilial() {
+    solicitarCambioFilial() {
         const session = window.PortalState.getSession();
         if (!session) return;
         const member = window.PortalState.getMemberByCI(session.ci);
         const name = member ? `${member.nombres} ${member.apellidos}` : 'Fraterno';
-        const currentBloque = member ? member.bloque_nombre : 'Bloque Hombres';
-        const currentFilial = member ? member.filial_nombre : 'Matriz (La Paz)';
+        const currentFilial = member ? (member.filial_nombre || 'Matriz (La Paz)') : 'Matriz (La Paz)';
         
         // Registrar en estado local para control
         if (member) {
             const solicitud = {
                 fecha: new Date().toISOString(),
                 estado: 'pendiente',
-                bloque_origen: currentBloque,
                 filial_origen: currentFilial
             };
             window.PortalState.updateMember(member.ci, { solicitud_traslado: solicitud });
         }
 
-        const msg = `¡Solicitud registrada para la Mesa Directiva!\n\nFraterno: ${name}\nAsignación registrada: ${currentBloque} (${currentFilial})\n\nTu solicitud de traslado o reasignación de bloque/filial para el Carnaval de Oruro 2027 ha sido enviada para resolución de la Directiva.`;
-        this.showToast('Solicitud de cambio enviada a la Mesa Directiva.', 'info');
+        const msg = `¡Solicitud registrada para la Mesa Directiva!\n\nFraterno: ${name}\nFilial de Origen: ${currentFilial}\n\nTu solicitud de traslado de Filial para el Carnaval de Oruro 2027 ha sido enviada para resolución de la Directiva.`;
+        this.showToast('Solicitud de traslado de filial enviada a la Mesa Directiva.', 'info');
         if (typeof alert === 'function') {
             alert(msg);
         }
+    }
+
+    solicitarCambioBloqueFilial() {
+        return this.solicitarCambioFilial();
     }
 
     renderMemberProfileEdit() {
@@ -1445,7 +1441,7 @@ class PortalAppManager {
         if (infoCI) infoCI.textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
 
         const infoBloque = document.getElementById('profileInfoBloque');
-        if (infoBloque) infoBloque.textContent = member.bloque_nombre || 'Bloque Hombres';
+        if (infoBloque) infoBloque.textContent = member.filial_nombre || 'Matriz (La Paz)';
 
         const infoFilial = document.getElementById('profileInfoFilial');
         if (infoFilial) infoFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
@@ -1487,14 +1483,8 @@ class PortalAppManager {
         const selTalla = document.getElementById('selectProfileTallaTraje');
         if (selTalla) selTalla.value = member.talla_traje || '';
 
-        const selBloque = document.getElementById('selectProfileBloque');
-        if (selBloque) selBloque.value = (member.bloque_id === 'mujeres' || member.bloque_id === 'hombres') ? member.bloque_id : 'hombres';
-
         const selFilial = document.getElementById('selectProfileFilial');
         if (selFilial) selFilial.value = member.filial_id || 'matriz_lp';
-
-        const inBloqueNombre = document.getElementById('inputProfileBloqueNombre');
-        if (inBloqueNombre) inBloqueNombre.value = member.bloque_nombre || 'Bloque Hombres';
 
         const inFilialNombre = document.getElementById('inputProfileFilialNombre');
         if (inFilialNombre) inFilialNombre.value = member.filial_nombre || 'Matriz (La Paz)';
@@ -1503,9 +1493,9 @@ class PortalAppManager {
         if (inRolNombre) inRolNombre.value = member.rol_fraternal || '';
 
         // Actualizar ayuda y estado de asignación oficial
-        const statusHelp = document.getElementById('profileBloqueFilialStatusHelp');
+        const statusHelp = document.getElementById('profileFilialStatusHelp') || document.getElementById('profileBloqueFilialStatusHelp');
         if (statusHelp) {
-            statusHelp.innerHTML = `<strong>Asignación actual:</strong> <span class="text-brand fw-semibold">${member.bloque_nombre || 'Bloque Hombres'}</span> &bull; <span class="text-dark fw-semibold">${member.filial_nombre || 'Matriz (La Paz)'}</span>. <span class="badge bg-success-subtle text-success ms-1">Asignado &bull; Oruro 2027</span><br><span class="text-muted" style="font-size:0.75rem;">Para traslados posteriores entre filiales o cambio de tropa, solicítalo con el botón oficial a la Mesa Directiva.</span>`;
+            statusHelp.innerHTML = `<strong>Filial Oficial:</strong> <span class="text-brand fw-semibold">${member.filial_nombre || 'Matriz (La Paz)'}</span>. <span class="badge bg-success-subtle text-success ms-1">Asignado &bull; Oruro 2027</span><br><span class="text-muted" style="font-size:0.75rem;">Para traslados posteriores entre las 7 filiales oficiales, solicítalo con el botón oficial a la Mesa Directiva.</span>`;
         }
 
         // Ocultar alertas
@@ -1533,7 +1523,6 @@ class PortalAppManager {
             contacto_emergencia: document.getElementById('inputProfileContactoEmergencia')?.value || '',
             telefono_emergencia: document.getElementById('inputProfileTelEmergencia')?.value || '',
             talla_traje: document.getElementById('selectProfileTallaTraje')?.value || '',
-            bloque_id: document.getElementById('selectProfileBloque')?.value || currentMember.bloque_id || 'hombres',
             filial_id: document.getElementById('selectProfileFilial')?.value || currentMember.filial_id || 'matriz_lp'
         };
 

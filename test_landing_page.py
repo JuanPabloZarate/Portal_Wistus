@@ -609,7 +609,7 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         self.assertTrue(has_title, "La credencial debe identificarse como credencial/membresía fraterna")
 
     # --------------------------------------------------------------------------
-    # F13: Carrusel de Bloques Fraternos ("Nuestros Bloques")
+    # F13: Carrusel de Filiales Fraternas ("Nuestras Filiales")
     # --------------------------------------------------------------------------
     def test_f13_01_listing_carousel_section_container(self):
         """F13: Contrato DOM: Existe [data-block="listing-carousel"]."""
@@ -617,31 +617,30 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         section = soup.select_one('[data-block="listing-carousel"]')
         self.assertIsNotNone(section, "Debe existir un bloque con data-block='listing-carousel'")
 
-    def test_f13_02_bloque_machas_presence(self):
-        """F13: Carrusel contiene tarjeta del 'Bloque Machas' con sinopsis."""
+    def test_f13_02_filial_matriz_presence(self):
+        """F13: Carrusel contiene tarjeta de la 'Filial Matriz (La Paz)' con sinopsis."""
         soup = self.require_landing_soup()
         section = soup.select_one('[data-block="listing-carousel"]')
-        self.assertIn("machas", section.get_text().lower(), "Debe existir tarjeta para el 'Bloque Machas'")
+        self.assertIn("matriz", section.get_text().lower(), "Debe existir tarjeta para la 'Filial Matriz'")
 
-    def test_f13_03_bloque_imillas_presence(self):
-        """F13: Carrusel contiene tarjeta del 'Bloque Imillas' con sinopsis."""
+    def test_f13_03_filial_cochabamba_presence(self):
+        """F13: Carrusel contiene tarjeta de la 'Filial Cochabamba' con sinopsis."""
         soup = self.require_landing_soup()
         section = soup.select_one('[data-block="listing-carousel"]')
-        self.assertIn("imillas", section.get_text().lower(), "Debe existir tarjeta para el 'Bloque Imillas'")
+        self.assertIn("cochabamba", section.get_text().lower(), "Debe existir tarjeta para la 'Filial Cochabamba'")
 
-    def test_f13_04_bloque_naupas_presence(self):
-        """F13: Carrusel contiene tarjeta del 'Bloque Ñaupas' con sinopsis."""
+    def test_f13_04_filial_santacruz_presence(self):
+        """F13: Carrusel contiene tarjeta de la 'Filial Santa Cruz' con sinopsis."""
+        soup = self.require_landing_soup()
+        section = soup.select_one('[data-block="listing-carousel"]')
+        self.assertIn("santa cruz", section.get_text().lower(), "Debe existir tarjeta para la 'Filial Santa Cruz'")
+
+    def test_f13_05_filiales_internacionales_presence(self):
+        """F13: Carrusel contiene tarjetas de filiales internacionales (Perú, Chile, Europa, EE.UU.)."""
         soup = self.require_landing_soup()
         section = soup.select_one('[data-block="listing-carousel"]')
         text = section.get_text().lower()
-        has_naupas = ("ñaupas" in text or "naupas" in text)
-        self.assertTrue(has_naupas, "Debe existir tarjeta para el 'Bloque Ñaupas'")
-
-    def test_f13_05_bloque_sambos_presence(self):
-        """F13: Carrusel contiene tarjeta del 'Bloque Sambos' con sinopsis."""
-        soup = self.require_landing_soup()
-        section = soup.select_one('[data-block="listing-carousel"]')
-        self.assertIn("sambos", section.get_text().lower(), "Debe existir tarjeta para el 'Bloque Sambos'")
+        self.assertTrue(any(f in text for f in ["perú", "peru", "chile", "europa", "estados unidos", "ee.uu."]))
 
     # --------------------------------------------------------------------------
     # F14: Eliminación de Barra Inferior Fija & Acciones en Header Superior
@@ -755,22 +754,20 @@ class Tier1FeatureCoverageTests(BaseLandingTestCase):
         self.assertTrue(any(k in combined for k in ["apellido", "last"]), "Falta campo de Apellidos")
         self.assertTrue(any(k in combined for k in ["telefono", "phone", "celular", "tel"]), "Falta campo de Teléfono")
 
-    def test_f16_04_enquire_form_block_selection_dropdown(self):
-        """F16: Formulario contiene selector <select> con opciones de bloques fraternos oficiales y filiales."""
+    def test_f16_04_enquire_form_filial_selection_dropdown(self):
+        """F16: Formulario contiene selector <select> con opciones de las filiales oficiales."""
         soup = self.require_landing_soup()
         dialog = soup.find("dialog", id="enquire")
-        select = dialog.find("select", id="enquire-bloque") or dialog.find("select")
-        self.assertIsNotNone(select, "El formulario debe incluir un <select> para elegir bloque de interés")
-        options_text = " ".join(opt.get_text().lower() for opt in select.find_all("option"))
-        self.assertIn("hombres", options_text, "Debe incluir opción Bloque Hombres")
-        self.assertIn("mujeres", options_text, "Debe incluir opción Bloque Mujeres")
-
-        select_filial = dialog.find("select", id="enquire-filial")
+        select_filial = dialog.find("select", id="enquire-filial") or dialog.find("select")
         self.assertIsNotNone(select_filial, "El formulario debe incluir un <select id='enquire-filial'> para elegir filial oficial")
         filiales_text = " ".join(opt.get_text().lower() for opt in select_filial.find_all("option"))
         self.assertIn("la paz", filiales_text)
         self.assertIn("cochabamba", filiales_text)
         self.assertIn("santa cruz", filiales_text)
+        self.assertTrue(any(f in filiales_text for f in ["perú", "peru"]))
+        self.assertIn("chile", filiales_text)
+        self.assertIn("europa", filiales_text)
+        self.assertTrue(any(f in filiales_text for f in ["estados unidos", "ee.uu."]))
 
     def test_f16_05_enquire_form_submit_button(self):
         """F16: Formulario contiene botón de envío (type='submit' o botón de postulación)."""
@@ -1171,7 +1168,7 @@ class Tier4EndToEndUserJourneyTests(BaseLandingTestCase):
     # J1: Flujo de Descubrimiento de Nuevo Visitante
     # --------------------------------------------------------------------------
     def test_j01_new_visitor_discovery_flow(self):
-        """J1: Flujo: Hero -> Lectura de Cita & Metadatos -> Galería Swiper -> Bloques -> Enlace al Portal."""
+        """J1: Flujo: Hero -> Lectura de Cita & Metadatos -> Galería Swiper -> Filiales -> Enlace al Portal."""
         soup = self.require_landing_soup()
 
         # Paso 1: Encuentro inicial con Hero Masthead
@@ -1191,12 +1188,12 @@ class Tier4EndToEndUserJourneyTests(BaseLandingTestCase):
         swiper = carousel.select_one('[data-carousel-swiper]')
         self.assertIsNotNone(swiper, "J1.P3: Contenedor de Swiper fotográfico ausente")
 
-        # Paso 4: Exploración de los 4 bloques fraternos
+        # Paso 4: Exploración de las filiales oficiales
         blocks_carousel = soup.select_one('[data-block="listing-carousel"]')
-        self.assertIsNotNone(blocks_carousel, "J1.P4: Visitante no encuentra el carrusel de bloques fraternos")
+        self.assertIsNotNone(blocks_carousel, "J1.P4: Visitante no encuentra el carrusel de filiales oficiales")
         blocks_text = blocks_carousel.get_text().lower()
-        for b in ["machas", "imillas", "sambos"]:
-            self.assertIn(b, blocks_text, f"J1.P4: Falta información del bloque {b}")
+        for b in ["matriz", "cochabamba", "santa cruz"]:
+            self.assertIn(b, blocks_text, f"J1.P4: Falta información de la filial {b}")
 
         # Paso 5: Navegación final al portal
         portal_links = soup.find_all("a", href=lambda h: h and "index.html" in h)
@@ -1226,7 +1223,7 @@ class Tier4EndToEndUserJourneyTests(BaseLandingTestCase):
         # Paso 4: Formulario con campos completos
         form = dialog_enquire.find("form")
         self.assertIsNotNone(form, "J2.P4: Formulario reactivo de postulación ausente en el drawer")
-        self.assertIsNotNone(form.find("select"), "J2.P4: Selector de bloque de interés ausente")
+        self.assertIsNotNone(form.find("select"), "J2.P4: Selector de filial de postulación ausente")
 
         # Paso 5: Script que procesa el envío sin recargar
         scripts_text = self.get_scripts_text()

@@ -13,6 +13,7 @@ class PagosManager {
         this.voucherZoomLevel = 1.0;
         this.controlPaymentsFilter = {
             search: '',
+            filial: 'all',
             bloque: 'all',
             cuota: 'all',
             metodo: 'all',
@@ -602,19 +603,19 @@ class PagosManager {
         this.renderControlPaymentsTable();
         this.renderControlVouchersTable();
         this.renderControlCuotasTable();
-        this.renderControlBloquesSummary(summary.porBloque);
+        this.renderControlFilialesSummary(summary.porFilial || summary.porBloque);
 
         // Poblar selects dinámicos
         this.populatePaymentMemberSelect();
         this.populatePaymentCuotasSelect();
     }
 
-    renderControlBloquesSummary(bloques) {
-        const container = document.getElementById('controlFinBloquesContainer');
-        if (!container || !Array.isArray(bloques)) return;
+    renderControlFilialesSummary(filiales) {
+        const container = document.getElementById('controlFinBloquesContainer') || document.getElementById('controlFinFilialesContainer');
+        if (!container || !Array.isArray(filiales)) return;
 
         let html = '';
-        bloques.forEach(b => {
+        filiales.forEach(b => {
             html += `
             <div class="col-md-4 col-lg-2 mb-2">
                 <div class="p-3 bg-surface-2 rounded-3 border border-subtle h-100">
@@ -633,6 +634,10 @@ class PagosManager {
         container.innerHTML = html;
     }
 
+    renderControlBloquesSummary(filiales) {
+        return this.renderControlFilialesSummary(filiales);
+    }
+
     renderControlPaymentsTable() {
         const tableBody = document.getElementById('controlPaymentsTableBody');
         if (!tableBody) return;
@@ -645,8 +650,6 @@ class PagosManager {
                     ...p,
                     member_ci: m.ci,
                     member_nombre: `${m.nombres} ${m.apellidos}`,
-                    bloque_id: m.bloque_id || 'hombres',
-                    bloque_nombre: m.bloque_nombre || 'Bloque Hombres',
                     filial_id: m.filial_id || 'matriz_lp',
                     filial_nombre: m.filial_nombre || 'Matriz (La Paz)',
                     telefono: m.telefono || ''
@@ -665,8 +668,10 @@ class PagosManager {
                 (p.nro_transaccion && p.nro_transaccion.toLowerCase().includes(q))
             );
         }
-        if (f.bloque && f.bloque !== 'all') {
-            allPayments = allPayments.filter(p => p.bloque_id === f.bloque);
+        if (f.filial && f.filial !== 'all') {
+            allPayments = allPayments.filter(p => p.filial_id === f.filial);
+        } else if (f.bloque && f.bloque !== 'all') {
+            allPayments = allPayments.filter(p => p.filial_id === f.bloque);
         }
         if (f.cuota && f.cuota !== 'all') {
             allPayments = allPayments.filter(p => p.cuota_id === f.cuota);
@@ -700,7 +705,7 @@ class PagosManager {
                 </td>
                 <td>
                     <div class="fw-bold text-dark">${p.member_nombre}</div>
-                    <div class="small text-secondary">CI: ${p.member_ci} &bull; <span class="badge bg-surface-2 text-dark border border-subtle">${p.bloque_nombre || 'Bloque Hombres'}</span> <span class="badge bg-surface-2 text-dark border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${p.filial_nombre || 'Matriz (La Paz)'}</span></div>
+                    <div class="small text-secondary">CI: ${p.member_ci} &bull; <span class="badge bg-surface-2 text-brand border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${p.filial_nombre || 'Matriz (La Paz)'}</span></div>
                 </td>
                 <td class="text-dark">
                     <div>${p.concepto}</div>
@@ -743,8 +748,7 @@ class PagosManager {
                     <div class="small text-secondary">CI: ${v.member_ci} ${v.member_telefono ? `&bull; ${v.member_telefono}` : ''}</div>
                 </td>
                 <td>
-                    <span class="badge bg-surface-2 text-dark border border-subtle mb-1 d-block">${v.bloque_nombre || 'Bloque Hombres'}</span>
-                    <span class="badge bg-surface-2 text-dark border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${v.filial_nombre || 'Matriz (La Paz)'}</span>
+                    <span class="badge bg-surface-2 text-brand border border-subtle"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${v.filial_nombre || 'Matriz (La Paz)'}</span>
                 </td>
                 <td>
                     <div class="fw-semibold text-dark">${v.concepto}</div>
@@ -861,7 +865,8 @@ class PagosManager {
 
         document.getElementById('viewVoucherFraternoNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('viewVoucherFraternoCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
-        document.getElementById('viewVoucherFraternoBloque').textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'}`;
+        const elVoucherFilial = document.getElementById('viewVoucherFraternoFilial') || document.getElementById('viewVoucherFraternoBloque');
+        if (elVoucherFilial) elVoucherFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
         document.getElementById('viewVoucherCuota').textContent = voucher.concepto;
         document.getElementById('viewVoucherMonto').textContent = `Bs. ${voucher.monto.toLocaleString('es-BO')}`;
         
@@ -1017,7 +1022,8 @@ class PagosManager {
         document.getElementById('reciboFecha').textContent = `${payment.fecha} ${payment.hora || ''}`;
         document.getElementById('reciboFraternoNombre').textContent = `${member.nombres} ${member.apellidos}`;
         document.getElementById('reciboFraternoCI').textContent = `${member.ci} ${member.ci_exp || 'LP'}`;
-        document.getElementById('reciboBloque').textContent = `${member.bloque_nombre || 'Bloque Hombres'} • ${member.filial_nombre || 'Matriz (La Paz)'}`;
+        const elReciboFilial = document.getElementById('reciboFilial') || document.getElementById('reciboBloque');
+        if (elReciboFilial) elReciboFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
         document.getElementById('reciboConcepto').textContent = payment.concepto;
         document.getElementById('reciboMonto').textContent = `Bs. ${payment.monto.toLocaleString('es-BO')}`;
         document.getElementById('reciboMetodo').textContent = payment.metodo;
@@ -1079,7 +1085,7 @@ class PagosManager {
     exportPaymentsCSV() {
         const members = window.PortalState.getMembers();
         let rows = [
-            ['Nro Recibo', 'CI', 'Fraterno', 'Bloque', 'Concepto', 'Monto (Bs)', 'Fecha', 'Hora', 'Metodo', 'Cajero', 'Ref Transaccion', 'Estado']
+            ['Nro Recibo', 'CI', 'Fraterno', 'Filial', 'Concepto', 'Monto (Bs)', 'Fecha', 'Hora', 'Metodo', 'Cajero', 'Ref Transaccion', 'Estado']
         ];
 
         members.forEach(m => {
@@ -1088,7 +1094,7 @@ class PagosManager {
                     p.nro_recibo || p.id,
                     m.ci,
                     `"${m.nombres} ${m.apellidos}"`,
-                    `"${m.bloque_nombre}"`,
+                    `"${m.filial_nombre || 'Matriz (La Paz)'}"`,
                     `"${p.concepto}"`,
                     p.monto,
                     p.fecha,
@@ -1120,7 +1126,7 @@ class PagosManager {
         if (!sel) return;
         const members = window.PortalState.getMembers();
         sel.innerHTML = '<option value="">-- Seleccionar Fraterno / CI --</option>' + 
-            members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci}) - ${m.bloque_nombre}</option>`).join('');
+            members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci}) - ${m.filial_nombre || 'Matriz (La Paz)'}</option>`).join('');
     }
 
     populatePaymentCuotasSelect() {

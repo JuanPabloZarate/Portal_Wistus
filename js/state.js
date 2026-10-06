@@ -49,19 +49,15 @@ class PortalStateManager {
                     if (!parsed.eventos || parsed.eventos.length === 0) {
                         parsed.eventos = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.eventos));
                     }
-                    // Sincronizar bloques y filiales oficiales vigentes
-                    parsed.bloques = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.bloques));
+                    // Sincronizar filiales oficiales vigentes y eliminar bloques
+                    parsed.bloques = [];
                     parsed.filiales = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.filiales));
 
-                    // Normalizar miembros al nuevo esquema de 2 bloques y 7 filiales oficiales
+                    // Normalizar miembros al esquema 100% por Filial oficial
                     if (Array.isArray(parsed.miembros)) {
                         parsed.miembros.forEach(m => {
-                            if (!m.bloque_id || (m.bloque_id !== 'hombres' && m.bloque_id !== 'mujeres')) {
-                                const bRaw = String(m.bloque_id || '').toLowerCase() + ' ' + String(m.bloque_nombre || '').toLowerCase();
-                                const isFemale = bRaw.includes('imilla') || bRaw.includes('choclo') || bRaw.includes('wanlli') || bRaw.includes('mujer');
-                                m.bloque_id = isFemale ? 'mujeres' : 'hombres';
-                                m.bloque_nombre = isFemale ? 'Bloque Mujeres' : 'Bloque Hombres';
-                            }
+                            delete m.bloque_id;
+                            delete m.bloque_nombre;
                             if (!m.filial_id) {
                                 m.filial_id = 'matriz_lp';
                                 m.filial_nombre = 'Matriz (La Paz)';
@@ -115,7 +111,25 @@ class PortalStateManager {
     getSession() {
         try {
             const s = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
-            return s ? JSON.parse(s) : null;
+            if (!s) return null;
+            const parsed = JSON.parse(s);
+            if (parsed && parsed.role === 'miembro' && (parsed.bloque_id !== undefined || !parsed.filial_id)) {
+                delete parsed.bloque_id;
+                delete parsed.bloque_nombre;
+                const member = this.getMemberByCI(parsed.ci);
+                if (member) {
+                    parsed.filial_id = member.filial_id || 'matriz_lp';
+                    parsed.filial_nombre = member.filial_nombre || 'Matriz (La Paz)';
+                    parsed.rol_fraternal = member.rol_fraternal || parsed.rol_fraternal || 'Fraterno Titular';
+                } else {
+                    parsed.filial_id = parsed.filial_id || 'matriz_lp';
+                    parsed.filial_nombre = parsed.filial_nombre || 'Matriz (La Paz)';
+                }
+                const sanitizedStr = JSON.stringify(parsed);
+                if (sessionStorage.getItem(SESSION_KEY)) sessionStorage.setItem(SESSION_KEY, sanitizedStr);
+                if (localStorage.getItem(SESSION_KEY)) localStorage.setItem(SESSION_KEY, sanitizedStr);
+            }
+            return parsed;
         } catch (e) {
             return null;
         }
@@ -189,8 +203,6 @@ class PortalStateManager {
             contacto_emergencia: memberData.contacto_emergencia || '',
             telefono_emergencia: memberData.telefono_emergencia || '',
             talla_traje: memberData.talla_traje || 'M',
-            bloque_id: memberData.bloque_id || 'hombres',
-            bloque_nombre: memberData.bloque_nombre || 'Bloque Hombres',
             filial_id: memberData.filial_id || 'matriz_lp',
             filial_nombre: memberData.filial_nombre || 'Matriz (La Paz)',
             rol_fraternal: memberData.rol_fraternal || 'Fraterno Titular',
@@ -386,11 +398,11 @@ class PortalStateManager {
         return updatedCount;
     }
 
-    markBlockAttendance(eventId, bloqueId, estado = 'presente', marcadoPor = 'Directiva de Bloque') {
+    markFilialAttendance(eventId, filialId, estado = 'presente', marcadoPor = 'Directiva Oficial') {
         const members = this.getMembers();
         let updatedCount = 0;
         members.forEach(m => {
-            if (bloqueId === 'all' || m.bloque_id === bloqueId) {
+            if (filialId === 'all' || m.filial_id === filialId) {
                 this.markAttendance(m.ci, eventId, estado, marcadoPor);
                 updatedCount++;
             }
@@ -398,17 +410,35 @@ class PortalStateManager {
         return updatedCount;
     }
 
+    markBlockAttendance(eventId, bloqueId, estado = 'presente', marcadoPor = 'Directiva Oficial') {
+        return this.markFilialAttendance(eventId, bloqueId, estado, marcadoPor);
+    }
+
     getEventAttendanceStats(eventId) {
         const members = this.getMembers();
         let presentes = 0, atrasos = 0, faltas = 0, licencias = 0, pendientes = 0;
-        const blockBreakdown = {};
+        const filialBreakdown = {};
+
+        const filiales = this.getFiliales();
+        filiales.forEach(f => {
+            filialBreakdown[f.id] = {
+                id: f.id,
+                name: f.name,
+                total: 0,
+                presentes: 0,
+                atrasos: 0,
+                faltas: 0,
+                licencias: 0,
+                pendientes: 0
+            };
+        });
 
         members.forEach(m => {
-            const bId = m.bloque_id || 'general';
-            if (!blockBreakdown[bId]) {
-                blockBreakdown[bId] = {
-                    id: bId,
-                    name: m.bloque_nombre || bId,
+            const fId = m.filial_id || 'matriz_lp';
+            if (!filialBreakdown[fId]) {
+                filialBreakdown[fId] = {
+                    id: fId,
+                    name: m.filial_nombre || fId,
                     total: 0,
                     presentes: 0,
                     atrasos: 0,
@@ -417,24 +447,24 @@ class PortalStateManager {
                     pendientes: 0
                 };
             }
-            blockBreakdown[bId].total++;
+            filialBreakdown[fId].total++;
 
             const reg = m.asistencias ? m.asistencias[eventId] : null;
             if (!reg || reg.estado === 'pendiente' || !reg.estado) {
                 pendientes++;
-                blockBreakdown[bId].pendientes++;
+                filialBreakdown[fId].pendientes++;
             } else if (reg.estado === 'presente') {
                 presentes++;
-                blockBreakdown[bId].presentes++;
+                filialBreakdown[fId].presentes++;
             } else if (reg.estado === 'atraso') {
                 atrasos++;
-                blockBreakdown[bId].atrasos++;
+                filialBreakdown[fId].atrasos++;
             } else if (reg.estado === 'licencia') {
                 licencias++;
-                blockBreakdown[bId].licencias++;
+                filialBreakdown[fId].licencias++;
             } else if (reg.estado === 'falta') {
                 faltas++;
-                blockBreakdown[bId].faltas++;
+                filialBreakdown[fId].faltas++;
             }
         });
 
@@ -451,7 +481,8 @@ class PortalStateManager {
             pendientes,
             totalMarcados,
             porcentajeEfectivo,
-            blockBreakdown
+            filialBreakdown,
+            blockBreakdown: filialBreakdown
         };
     }
 
@@ -633,8 +664,6 @@ class PortalStateManager {
                     member_ci: m.ci,
                     member_nombre: `${m.nombres} ${m.apellidos}`,
                     member_telefono: m.telefono || '',
-                    bloque_id: m.bloque_id || 'hombres',
-                    bloque_nombre: m.bloque_nombre || 'Bloque Hombres',
                     filial_id: m.filial_id || 'matriz_lp',
                     filial_nombre: m.filial_nombre || 'Matriz (La Paz)'
                 });
@@ -729,15 +758,13 @@ class PortalStateManager {
         let fraternosAlDia = 0;
         let fraternosConSaldo = 0;
 
-        const bloquesConfig = (this.state && Array.isArray(this.state.bloques) && this.state.bloques.length > 0)
-            ? this.state.bloques
-            : (DEFAULT_PORTAL_CONFIG.bloques || []);
-        const bloquesMap = {};
-        bloquesConfig.forEach(b => {
-            bloquesMap[b.id] = {
-                id: b.id,
-                name: b.name,
-                color: b.color || '#3b82f6',
+        const filialesConfig = this.getFiliales();
+        const filialesMap = {};
+        filialesConfig.forEach(f => {
+            filialesMap[f.id] = {
+                id: f.id,
+                name: f.name,
+                color: '#7c3aed',
                 total_miembros: 0,
                 recaudado: 0,
                 proyectado: 0,
@@ -747,12 +774,12 @@ class PortalStateManager {
         });
 
         members.forEach(m => {
-            const bId = (m.bloque_id === 'mujeres' || m.bloque_id === 'hombres') ? m.bloque_id : 'hombres';
-            if (!bloquesMap[bId]) {
-                bloquesMap[bId] = {
-                    id: bId,
-                    name: m.bloque_nombre || (bId === 'mujeres' ? 'Bloque Mujeres' : 'Bloque Hombres'),
-                    color: bId === 'mujeres' ? '#ec4899' : '#3b82f6',
+            const fId = m.filial_id || 'matriz_lp';
+            if (!filialesMap[fId]) {
+                filialesMap[fId] = {
+                    id: fId,
+                    name: m.filial_nombre || fId,
+                    color: '#7c3aed',
                     total_miembros: 0,
                     recaudado: 0,
                     proyectado: 0,
@@ -765,25 +792,25 @@ class PortalStateManager {
             const pagado = mPagos.reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
             
             totalRecaudado += pagado;
-            bloquesMap[bId].total_miembros++;
-            bloquesMap[bId].recaudado += pagado;
-            bloquesMap[bId].proyectado += cuotaTotalIndividual;
+            filialesMap[fId].total_miembros++;
+            filialesMap[fId].recaudado += pagado;
+            filialesMap[fId].proyectado += cuotaTotalIndividual;
 
             if (pagado >= cuotaTotalIndividual && cuotaTotalIndividual > 0) {
                 fraternosAlDia++;
-                bloquesMap[bId].al_dia++;
+                filialesMap[fId].al_dia++;
             } else {
                 fraternosConSaldo++;
-                bloquesMap[bId].con_saldo++;
+                filialesMap[fId].con_saldo++;
             }
         });
 
         const pendingVouchers = this.getPendingVouchers();
         const pendingMonto = pendingVouchers.reduce((acc, v) => acc + (parseFloat(v.monto) || 0), 0);
 
-        const porBloque = Object.values(bloquesMap).map(b => ({
-            ...b,
-            porcentaje: b.proyectado > 0 ? Math.round((b.recaudado / b.proyectado) * 100) : 100
+        const porFilial = Object.values(filialesMap).map(f => ({
+            ...f,
+            porcentaje: f.proyectado > 0 ? Math.round((f.recaudado / f.proyectado) * 100) : 100
         }));
 
         return {
@@ -794,12 +821,13 @@ class PortalStateManager {
             fraternosConSaldo,
             pendingVouchersCount: pendingVouchers.length,
             pendingVouchersMonto: pendingMonto,
-            porBloque
+            porFilial,
+            porBloque: []
         };
     }
 
     getBloques() {
-        return (this.state && Array.isArray(this.state.bloques) && this.state.bloques.length > 0)
+        return (this.state && Array.isArray(this.state.bloques))
             ? this.state.bloques
             : (DEFAULT_PORTAL_CONFIG.bloques || []);
     }
@@ -822,8 +850,6 @@ class PortalStateManager {
                 pais: f.pais || 'Bolivia',
                 sede: f.sede || '',
                 total_miembros: 0,
-                hombres: 0,
-                mujeres: 0,
                 recaudado: 0
             };
         });
@@ -837,18 +863,10 @@ class PortalStateManager {
                     pais: 'Bolivia',
                     sede: '',
                     total_miembros: 0,
-                    hombres: 0,
-                    mujeres: 0,
                     recaudado: 0
                 };
             }
             filialesMap[fId].total_miembros++;
-            if (m.bloque_id === 'mujeres') {
-                filialesMap[fId].mujeres++;
-            } else {
-                filialesMap[fId].hombres++;
-            }
-
             const pagado = (m.pagos || []).reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
             filialesMap[fId].recaudado += pagado;
         });

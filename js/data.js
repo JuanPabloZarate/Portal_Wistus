@@ -36,10 +36,7 @@ const DEFAULT_PORTAL_CONFIG = {
             }
         }
     },
-    bloques: [
-        { id: 'hombres', name: 'Bloque Hombres', guia: 'Juan Pablo Quispe', cupos: 150, color: '#3b82f6' },
-        { id: 'mujeres', name: 'Bloque Mujeres', guia: 'Maria Elena Flores', cupos: 150, color: '#ec4899' }
-    ],
+    bloques: [],
     filiales: [
         { id: 'matriz_lp', name: 'Matriz (La Paz)', pais: 'Bolivia', sede: 'San Pedro, Calle Almirante Grau' },
         { id: 'cochabamba', name: 'Cochabamba', pais: 'Bolivia', sede: 'Filial Cochabamba' },
@@ -154,7 +151,7 @@ const DEFAULT_PORTAL_CONFIG = {
             fecha: '2026-12-15',
             titulo: 'Última Fecha para Pago de Cuota 2 (Banda Oficial Carnaval)',
             autor: 'Tesorería General Tinkus Wistus 2027',
-            contenido: 'Fraternos que aún tengan saldo pendiente en la Cuota 2 deben regularizar hasta el 31 de diciembre para confirmar su puesto en fila y bloque oficial de Tinkus Wistus para el Carnaval de Oruro 2027.',
+            contenido: 'Fraternos que aún tengan saldo pendiente en la Cuota 2 deben regularizar hasta el 31 de diciembre para confirmar su puesto y participación oficial de Tinkus Wistus para el Carnaval de Oruro 2027.',
             prioridad: 'media'
         },
         {
@@ -178,11 +175,9 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Dra. Rosario Mamani (Madre)',
             telefono_emergencia: '+591 71234567',
             talla_traje: 'L',
-            bloque_id: 'hombres',
-            bloque_nombre: 'Bloque Hombres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
-            rol_fraternal: 'Guía de Bloque',
+            rol_fraternal: 'Guía General',
             antiguedad_anios: 5,
             foto: 'assets/img/avatar-default.svg',
             estado_fraterno: 'activo',
@@ -211,11 +206,9 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Carlos Flores (Hermano)',
             telefono_emergencia: '+591 72345678',
             talla_traje: 'M',
-            bloque_id: 'mujeres',
-            bloque_nombre: 'Bloque Mujeres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
-            rol_fraternal: 'Guía de Bloque',
+            rol_fraternal: 'Fraterna Titular',
             antiguedad_anios: 4,
             foto: 'assets/img/avatar-default.svg',
             estado_fraterno: 'activo',
@@ -252,8 +245,6 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Secretaría Tinkus Wistus',
             telefono_emergencia: '+591 22490123',
             talla_traje: 'M',
-            bloque_id: 'hombres',
-            bloque_nombre: 'Bloque Hombres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Fraterno Titular',
@@ -283,11 +274,9 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Patricia Alarcón',
             telefono_emergencia: '+591 70654321',
             talla_traje: 'XL',
-            bloque_id: 'hombres',
-            bloque_nombre: 'Bloque Hombres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
-            rol_fraternal: 'Guía de Bloque',
+            rol_fraternal: 'Fraterno Guía',
             antiguedad_anios: 8,
             foto: 'assets/img/avatar-default.svg',
             estado_fraterno: 'activo',
@@ -315,11 +304,9 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Gonzalo Vargas',
             telefono_emergencia: '+591 78901234',
             talla_traje: 'S',
-            bloque_id: 'mujeres',
-            bloque_nombre: 'Bloque Mujeres',
             filial_id: 'cochabamba',
             filial_nombre: 'Cochabamba',
-            rol_fraternal: 'Guía de Bloque',
+            rol_fraternal: 'Fraterna Titular',
             antiguedad_anios: 3,
             foto: 'assets/img/avatar-default.svg',
             estado_fraterno: 'activo',
@@ -346,11 +333,9 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Martha Callisaya',
             telefono_emergencia: '+591 71987654',
             talla_traje: 'M',
-            bloque_id: 'mujeres',
-            bloque_nombre: 'Bloque Mujeres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
-            rol_fraternal: 'Guía de Bloque',
+            rol_fraternal: 'Fraterna Titular',
             antiguedad_anios: 2,
             foto: 'assets/img/avatar-default.svg',
             estado_fraterno: 'activo',
@@ -376,8 +361,6 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Directiva Central Wistus',
             telefono_emergencia: '+591 22490123',
             talla_traje: 'L',
-            bloque_id: 'hombres',
-            bloque_nombre: 'Bloque Hombres',
             filial_id: 'matriz_lp',
             filial_nombre: 'Matriz (La Paz)',
             rol_fraternal: 'Pasante Mayor 2027',
@@ -409,8 +392,6 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Elena Yujra',
             telefono_emergencia: '+591 76549871',
             talla_traje: 'M',
-            bloque_id: 'hombres',
-            bloque_nombre: 'Bloque Hombres',
             filial_id: 'cochabamba',
             filial_nombre: 'Cochabamba',
             rol_fraternal: 'Fraterno Titular',
@@ -439,8 +420,6 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Saul Condori',
             telefono_emergencia: '+591 79123847',
             talla_traje: 'S',
-            bloque_id: 'mujeres',
-            bloque_nombre: 'Bloque Mujeres',
             filial_id: 'santa_cruz',
             filial_nombre: 'Santa Cruz',
             rol_fraternal: 'Fraterna Titular',
@@ -470,8 +449,6 @@ const DEFAULT_PORTAL_CONFIG = {
             contacto_emergencia: 'Carmen Huanca',
             telefono_emergencia: '+591 76401928',
             talla_traje: 'M',
-            bloque_id: 'mujeres',
-            bloque_nombre: 'Bloque Mujeres',
             filial_id: 'peru',
             filial_nombre: 'Perú',
             rol_fraternal: 'Fraterna Aspirante',
@@ -548,17 +525,6 @@ class WistusDataGenerator {
 
         const ciNum = options.ci || String(Math.floor(3000000 + Math.random() * 6999999));
         const ciExp = options.ci_exp || this.EXPEDIDOS[Math.floor(Math.random() * this.EXPEDIDOS.length)];
-
-        const bloques = DEFAULT_PORTAL_CONFIG.bloques || [];
-        let bloque = null;
-        if (options.bloque_id) {
-            bloque = bloques.find(b => b.id === options.bloque_id);
-        }
-        if (!bloque) {
-            const targetId = isFemale ? 'mujeres' : 'hombres';
-            bloque = bloques.find(b => b.id === targetId) || (isFemale ? { id: 'mujeres', name: 'Bloque Mujeres' } : { id: 'hombres', name: 'Bloque Hombres' });
-        }
-
         const filiales = DEFAULT_PORTAL_CONFIG.filiales || [];
         let filial = null;
         if (options.filial_id) {
@@ -652,8 +618,6 @@ class WistusDataGenerator {
             contacto_emergencia: `Familiar (${apellido1})`,
             telefono_emergencia: `+591 7${Math.floor(1000000 + Math.random() * 8999999)}`,
             talla_traje: ['S', 'M', 'L', 'XL'][Math.floor(Math.random() * 4)],
-            bloque_id: bloque.id,
-            bloque_nombre: bloque.name,
             filial_id: filial.id,
             filial_nombre: filial.name,
             rol_fraternal: rol,
