@@ -195,14 +195,19 @@ body {
    PANTALLA DE ACCESO / LOGIN FESTIVO & DISTINGUIDO - CARNAVAL DE ORURO 2027
    ========================================================================== */
 .login-wrapper {
+    height: 100vh;
+    height: 100dvh;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 32px 16px;
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     background: radial-gradient(circle at 10% 15%, rgba(124, 58, 237, 0.12) 0%, transparent 45%),
                 radial-gradient(circle at 90% 85%, rgba(245, 158, 11, 0.10) 0%, transparent 45%),
                 radial-gradient(circle at 50% 50%, rgba(59, 7, 100, 0.05) 0%, transparent 65%),
@@ -258,15 +263,16 @@ body {
 /* Tarjeta Principal de Login */
 .login-card-main {
     background: #ffffff;
-    border: 1px solid rgba(124, 58, 237, 0.18);
+    border: 1px solid rgba(124, 58, 237, 0.14);
     border-radius: 24px;
-    box-shadow: 0 25px 60px -12px rgba(46, 16, 101, 0.16), 
-                0 0 35px rgba(245, 158, 11, 0.06);
-    max-width: 460px;
+    box-shadow: 0 20px 50px -10px rgba(76, 29, 149, 0.12), 
+                0 0 1px 1px rgba(0, 0, 0, 0.02);
+    max-width: 440px;
     width: 100%;
-    padding: 24px 28px;
+    padding: 20px 24px;
     position: relative;
     z-index: 2;
+    margin: auto 0;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -274,32 +280,48 @@ body {
     content: '';
     position: absolute;
     top: 0;
-    left: 28px;
-    right: 28px;
-    height: 4px;
-    background: linear-gradient(90deg, #7c3aed 0%, #fbbf24 50%, #7c3aed 100%);
-    border-radius: 4px 4px 0 0;
+    left: 24px;
+    right: 24px;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed 0%, #d97706 50%, #7c3aed 100%);
+    border-radius: 3px 3px 0 0;
+}
+
+/* Botón píldora retorno a landing */
+.login-back-pill {
+    font-size: 0.74rem;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    color: #64748b;
+    background: #f8fafc;
+    border-color: rgba(203, 213, 225, 0.8) !important;
+    transition: all 0.2s ease;
+}
+.login-back-pill:hover {
+    color: #111111;
+    background: #f1f5f9;
+    border-color: #94a3b8 !important;
+    transform: translateX(-2px);
 }
 
 /* Indicador Festivo Oruro 2027 */
 .login-festive-tag {
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .badge-oruro-carnaval {
     display: inline-flex;
     align-items: center;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(124, 58, 237, 0.12));
-    border: 1px solid rgba(245, 158, 11, 0.35);
+    background: rgba(217, 119, 6, 0.08);
+    border: 1px solid rgba(217, 119, 6, 0.25);
     color: #92400e;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.8px;
+    font-size: 0.70rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 20px;
-    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+    padding: 4px 12px;
+    border-radius: 9999px;
 }
 
 /* Insignia / Escudo Oficial con Halo Dorado-Lila */
@@ -310,25 +332,24 @@ body {
 .login-logo-halo {
     display: inline-block;
     position: relative;
-    padding: 4px;
+    padding: 3px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #fbbf24 0%, #7c3aed 50%, #3b0764 100%);
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.32), 0 0 20px rgba(251, 191, 36, 0.45);
-    margin-bottom: 6px;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #d97706 0%, #7c3aed 100%);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.20);
+    margin-bottom: 4px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .login-logo-halo:hover {
-    transform: scale(1.06) rotate(2deg);
-    box-shadow: 0 12px 30px rgba(124, 58, 237, 0.45), 0 0 28px rgba(251, 191, 36, 0.6);
+    transform: scale(1.05);
 }
 
 .login-logo {
-    width: 82px;
-    height: 82px;
+    width: 74px;
+    height: 74px;
     border-radius: 50%;
     background: #ffffff;
-    padding: 3px;
+    padding: 2px;
     display: block;
     object-fit: contain;
 }
@@ -336,29 +357,29 @@ body {
 .login-edition-badge {
     display: inline-flex;
     align-items: center;
-    font-size: 0.70rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     color: #6d28d9;
     background: #f5f3ff;
     border: 1px solid #ddd6fe;
-    padding: 3px 10px;
-    border-radius: 12px;
+    padding: 2px 10px;
+    border-radius: 9999px;
 }
 
 /* Tipografía de Identidad */
 .login-portal-title {
-    font-size: 1.42rem;
+    font-size: 1.35rem;
     font-weight: 800;
     color: #1e1b4b !important;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.2px;
 }
 
 .login-portal-subtitle {
-    font-size: 0.80rem;
+    font-size: 0.76rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.4px;
+    letter-spacing: 1.2px;
     color: #7c3aed;
 }
 
@@ -402,15 +423,15 @@ body {
 
 /* Paneles de Bienvenida Ameno (Fraterno) y Cabecera de Control */
 .login-fraterno-welcome {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(124, 58, 237, 0.06) 100%);
-    border: 1px solid rgba(245, 158, 11, 0.25);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05);
+    background: #faf8f5;
+    border: 1px solid rgba(185, 177, 164, 0.35);
+    border-radius: 14px;
+    padding: 10px 14px;
     transition: all 0.2s ease;
 }
 
 .login-fraterno-welcome:hover {
-    border-color: rgba(245, 158, 11, 0.4);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(124, 58, 237, 0.09) 100%);
+    border-color: rgba(217, 119, 6, 0.35);
 }
 
 .fraterno-welcome-badge {
@@ -418,32 +439,36 @@ body {
     align-items: center;
     background: #ffffff;
     color: #92400e;
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    padding: 3px 14px;
+    border: 1px solid rgba(217, 119, 6, 0.25);
+    padding: 2px 12px;
     border-radius: 9999px;
-    font-size: 0.80rem;
+    font-size: 0.78rem;
     font-weight: 800;
-    letter-spacing: 0.3px;
-    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+}
+
+.login-welcome-text {
+    color: #334155;
+    font-size: 0.78rem;
+    line-height: 1.35;
 }
 
 .login-directiva-header {
-    background: linear-gradient(135deg, rgba(100, 116, 139, 0.07) 0%, rgba(124, 58, 237, 0.05) 100%);
-    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 10px 14px;
 }
 
 .directiva-welcome-badge {
     display: inline-flex;
     align-items: center;
     background: #ffffff;
-    color: #475569;
+    color: #334155;
     border: 1px solid rgba(148, 163, 184, 0.3);
-    padding: 3px 14px;
+    padding: 2px 12px;
     border-radius: 9999px;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
-    letter-spacing: 0.3px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 
 .login-directiva-discreet {
@@ -451,14 +476,14 @@ body {
     justify-content: center;
     align-items: center;
     border-top: 1px dashed rgba(203, 213, 225, 0.6);
-    margin-top: 8px;
-    padding-top: 10px;
+    margin-top: 6px;
+    padding-top: 8px;
 }
 
 .btn-link-discrete {
     background: transparent;
     border: none;
-    color: #64748b;
+    color: #334155;
     font-size: 0.80rem;
     font-weight: 600;
     padding: 6px 12px;
@@ -472,7 +497,7 @@ body {
 }
 
 .btn-link-discrete:hover {
-    color: #7c3aed;
+    color: #6d28d9;
     background: rgba(124, 58, 237, 0.07);
     text-decoration: underline;
 }
@@ -518,8 +543,21 @@ body {
 
 .input-wrapper-portal:focus-within {
     border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+    box-shadow: 0 0 0 3.5px rgba(124, 58, 237, 0.14);
     background: #ffffff;
+}
+
+.input-wrapper-ci {
+    min-height: 52px;
+    scroll-margin-top: 16px;
+    scroll-margin-bottom: 16px;
+}
+
+.input-wrapper-ci .form-control-portal {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #1e1b4b;
 }
 
 .input-wrapper-portal i {
@@ -535,6 +573,10 @@ body {
     font-size: 0.96rem;
     padding: 10px 0;
     width: 100%;
+}
+
+.form-control-portal.font-mono {
+    font-family: 'DM Mono', monospace, ui-monospace;
 }
 
 .form-control-portal:focus {
@@ -649,29 +691,44 @@ body {
 /* Botones de Envío y Acceso */
 .btn-portal-primary,
 .btn-login-submit {
-    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     color: #ffffff;
     border: none;
     border-radius: 12px;
-    padding: 12px 20px;
+    padding: 13px 20px;
     font-weight: 700;
-    font-size: 0.92rem;
-    letter-spacing: 0.4px;
-    box-shadow: 0 5px 16px rgba(124, 58, 237, 0.28);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.32);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
+    scroll-margin-bottom: 24px;
 }
 
 .btn-portal-primary:hover,
 .btn-login-submit:hover {
-    background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
     color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.38);
+    box-shadow: 0 10px 24px rgba(124, 58, 237, 0.45);
+}
+
+.btn-portal-primary:active,
+.btn-login-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.btn-portal-primary:disabled,
+.btn-login-submit:disabled {
+    opacity: 0.72;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.18);
 }
 
 .btn-portal-primary:hover i,
@@ -715,6 +772,98 @@ body {
     .btn-quick-ci, .btn-quick-admin {
         font-size: 0.72rem;
         padding: 4px 7px;
+    }
+}
+
+/* Pantallas de altura reducida (Smartphones compactos, Netbooks, Teclado virtual expandido) */
+@media (max-height: 680px) {
+    .login-wrapper {
+        padding: 10px 8px;
+    }
+    .login-card-main {
+        padding: 14px 18px;
+        border-radius: 18px;
+        margin: 4px auto;
+        max-width: 420px;
+    }
+    .login-logo {
+        width: 50px;
+        height: 50px;
+    }
+    .login-logo-halo {
+        padding: 2px;
+        margin-bottom: 2px;
+    }
+    .login-edition-badge {
+        font-size: 0.64rem;
+        padding: 1px 8px;
+    }
+    .login-portal-title {
+        font-size: 1.125rem;
+        margin-bottom: 0 !important;
+    }
+    .login-portal-subtitle {
+        font-size: 0.66rem;
+        letter-spacing: 0.8px;
+    }
+    .login-fraterno-welcome {
+        padding: 5px 8px;
+        margin-bottom: 8px !important;
+    }
+    .fraterno-welcome-badge {
+        font-size: 0.72rem;
+        padding: 1px 8px;
+    }
+    .login-welcome-text {
+        font-size: 0.72rem;
+        line-height: 1.25;
+    }
+    .input-wrapper-ci {
+        min-height: 44px;
+    }
+    .input-wrapper-ci .form-control-portal {
+        font-size: 1rem;
+    }
+    .btn-portal-primary,
+    .btn-login-submit {
+        padding: 9px 16px;
+        font-size: 0.88rem;
+        margin-bottom: 6px !important;
+    }
+    .login-directiva-discreet {
+        margin-top: 4px;
+        padding-top: 6px;
+    }
+    .btn-link-discrete {
+        font-size: 0.74rem;
+        padding: 4px 8px;
+    }
+    .login-footer {
+        margin-top: 6px !important;
+        padding-top: 4px !important;
+    }
+}
+
+@media (max-height: 480px) {
+    .login-badge-container {
+        display: none !important;
+    }
+    .login-fraterno-welcome,
+    .login-directiva-header {
+        display: none !important;
+    }
+    .login-card-main {
+        padding: 10px 14px;
+        margin: 2px auto;
+    }
+    .login-portal-title {
+        font-size: 1rem;
+    }
+    .btn-portal-primary,
+    .btn-login-submit {
+        padding: 7px 12px;
+        font-size: 0.82rem;
+        margin-bottom: 4px !important;
     }
 }
 

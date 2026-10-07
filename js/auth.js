@@ -106,17 +106,28 @@ class AuthManager {
             });
         }
 
-        // Botón para limpiar campo CI
+        // Botón para limpiar campo CI y sanitización reactiva
         const btnClearCI = document.getElementById('btnClearCI');
         const ciInput = document.getElementById('inputCI');
         if (btnClearCI && ciInput) {
             ciInput.addEventListener('input', () => {
                 this.hideAlert(document.getElementById('alertFraternoLogin'));
+                if (/\s/.test(ciInput.value)) {
+                    ciInput.value = ciInput.value.replace(/\s+/g, '');
+                }
                 if (ciInput.value.trim().length > 0) {
                     btnClearCI.classList.remove('d-none');
                 } else {
                     btnClearCI.classList.add('d-none');
                 }
+            });
+            ciInput.addEventListener('paste', () => {
+                setTimeout(() => {
+                    ciInput.value = ciInput.value.replace(/\s+/g, '');
+                    if (ciInput.value.trim().length > 0) {
+                        btnClearCI.classList.remove('d-none');
+                    }
+                }, 0);
             });
             btnClearCI.addEventListener('click', () => {
                 ciInput.value = '';
@@ -190,6 +201,10 @@ class AuthManager {
             window.PortalApp.navigateToDashboard(session.role);
         } else if (window.PortalApp) {
             window.PortalApp.showView('login');
+            setTimeout(() => {
+                const ciInput = document.getElementById('inputCI');
+                if (ciInput) ciInput.focus();
+            }, 60);
         }
     }
 
@@ -236,6 +251,11 @@ class AuthManager {
                 }
             } else {
                 this.showAlert(alertEl, `CI "${rawCI}" no registrado en el Padrón oficial. Verifique el número ingresado.`);
+                const ciInput = document.getElementById('inputCI');
+                if (ciInput) {
+                    ciInput.focus();
+                    ciInput.select();
+                }
             }
         }, 250);
     }
@@ -302,6 +322,11 @@ class AuthManager {
                 }
             } else {
                 this.showAlert(alertEl, 'Usuario o contraseña incorrectos. Verifique sus credenciales.');
+                const passInput = document.getElementById('inputControlPass');
+                if (passInput) {
+                    passInput.focus();
+                    passInput.select();
+                }
             }
         }, 250);
     }
@@ -349,6 +374,20 @@ class AuthManager {
             tabControlPane.classList.remove('show', 'active');
             tabFraternoPane.classList.add('show', 'active');
         }
+        const tabFraternoBtn = document.getElementById('tab-fraterno-btn');
+        const tabControlBtn = document.getElementById('tab-control-btn');
+        if (tabFraternoBtn) {
+            tabFraternoBtn.setAttribute('aria-expanded', 'true');
+            tabFraternoBtn.setAttribute('aria-selected', 'true');
+        }
+        if (tabControlBtn) {
+            tabControlBtn.setAttribute('aria-expanded', 'false');
+            tabControlBtn.setAttribute('aria-selected', 'false');
+        }
+        setTimeout(() => {
+            const ciInput = document.getElementById('inputCI');
+            if (ciInput) ciInput.focus();
+        }, 60);
     }
 
     showAlert(el, msg) {

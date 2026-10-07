@@ -190,6 +190,65 @@
     .swiper-slide {
       transition: opacity 0.3s ease;
     }
+
+    /* Hero Compact Viewport Optimization (Mobile Landscape / Ultra-short displays) */
+    @media (max-height: 540px) {
+      .hero-content-box {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+      }
+      .hero-badge-wrap {
+        margin-bottom: 0.2rem !important;
+      }
+      .hero-badge-wrap img {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+      }
+      .hero-tag-convocatoria {
+        margin-bottom: 0.2rem !important;
+        padding: 0.15rem 0.6rem !important;
+        font-size: 10px !important;
+      }
+      .hero-title-main {
+        font-size: 1.85rem !important;
+        line-height: 1.05 !important;
+        margin-bottom: 0.2rem !important;
+      }
+      .hero-lema-text {
+        font-size: 0.75rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .hero-cta-wrapper {
+        flex-direction: row !important;
+        gap: 0.5rem !important;
+      }
+      .hero-cta-wrapper a,
+      .hero-cta-wrapper button {
+        padding: 0.45rem 1rem !important;
+        font-size: 0.72rem !important;
+      }
+      .hero-scroll-indicator {
+        display: none !important;
+      }
+    }
+    @media (max-height: 380px) {
+      .hero-badge-wrap {
+        display: none !important;
+      }
+      .hero-lema-text {
+        display: none !important;
+      }
+      .hero-title-main {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.25rem !important;
+      }
+      .hero-cta-wrapper a,
+      .hero-cta-wrapper button {
+        padding: 0.35rem 0.85rem !important;
+        font-size: 0.68rem !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-silver text-charcoal font-sans antialiased selection:bg-wistus-purple selection:text-white overflow-x-hidden">
@@ -297,9 +356,9 @@
     <!-- ========================================================================= -->
     <!-- R3. HERO MASTHEAD INMERSIVO FULL-SCREEN (h-svh, [data-block="masthead-full"]) -->
     <!-- ========================================================================= -->
-    <section id="hero" class="relative overflow-hidden bg-black text-[#f5f0ea] h-svh min-h-screen min-h-[560px] flex items-center justify-center">
+    <section id="hero" class="relative overflow-hidden bg-black text-[#f5f0ea] h-svh min-h-screen flex items-center justify-center">
       <!-- Contenedor Semántico Masthead Full -->
-      <header data-block="masthead-full" class="h-svh h-screen min-h-screen min-h-[560px] w-full flex items-center justify-center relative">
+      <header data-block="masthead-full" class="h-svh h-screen min-h-screen w-full flex items-center justify-center relative">
         <!-- Fotografía de Fondo Monumental con Overlay Oscuro -->
         <div class="absolute inset-0 z-0">
           <img src="assets/img/wistus-banner.jpg" alt="Fraternidad Tinkus Wistus en Desfile Oficial" class="w-full h-full object-cover object-center filter brightness-[0.70] contrast-[1.05]">
@@ -307,33 +366,46 @@
         </div>
 
         <!-- Contenido Monumental Centrado -->
-        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center py-10 sm:py-16">
+        <div class="hero-content-box relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center flex flex-col items-center py-6 sm:py-10 md:py-14">
           <!-- Badge Oficial Tinkus Wistus -->
-          <div class="mb-3 sm:mb-6">
-            <img src="assets/img/wistus-badge.svg" alt="Badge Oficial Tinkus Wistus" class="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto object-contain filter drop-shadow-[0_4px_16px_rgba(217,119,6,0.45)] transform hover:scale-105 transition-transform duration-500">
+          <div class="hero-badge-wrap mb-2 sm:mb-4">
+            <img src="assets/img/wistus-badge.svg" alt="Badge Oficial Tinkus Wistus" class="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto object-contain filter drop-shadow-[0_4px_16px_rgba(217,119,6,0.45)] transform hover:scale-105 transition-transform duration-500">
           </div>
 
           <!-- Etiqueta Editorial Convocatoria -->
-          <div class="inline-flex items-center gap-2 border border-[#f5f0ea]/30 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/90 mb-4 sm:mb-5">
+          <div class="hero-tag-convocatoria inline-flex items-center gap-2 border border-[#f5f0ea]/30 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/90 mb-2 sm:mb-4">
             <span class="w-2 h-2 rounded-full bg-wistus-gold animate-pulse"></span>
             <span>Carnaval de Oruro 2027</span>
           </div>
 
           <!-- Título Monumental en Serif -->
-          <h1 class="font-serif text-3xl sm:text-6xl md:text-8xl lg:text-9xl leading-[0.94] tracking-tight uppercase mb-4 sm:mb-6 font-bold text-white drop-shadow-lg break-words">
+          <h1 class="hero-title-main font-serif text-3xl sm:text-6xl md:text-7xl lg:text-8xl leading-tight tracking-tight uppercase mb-2 sm:mb-3 font-bold text-white drop-shadow-lg break-words">
             TINKUS WISTUS
           </h1>
 
           <!-- Lema Editorial -->
-          <p class="font-editorial italic text-base sm:text-xl md:text-2xl lg:text-3xl text-[#f5f0ea]/90 max-w-2xl mx-auto font-light leading-relaxed mb-6 sm:mb-8 drop-shadow px-2">
+          <p class="hero-lema-text font-editorial italic text-xs sm:text-base md:text-xl text-[#f5f0ea]/90 max-w-xl mx-auto font-light leading-relaxed mb-5 sm:mb-7 drop-shadow px-2">
             “Fuerza, Pasión y Tradición Ancestral en el Corazón de La Paz”
           </p>
 
+          <!-- Bloque Dual CTA Minimalista de Alto Impacto -->
+          <div class="hero-cta-wrapper flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 w-full max-w-sm sm:max-w-xl mx-auto">
+            <!-- CTA Primario: Acceso Directo al Portal Fraterno -->
+            <a href="index.html" id="hero-cta-portal" title="Acceso directo al Portal Fraterno" aria-label="Ingresar al Portal Fraterno" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-wistus-gold hover:bg-wistus-gold-light text-charcoal font-semibold text-xs sm:text-sm font-mono uppercase tracking-wider transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(217,119,6,0.45)] active:translate-y-0 group">
+              <span>Ingresar al Portal</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
 
+            <!-- CTA Secundario: Postulación Inmediata Oruro 2027 -->
+            <button type="button" id="hero-cta-enquire" data-open-enquire aria-haspopup="dialog" aria-controls="enquire" aria-label="Postular a la Fraternidad Tinkus Wistus para el Carnaval de Oruro 2027" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-[#f5f0ea] border border-white/25 hover:border-white/50 backdrop-blur-md text-xs sm:text-sm font-mono uppercase tracking-wider font-medium transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(255,255,255,0.15)] active:translate-y-0 group">
+              <span class="w-1.5 h-1.5 rounded-full bg-wistus-gold group-hover:scale-125 transition-transform"></span>
+              <span>Postular a Oruro 2027</span>
+            </button>
+          </div>
         </div>
 
         <!-- Indicador de Scroll -->
-        <a href="#metadatos" class="hidden min-[480px]:flex absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/70 flex-col items-center gap-1 sm:gap-2 hover:text-[#f5f0ea] transition-colors z-10" aria-label="Desplazarse hacia abajo">
+        <a href="#metadatos" class="hero-scroll-indicator hidden min-[480px]:flex absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-[#f5f0ea]/70 flex-col items-center gap-1 sm:gap-2 hover:text-[#f5f0ea] transition-colors z-10" aria-label="Desplazarse hacia abajo">
           <span>Explorar</span>
           <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
         </a>

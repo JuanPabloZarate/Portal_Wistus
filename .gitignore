@@ -24,3 +24,6 @@ Thumbs.db
 # MinGit temporal o descargas
 .mingit/
 mingit.zip
+
+# Agentes
+.agents/

@@ -103,6 +103,12 @@ class PortalAppManager {
         if (viewName === 'control-pagos') window.Pagos.renderControlPayments();
         if (viewName === 'control-directorio') window.Miembros.renderControlDirectory();
         if (viewName === 'control-eventos') this.renderEventsTimeline(true);
+        if (viewName === 'login') {
+            setTimeout(() => {
+                const ciInput = document.getElementById('inputCI');
+                if (ciInput) ciInput.focus();
+            }, 60);
+        }
     }
 
     navigateHome() {
