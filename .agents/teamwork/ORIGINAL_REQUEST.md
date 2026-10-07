@@ -59,3 +59,42 @@ Crear `landing.html` autónomo y responsivo que replique la experiencia de usuar
   2. Presencia de todos los IDs y selectores clave (Hero, Navbar, Carruseles, Modales, Barra Fija).
   3. Enlaces válidos a `index.html` y activos estáticos.
   4. Ejecución sin errores de inicialización de scripts.
+
+
+## 2026-10-07T00:41:46Z
+
+This is a single self-contained fix; keep it small and focused.
+
+Optimizar y modernizar la experiencia UX/UI de la Landing Page (`landing.html`) y de la pantalla de Ingreso/Login al Portal Fraterno (`index.html`), aplicando un diseño minimalista de alto impacto visual, enfocado de forma contundente en los Calls to Action (CTAs) principales y reduciendo la fricción cognitiva del usuario.
+
+Working directory: `c:\Users\juan.zarate\OneDrive - bancofie.com.bo\Escritorio\Goal - Portal`
+Integrity mode: development
+
+## Requirements
+
+### R1. Landing Page — Hero Minimalista de Alto Impacto con Dual CTA
+- Rediseñar el Hero Masthead de `landing.html` para que mantenga su estética editorial y monumental, pero incorpore un bloque de Call to Action (CTA) nítido, minimalista y magnético.
+- Dual Action estratégico:
+  1. **CTA Primario (Fraternos activos):** Botón principal de acceso directo al Portal Fraterno (`index.html`) con micro-interacciones suaves.
+  2. **CTA Secundario (Nuevos postulantes):** Botón refinado estilo glassmorphism/pill para postulación inmediata al Carnaval de Oruro 2027 (abre el drawer/modal de postulación).
+- Limpieza visual: eliminar redundancias de texto para que el titular, la insignia y las acciones respiren con elegancia premium.
+
+### R2. Pantalla de Ingreso / Login Fraterno — Experiencia Minimalista y Directa
+- Rediseñar el contenedor `#view-login` en `index.html` eliminando saturación visual (múltiples badges repetitivos, textos redundantes y bordes ruidosos).
+- Enfoque directo en el input de Cédula de Identidad (CI): tipografía mono limpia, teclado numérico optimizado en móviles, auto-focus fluido y feedback instantáneo.
+- Botón CTA de ingreso preponderante, con feedback visual de carga/transición.
+- Acceso a Mesa Directiva integrado de forma minimalista y sutil (enlace discreto inferior o toggle secundario).
+
+### R3. Micro-interacciones, Accesibilidad y Rendimiento Móvil
+- Garantizar contraste AA/AAA y legibilidad impecable en pantallas AMOLED oscuras y claras.
+- Sin dependencias pesadas adicionales: Tailwind CSS en landing, Bootstrap 5 + CSS temático en portal.
+- Mantener compatibilidad 100% con las suites de tests existentes.
+
+## Acceptance Criteria
+
+### Verificación Funcional y Visual
+- [ ] La landing page presenta en su viewport inicial (desktop y móvil) los 2 CTAs claramente diferenciados sin scroll necesario.
+- [ ] El botón de ingreso al portal redirige a `index.html` sin demoras ni parpadeos.
+- [ ] La pantalla de login del portal carga de forma inmediata y enfoca directamente la acción en ingresar el CI.
+- [ ] Los flujos existentes de autenticación (CI fraterno y credenciales de control) siguen funcionando al 100%.
+- [ ] Las 164 pruebas automatizadas en `tests_verification.py` y `test_landing_page.py` se ejecutan y pasan con éxito.
