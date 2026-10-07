@@ -821,14 +821,42 @@ class PortalStateManager {
         const index = this.getCuotas().findIndex(c => c.id === id);
         if (index === -1) throw new Error('Cuota no encontrada');
 
+        const prevTitle = this.state.cuotas_definidas[index].title;
+        const newTitle = updates.title !== undefined ? updates.title.trim() : prevTitle;
+
         this.state.cuotas_definidas[index] = {
             ...this.state.cuotas_definidas[index],
-            title: updates.title !== undefined ? updates.title.trim() : this.state.cuotas_definidas[index].title,
+            title: newTitle,
             monto: updates.monto !== undefined ? (parseFloat(updates.monto) || 0) : this.state.cuotas_definidas[index].monto,
             vencimiento: updates.vencimiento !== undefined ? updates.vencimiento : this.state.cuotas_definidas[index].vencimiento,
             obligatorio: updates.obligatorio !== undefined ? !!updates.obligatorio : this.state.cuotas_definidas[index].obligatorio,
             categoria: updates.categoria !== undefined ? updates.categoria : (this.state.cuotas_definidas[index].categoria || 'General')
         };
+
+        // Si el título cambió, sincronizar en cascada en miembros, pagos y vouchers
+        if (newTitle && newTitle !== prevTitle) {
+            this.getMembers().forEach(m => {
+                let memberModified = false;
+                if (Array.isArray(m.pagos)) {
+                    m.pagos.forEach(p => {
+                        if (p.cuota_id === id) { p.concepto = newTitle; memberModified = true; }
+                    });
+                }
+                if (Array.isArray(m.vouchers_pendientes)) {
+                    m.vouchers_pendientes.forEach(v => {
+                        if (v.cuota_id === id) { v.concepto = newTitle; memberModified = true; }
+                    });
+                }
+                if (Array.isArray(m.cuotas_asignadas)) {
+                    m.cuotas_asignadas.forEach(ca => {
+                        if (ca.cuota_id === id || ca.id === id) { ca.title = newTitle; memberModified = true; }
+                    });
+                }
+                if (memberModified && window.DBService && window.DBService.isCloudActive) {
+                    window.DBService.saveFraterno(m, false).catch(err => console.warn(err));
+                }
+            });
+        }
 
         this.saveState();
         return this.state.cuotas_definidas[index];
@@ -843,6 +871,389 @@ class PortalStateManager {
             return true;
         }
         return false;
+    }
+
+    renameCuota(id, newTitle) {
+        if (!newTitle || !newTitle.trim()) {
+            throw new Error('El título de la cuota no puede estar vacío');
+        }
+        const trimmed = newTitle.trim();
+
+        // 1. Si existe en catálogo de cuotas definidas
+        const inCatalog = this.getCuotas().some(c => c.id === id);
+        if (inCatalog) {
+            return this.updateCuota(id, { title: trimmed });
+        }
+
+        // 2. Si es un cobro único o cuota específica asignada
+        let updatedCobro = null;
+        this.getMembers().forEach(m => {
+            let memberModified = false;
+            if (Array.isArray(m.cuotas_asignadas)) {
+                m.cuotas_asignadas.forEach(ca => {
+                    if (ca.id === id || ca.cuota_id === id) {
+                        ca.title = trimmed;
+                        updatedCobro = ca;
+                        memberModified = true;
+                    }
+                });
+            }
+            if (Array.isArray(m.pagos)) {
+                m.pagos.forEach(p => {
+                    if (p.cuota_id === id) {
+                        p.concepto = trimmed;
+                        memberModified = true;
+                    }
+                });
+            }
+            if (Array.isArray(m.vouchers_pendientes)) {
+                m.vouchers_pendientes.forEach(v => {
+                    if (v.cuota_id === id) {
+                        v.concepto = trimmed;
+                        memberModified = true;
+                    }
+                });
+            }
+            if (memberModified && window.DBService && window.DBService.isCloudActive) {
+                window.DBService.saveFraterno(m, false).catch(err => console.warn(err));
+            }
+        });
+
+        if (!updatedCobro) {
+            throw new Error(`Cuota o Cobro Único con ID ${id} no encontrado`);
+        }
+
+        this.saveState();
+        return updatedCobro;
+    }
+
+    getMemberCuotas(ci, includeUnassigned = false) {
+        const member = this.getMemberByCI(ci);
+        const catalog = this.getCuotas();
+        if (!member) {
+            return catalog.map(c => ({
+                ...c,
+                cuota_id: c.id,
+                asignada: true,
+                is_cobro_unico: false,
+                monto_original: c.monto,
+                monto: c.monto
+            }));
+        }
+
+        const asignadas = member.cuotas_asignadas || null;
+        const result = [];
+
+        // Si no hay personalización explícita, hereda todas las cuotas del catálogo
+        if (!asignadas || !Array.isArray(asignadas)) {
+            catalog.forEach(cat => {
+                result.push({
+                    id: cat.id,
+                    cuota_id: cat.id,
+                    title: cat.title,
+                    monto: cat.monto,
+                    monto_original: cat.monto,
+                    vencimiento: cat.vencimiento,
+                    obligatorio: cat.obligatorio,
+                    categoria: cat.categoria || 'General',
+                    asignada: true,
+                    is_cobro_unico: false
+                });
+            });
+            return result;
+        }
+
+        // Si hay asignaciones personalizadas:
+        catalog.forEach(cat => {
+            const found = asignadas.find(a => (a.cuota_id === cat.id || a.id === cat.id));
+            if (found) {
+                const isAsignada = found.asignada !== false;
+                if (isAsignada || includeUnassigned) {
+                    result.push({
+                        id: cat.id,
+                        cuota_id: cat.id,
+                        title: cat.title, // siempre actualizado con catálogo
+                        monto: found.monto !== undefined ? (parseFloat(found.monto) || 0) : cat.monto,
+                        monto_original: cat.monto,
+                        vencimiento: found.vencimiento || cat.vencimiento,
+                        obligatorio: found.obligatorio !== undefined ? found.obligatorio : cat.obligatorio,
+                        categoria: cat.categoria || 'General',
+                        asignada: isAsignada,
+                        is_cobro_unico: false,
+                        descuento: found.descuento || 0,
+                        motivo_exencion: found.motivo_exencion || ''
+                    });
+                }
+            } else {
+                result.push({
+                    id: cat.id,
+                    cuota_id: cat.id,
+                    title: cat.title,
+                    monto: cat.monto,
+                    monto_original: cat.monto,
+                    vencimiento: cat.vencimiento,
+                    obligatorio: cat.obligatorio,
+                    categoria: cat.categoria || 'General',
+                    asignada: true,
+                    is_cobro_unico: false
+                });
+            }
+        });
+
+        // Cobros Únicos específicos para este miembro
+        asignadas.forEach(a => {
+            if (a.is_cobro_unico) {
+                const isAsignada = a.asignada !== false;
+                if (isAsignada || includeUnassigned) {
+                    result.push({
+                        id: a.id,
+                        cuota_id: a.id,
+                        title: a.title,
+                        monto: parseFloat(a.monto) || 0,
+                        vencimiento: a.vencimiento || new Date().toISOString().substring(0, 10),
+                        obligatorio: a.obligatorio !== undefined ? a.obligatorio : true,
+                        categoria: a.categoria || 'Cobro Único',
+                        asignada: isAsignada,
+                        is_cobro_unico: true,
+                        fecha_asignacion: a.fecha_asignacion || new Date().toISOString().substring(0, 10),
+                        observacion: a.observacion || ''
+                    });
+                }
+            }
+        });
+
+        return result;
+    }
+
+    setMemberCuotasAsignadas(ci, assignedList) {
+        const member = this.getMemberByCI(ci);
+        if (!member) throw new Error('Fraterno no encontrado');
+        member.cuotas_asignadas = JSON.parse(JSON.stringify(assignedList));
+        this.saveState();
+        if (window.DBService && window.DBService.isCloudActive) {
+            window.DBService.saveFraterno(member, false).catch(err => console.warn(err));
+        }
+        return member.cuotas_asignadas;
+    }
+
+    assignCobroUnico(destinatarios, cobroData) {
+        if (!cobroData || !cobroData.title || !cobroData.title.trim()) {
+            throw new Error('El título o concepto del cobro único es obligatorio');
+        }
+        const monto = parseFloat(cobroData.monto) || 0;
+        if (monto <= 0) {
+            throw new Error('El monto del cobro único debe ser mayor a 0 Bs.');
+        }
+
+        const cobroId = cobroData.id || ('cu_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+        const itemCobro = {
+            id: cobroId,
+            cuota_id: cobroId,
+            title: cobroData.title.trim(),
+            monto: monto,
+            vencimiento: cobroData.vencimiento || new Date().toISOString().substring(0, 10),
+            categoria: cobroData.categoria || 'Cobro Único',
+            obligatorio: cobroData.obligatorio !== undefined ? !!cobroData.obligatorio : true,
+            is_cobro_unico: true,
+            asignada: true,
+            fecha_asignacion: new Date().toISOString().substring(0, 10),
+            observacion: (cobroData.observacion || '').trim()
+        };
+
+        let targetCIs = [];
+        if (Array.isArray(destinatarios)) {
+            targetCIs = destinatarios;
+        } else if (typeof destinatarios === 'string') {
+            if (destinatarios === 'all') {
+                targetCIs = this.getMembers().map(m => m.ci);
+            } else {
+                targetCIs = [destinatarios];
+            }
+        } else if (destinatarios && typeof destinatarios === 'object') {
+            targetCIs = this.getMembers().filter(m => {
+                const memFilial = m.filial_id || 'matriz_lp';
+                if (destinatarios.filial_id && destinatarios.filial_id !== 'all' && memFilial !== destinatarios.filial_id) return false;
+                if (destinatarios.rol && destinatarios.rol !== 'all' && m.rol_fraternal !== destinatarios.rol) return false;
+                return true;
+            }).map(m => m.ci);
+        }
+
+        if (targetCIs.length === 0) {
+            throw new Error('No se seleccionaron fraternos destinatarios');
+        }
+
+        let countAssigned = 0;
+        targetCIs.forEach(ci => {
+            const member = this.getMemberByCI(ci);
+            if (!member) return;
+
+            if (!member.cuotas_asignadas || !Array.isArray(member.cuotas_asignadas)) {
+                const currentCuotas = this.getMemberCuotas(ci);
+                member.cuotas_asignadas = currentCuotas.map(c => ({
+                    id: c.id,
+                    cuota_id: c.cuota_id || c.id,
+                    title: c.title,
+                    monto: c.monto,
+                    asignada: true,
+                    is_cobro_unico: !!c.is_cobro_unico
+                }));
+            }
+
+            const existingIdx = member.cuotas_asignadas.findIndex(ca => ca.id === cobroId);
+            if (existingIdx !== -1) {
+                member.cuotas_asignadas[existingIdx] = { ...itemCobro };
+            } else {
+                member.cuotas_asignadas.push({ ...itemCobro });
+            }
+            countAssigned++;
+
+            if (window.DBService && window.DBService.isCloudActive) {
+                window.DBService.saveFraterno(member, false).catch(err => console.warn(err));
+            }
+        });
+
+        this.saveState();
+        return { countAssigned, cobro: itemCobro, targetCIs };
+    }
+
+    batchUpdateCuotas(targetCIs, action, options = {}) {
+        if (!Array.isArray(targetCIs) || targetCIs.length === 0) {
+            throw new Error('Debe seleccionar al menos un fraterno para la operación en lote');
+        }
+
+        const cuotaId = options.cuotaId;
+        const catalogCuota = cuotaId ? this.getCuotaById(cuotaId) : null;
+        if (!catalogCuota) {
+            throw new Error('Debe seleccionar una cuota válida del catálogo');
+        }
+        let modifiedCount = 0;
+
+        targetCIs.forEach(ci => {
+            const member = this.getMemberByCI(ci);
+            if (!member) return;
+
+            if (!member.cuotas_asignadas || !Array.isArray(member.cuotas_asignadas)) {
+                const currentCuotas = this.getMemberCuotas(ci);
+                member.cuotas_asignadas = currentCuotas.map(c => ({
+                    id: c.id,
+                    cuota_id: c.cuota_id || c.id,
+                    title: c.title,
+                    monto: c.monto,
+                    asignada: true,
+                    is_cobro_unico: !!c.is_cobro_unico
+                }));
+            }
+
+            if (action === 'assign_cuota' && catalogCuota) {
+                const idx = member.cuotas_asignadas.findIndex(ca => ca.id === cuotaId || ca.cuota_id === cuotaId);
+                if (idx !== -1) {
+                    member.cuotas_asignadas[idx].asignada = true;
+                    if (options.monto !== undefined) member.cuotas_asignadas[idx].monto = parseFloat(options.monto) || catalogCuota.monto;
+                } else {
+                    member.cuotas_asignadas.push({
+                        id: catalogCuota.id,
+                        cuota_id: catalogCuota.id,
+                        title: catalogCuota.title,
+                        monto: options.monto !== undefined ? (parseFloat(options.monto) || catalogCuota.monto) : catalogCuota.monto,
+                        asignada: true,
+                        is_cobro_unico: false
+                    });
+                }
+                modifiedCount++;
+            } else if (action === 'unassign_cuota' && cuotaId) {
+                const idx = member.cuotas_asignadas.findIndex(ca => ca.id === cuotaId || ca.cuota_id === cuotaId);
+                if (idx !== -1) {
+                    member.cuotas_asignadas[idx].asignada = false;
+                    if (options.motivo) member.cuotas_asignadas[idx].motivo_exencion = options.motivo;
+                } else if (catalogCuota) {
+                    member.cuotas_asignadas.push({
+                        id: catalogCuota.id,
+                        cuota_id: catalogCuota.id,
+                        title: catalogCuota.title,
+                        monto: catalogCuota.monto,
+                        asignada: false,
+                        is_cobro_unico: false,
+                        motivo_exencion: options.motivo || 'Exoneración autorizada por Mesa Directiva'
+                    });
+                }
+                modifiedCount++;
+            } else if (action === 'adjust_monto' && cuotaId) {
+                const newMonto = parseFloat(options.monto);
+                if (isNaN(newMonto) || newMonto < 0) throw new Error('El monto ajustado debe ser mayor o igual a 0');
+                const idx = member.cuotas_asignadas.findIndex(ca => ca.id === cuotaId || ca.cuota_id === cuotaId);
+                if (idx !== -1) {
+                    member.cuotas_asignadas[idx].monto = newMonto;
+                    member.cuotas_asignadas[idx].asignada = true;
+                } else if (catalogCuota) {
+                    member.cuotas_asignadas.push({
+                        id: catalogCuota.id,
+                        cuota_id: catalogCuota.id,
+                        title: catalogCuota.title,
+                        monto: newMonto,
+                        asignada: true,
+                        is_cobro_unico: false
+                    });
+                }
+                modifiedCount++;
+            }
+
+            if (window.DBService && window.DBService.isCloudActive) {
+                window.DBService.saveFraterno(member, false).catch(err => console.warn(err));
+            }
+        });
+
+        this.saveState();
+        return { modifiedCount };
+    }
+
+    getMemberFinancialStatus(ci) {
+        const member = this.getMemberByCI(ci);
+        if (!member) return null;
+
+        const cuotas = this.getMemberCuotas(ci);
+        const pagos = member.pagos || [];
+        const pendingVouchers = member.vouchers_pendientes || [];
+
+        let totalExigido = 0;
+        const cuotasStatus = cuotas.map(c => {
+            const isOblig = c.obligatorio !== false;
+            if (isOblig) totalExigido += parseFloat(c.monto) || 0;
+
+            const pagosEsta = pagos.filter(p => p.cuota_id === c.id || p.cuota_id === c.cuota_id);
+            const pagado = pagosEsta.reduce((sum, p) => sum + (parseFloat(p.monto) || 0), 0);
+            const pendiente = Math.max(0, (parseFloat(c.monto) || 0) - pagado);
+            const voucherPend = pendingVouchers.find(v => v.cuota_id === c.id || v.cuota_id === c.cuota_id);
+
+            return {
+                ...c,
+                pagado,
+                saldo_pendiente: pendiente,
+                al_dia: pendiente === 0,
+                voucher_pendiente: voucherPend || null
+            };
+        });
+
+        const totalPagado = pagos.reduce((sum, p) => sum + (parseFloat(p.monto) || 0), 0);
+        const saldoPendiente = cuotasStatus.reduce((sum, c) => sum + (c.obligatorio !== false ? c.saldo_pendiente : 0), 0);
+        const montoCubierto = Math.max(0, totalExigido - saldoPendiente);
+        const porcentajePago = totalExigido > 0 ? Math.min(100, Math.round((montoCubierto / totalExigido) * 100)) : 100;
+
+        return {
+            ci: member.ci,
+            nombres: member.nombres,
+            apellidos: member.apellidos,
+            filial_id: member.filial_id || 'matriz_lp',
+            filial_nombre: member.filial_nombre || 'Matriz (La Paz)',
+            rol_fraternal: member.rol_fraternal,
+            totalExigido,
+            totalPagado,
+            saldoPendiente,
+            porcentajePago,
+            alDia: saldoPendiente === 0,
+            hasPendingVouchers: pendingVouchers.length > 0,
+            pendingVouchersCount: pendingVouchers.length,
+            cuotas: cuotasStatus
+        };
     }
 
     // --- PAGOS, COMPROBANTES Y VOUCHERS ---
@@ -1043,7 +1454,7 @@ class PortalStateManager {
         cuotasDef.forEach(c => cuotaTotalIndividual += (parseFloat(c.monto) || 0));
 
         let totalRecaudado = 0;
-        let totalProyectado = cuotaTotalIndividual * members.length;
+        let totalProyectado = 0;
         let fraternosAlDia = 0;
         let fraternosConSaldo = 0;
 
@@ -1080,12 +1491,18 @@ class PortalStateManager {
             const mPagos = m.pagos || [];
             const pagado = mPagos.reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
             
+            const memberCuotas = this.getMemberCuotas(m.ci);
+            const hasCustomCuotas = Array.isArray(m.cuotas_asignadas);
+            const memberExigido = memberCuotas.reduce((acc, c) => acc + (c.obligatorio !== false ? (parseFloat(c.monto) || 0) : 0), 0);
+            const requiredAmount = hasCustomCuotas ? memberExigido : cuotaTotalIndividual;
+
             totalRecaudado += pagado;
+            totalProyectado += requiredAmount;
             filialesMap[fId].total_miembros++;
             filialesMap[fId].recaudado += pagado;
-            filialesMap[fId].proyectado += cuotaTotalIndividual;
+            filialesMap[fId].proyectado += requiredAmount;
 
-            if (pagado >= cuotaTotalIndividual && cuotaTotalIndividual > 0) {
+            if (pagado >= requiredAmount) {
                 fraternosAlDia++;
                 filialesMap[fId].al_dia++;
             } else {

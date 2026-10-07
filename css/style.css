@@ -1068,11 +1068,13 @@ body {
 .scanner-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2.5px 2.5px; }
 .scanner-corner.br { bottom: 12px; right: 12px; border-width: 0 2.5px 2.5px 0; }
 
-/* ===== CORRECCIÓN Y CONTROL RIGUROSO DE CONTRASTE (SIN TEXTO BLANCO EN SUPERFICIES) ===== */
+/* ===== CORRECCIÓN Y CONTROL RIGUROSO DE CONTRASTE (SIN TEXTO BLANCO EN SUPERFICIES CLARAS) ===== */
 
-/* 1. Todos los textos en la aplicación se renderizan en tonos oscuros de alto contraste */
-.text-white, .text-light, .text-white-50 {
-    color: #0f172a !important; /* Slate 900 - Oscuro nítido */
+/* 1. Textos sueltos sobre superficies claras se renderizan en tonos oscuros de alto contraste */
+.text-white:not(.badge):not(.sidebar-badge):not(.btn):not(.btn *):not(.progress-bar):not(.badge *):not(.sidebar-badge *):not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.toast-header.bg-brand *):not(.modal-header.bg-brand *),
+.text-light:not(.badge):not(.sidebar-badge):not(.btn):not(.btn *):not(.progress-bar):not(.badge *):not(.sidebar-badge *):not(.gold-shimmer-card *):not(.festive-banner-card *),
+.text-white-50:not(.badge):not(.sidebar-badge):not(.btn):not(.btn *):not(.progress-bar):not(.gold-shimmer-card *):not(.festive-banner-card *) {
+    color: #0f172a !important; /* Slate 900 - Oscuro nítido para textos sueltos en fondos blancos */
 }
 
 .text-muted {
@@ -1083,49 +1085,68 @@ body {
     color: #334155 !important; /* Slate 700 - Oscuro secundario */
 }
 
-/* Títulos y elementos de superficie */
-h1, h2, h3, h4, h5, h6, p, span, div, td, th, label {
+/* Títulos y elementos de superficie clara */
+h1:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+h2:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+h3:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+h4:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+h5:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+h6:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.modal-header.bg-brand *),
+p:not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *),
+span:not(.badge):not(.badge *):not(.sidebar-badge):not(.sidebar-badge *):not(.btn *):not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.toast-header.bg-brand *):not(.modal-header.bg-brand *):not([class*="text-"]):not([class*="status-"]):not([class*="chip-"]),
+div:not(.badge):not(.badge *):not(.sidebar-badge):not(.btn *):not(.gold-shimmer-card *):not(.festive-banner-card *):not(.bg-brand *):not(.toast-header.bg-brand *):not(.modal-header.bg-brand *):not([class*="text-"]):not([class*="chip-"]):not([class*="badge-"]):not(.modal-header.bg-brand),
+td:not([class*="text-"]), th, label {
     color: #0f172a;
 }
 
-/* Excepciones exclusivas donde el texto DEBE ser blanco (Botones de color sólido) */
+/* Excepciones exclusivas donde el texto DEBE ser blanco (Botones, banners oscuros y badges de color sólido) */
 .btn-portal-primary,
-.bg-brand,
+.bg-brand:not(.bg-brand-subtle),
 .toast-header.bg-brand, .toast-header.bg-brand *,
+.modal-header.bg-brand, .modal-header.bg-brand *,
 .btn-primary, .btn-danger, .btn-success,
-.nav-pills-portal .nav-link.active {
+.nav-pills-portal .nav-link.active,
+.sidebar-badge,
+.sidebar-badge *,
+.gold-shimmer-card,
+.gold-shimmer-card *,
+.festive-banner-card,
+.festive-banner-card *,
+.progress-bar {
     color: #ffffff !important;
 }
 
-.bg-white, .bg-light, .bg-surface-1, .bg-surface-2, .metric-card, .modal-content, .card {
-    color: #0f172a !important;
+.bg-white, .bg-light, .bg-surface-1, .bg-surface-2, .metric-card, .modal-content, .card:not(.gold-shimmer-card):not(.festive-banner-card) {
+    color: #0f172a;
 }
 
 /* Mapeo preventivo para que bg-dark y bg-dark-subtle se conviertan en superficies claras con texto oscuro nítido */
-.bg-dark, .bg-dark-subtle {
+.bg-dark:not(.preview-voucher-toolbar):not([data-dark-mode]),
+.bg-dark-subtle:not(.preview-voucher-toolbar) {
     background-color: #f1f5f9 !important;
     color: #0f172a !important;
 }
 
-.bg-dark *, .bg-dark-subtle * {
+.bg-dark:not(.preview-voucher-toolbar):not([data-dark-mode]) *,
+.bg-dark-subtle:not(.preview-voucher-toolbar) * {
     color: #0f172a;
 }
 
-.bg-white .text-white, 
-.bg-light .text-white,
-.bg-surface-1 .text-white,
-.bg-surface-2 .text-white,
-.metric-card .text-white,
-.modal-content .text-white,
-.pvc-card .text-white,
-.card .text-white {
+.bg-white .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *), 
+.bg-light .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *),
+.bg-surface-1 .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *),
+.bg-surface-2 .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *),
+.metric-card .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *),
+.modal-content .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.modal-header.bg-brand *),
+.pvc-card .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not(.gold-shimmer-card *),
+.card:not(.gold-shimmer-card):not(.festive-banner-card) .text-white:not(.badge):not(.btn):not(.sidebar-badge):not([class*="bg-danger"]):not([class*="bg-success"]):not([class*="bg-primary"]):not([class*="bg-brand"]) {
     color: #0f172a !important;
 }
 
 .bg-white h1, .bg-white h2, .bg-white h3, .bg-white h4, .bg-white h5, .bg-white h6,
-.bg-white p, .bg-white span, .bg-white div, .bg-white td, .bg-white th, .bg-white label,
+.bg-white p, .bg-white span:not(.badge):not(.badge *):not([class*="text-"]):not([class*="status-"]):not([class*="chip-"]), .bg-white div:not(.badge):not(.badge *):not([class*="text-"]):not([class*="badge-"]):not([class*="chip-"]), .bg-white td, .bg-white th, .bg-white label,
 .bg-light h1, .bg-light h2, .bg-light h3, .bg-light h4, .bg-light h5, .bg-light h6,
-.bg-light p, .bg-light span, .bg-light div, .bg-light td, .bg-light th, .bg-light label {
+.bg-light p, .bg-light span:not(.badge):not(.badge *):not([class*="text-"]):not([class*="status-"]):not([class*="chip-"]), .bg-light div:not(.badge):not(.badge *):not([class*="text-"]):not([class*="badge-"]):not([class*="chip-"]), .bg-light td, .bg-light th, .bg-light label {
     color: #0f172a !important;
 }
 
@@ -2075,5 +2096,1013 @@ input:-webkit-autofill:active {
 .countdown-unit {
     min-width: 52px;
 }
+
+/* Panel Directiva de Cuotas & Verificación */
+.batch-actions-bar {
+    background: linear-gradient(135deg, #3b0764 0%, #2e1065 100%);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 10px 30px rgba(46, 16, 101, 0.35);
+    color: #ffffff;
+}
+
+.btn-verif-pill {
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+.btn-verif-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.hover-brand {
+    cursor: pointer;
+    transition: color 0.15s ease-in-out;
+}
+.hover-brand:hover {
+    color: var(--brand-primary, #7c3aed) !important;
+}
+
+.table-active {
+    background-color: rgba(124, 58, 237, 0.06) !important;
+}
+
+/* ========================================================================= */
+/* MEJORAS UX / LEGIBILIDAD TABLA DIRECTIVA DE CUOTAS                        */
+/* ========================================================================= */
+
+.table-fraternos-cuotas {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-fraternos-cuotas th {
+    white-space: nowrap;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 14px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.table-fraternos-cuotas td {
+    padding: 12px 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-fraternos-cuotas th.col-select {
+    width: 44px;
+    text-align: center;
+}
+
+.table-fraternos-cuotas th.col-fraterno {
+    min-width: 220px;
+}
+
+.table-fraternos-cuotas th.col-filial {
+    min-width: 140px;
+}
+
+.table-fraternos-cuotas th.col-cuotas {
+    min-width: 300px;
+    max-width: 340px;
+    width: 320px;
+}
+
+.table-fraternos-cuotas th.col-finanzas {
+    min-width: 195px;
+    width: 205px;
+}
+
+.table-fraternos-cuotas th.col-estado {
+    min-width: 140px;
+    width: 150px;
+    text-align: center;
+}
+
+.table-fraternos-cuotas th.col-acciones {
+    min-width: 165px;
+    text-align: right;
+}
+
+/* Micro-lista de Cuotas Asignadas (Desglose limpio y estructurado) */
+.cuotas-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 320px;
+    box-sizing: border-box;
+}
+
+.cuota-detail-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.cuota-detail-pill:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.cuota-detail-pill.cuota-pill-warning {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: #fffbeb;
+}
+.cuota-detail-pill.cuota-pill-warning:hover {
+    background: #fef3c7;
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
+.cuota-detail-pill.cuota-pill-primary {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: #eff6ff;
+}
+.cuota-detail-pill.cuota-pill-primary:hover {
+    background: #dbeafe;
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+.cuota-detail-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 165px;
+    display: inline-block;
+}
+
+/* Dots indicadores de estado */
+.status-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.status-dot-success {
+    background-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+.status-dot-danger {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+.status-dot-warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+.status-dot-primary {
+    background-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+.status-dot-secondary {
+    background-color: #94a3b8;
+}
+
+/* Tarjeta Resumen Financiero de Alta Legibilidad */
+.fin-summary-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 11px;
+    min-width: 180px;
+    max-width: 205px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.fin-summary-card .fin-label {
+    font-size: 0.74rem;
+    color: #475569 !important;
+    font-weight: 600;
+}
+
+.fin-summary-card .fin-value {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.79rem;
+    font-weight: 700;
+}
+
+.fin-summary-card .fin-value.text-dark {
+    color: #0f172a !important;
+}
+
+.fin-summary-card .fin-value.text-success,
+.fin-summary-card .fin-label.text-success {
+    color: #166534 !important;
+}
+
+.fin-summary-card .fin-value.text-danger,
+.fin-summary-card .fin-label.text-danger {
+    color: #991b1b !important;
+}
+
+/* Badges de Estado General */
+.badge-estado-general {
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    letter-spacing: 0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* ==========================================================================
+   SISTEMA DE BADGES, PILLS Y STATUS CHIPS DE ALTO CONTRASTE (LIGHT & DARK)
+   Garantiza texto 100% legible y elimina combinaciones oscuro/oscuro o claro/claro.
+   ========================================================================== */
+
+/* 1. Utilidades de Opacidad para Bootstrap */
+.bg-opacity-10 { --bs-bg-opacity: 0.1 !important; }
+.bg-opacity-15 { --bs-bg-opacity: 0.15 !important; }
+.bg-opacity-20 { --bs-bg-opacity: 0.2 !important; }
+.bg-opacity-25 { --bs-bg-opacity: 0.25 !important; }
+.bg-opacity-30 { --bs-bg-opacity: 0.3 !important; }
+.bg-opacity-40 { --bs-bg-opacity: 0.4 !important; }
+.bg-opacity-50 { --bs-bg-opacity: 0.5 !important; }
+.border-opacity-10 { --bs-border-opacity: 0.1 !important; }
+.border-opacity-20 { --bs-border-opacity: 0.2 !important; }
+.border-opacity-25 { --bs-border-opacity: 0.25 !important; }
+.border-opacity-30 { --bs-border-opacity: 0.3 !important; }
+.border-opacity-40 { --bs-border-opacity: 0.4 !important; }
+.border-opacity-50 { --bs-border-opacity: 0.5 !important; }
+
+/* 2. Soft Badges (Fondo tintado claro + Texto oscuro profundo de alto contraste) */
+
+/* --- PELIGRO / MORA / CON SALDO (DANGER) --- */
+.badge-subtle-danger,
+.badge-soft-danger,
+.badge.bg-danger-subtle,
+.badge.bg-danger.bg-opacity-10,
+.badge.bg-danger.bg-opacity-15,
+.badge.bg-danger.bg-opacity-20,
+.badge.bg-danger.bg-opacity-25,
+.badge.bg-danger.text-danger,
+.badge-estado-general.bg-danger,
+.badge-estado-general.text-danger,
+.cuota-detail-pill .badge.text-danger,
+.cuota-detail-pill .badge.bg-danger {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fca5a5 !important;
+}
+
+.badge-subtle-danger i,
+.badge-soft-danger i,
+.badge.bg-danger-subtle i,
+.badge.bg-danger.text-danger i,
+.badge-estado-general.bg-danger i,
+.badge-estado-general.text-danger i,
+.cuota-detail-pill .badge.text-danger i {
+    color: #991b1b !important;
+}
+
+/* --- ÉXITO / AL DÍA / CUBIERTO (SUCCESS) --- */
+.badge-subtle-success,
+.badge-soft-success,
+.badge.bg-success-subtle,
+.badge.bg-success.bg-opacity-10,
+.badge.bg-success.bg-opacity-15,
+.badge.bg-success.bg-opacity-20,
+.badge.bg-success.bg-opacity-25,
+.badge.bg-success.text-success,
+.badge-estado-general.bg-success,
+.badge-estado-general.text-success,
+.cuota-detail-pill .badge.text-success,
+.cuota-detail-pill .badge.bg-success {
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+}
+
+.badge-subtle-success i,
+.badge-soft-success i,
+.badge.bg-success-subtle i,
+.badge.bg-success.text-success i,
+.badge-estado-general.bg-success i,
+.badge-estado-general.text-success i,
+.cuota-detail-pill .badge.text-success i {
+    color: #166534 !important;
+}
+
+/* --- ADVERTENCIA / VERIFICACIÓN / PARCIAL (WARNING) --- */
+.badge-subtle-warning,
+.badge-soft-warning,
+.badge.bg-warning-subtle,
+.badge.bg-warning.bg-opacity-10,
+.badge.bg-warning.bg-opacity-15,
+.badge.bg-warning.bg-opacity-20,
+.badge.bg-warning.bg-opacity-25,
+.badge.bg-warning.text-warning,
+.badge.bg-warning.text-dark,
+.badge-estado-general.bg-warning,
+.badge-estado-general.text-warning,
+.cuota-detail-pill .badge.text-warning,
+.cuota-detail-pill .badge.bg-warning {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+}
+
+.badge-subtle-warning i,
+.badge-soft-warning i,
+.badge.bg-warning-subtle i,
+.badge.bg-warning.text-warning i,
+.badge.bg-warning.text-dark i,
+.badge-estado-general.bg-warning i,
+.badge-estado-general.text-warning i,
+.cuota-detail-pill .badge.text-warning i {
+    color: #92400e !important;
+}
+
+/* --- PRIMARIO / COBRO ÚNICO / OBLIGATORIO (PRIMARY) --- */
+.badge-subtle-primary,
+.badge-soft-primary,
+.badge.bg-primary-subtle,
+.badge.bg-primary.bg-opacity-10,
+.badge.bg-primary.bg-opacity-15,
+.badge.bg-primary.bg-opacity-20,
+.badge.bg-primary.bg-opacity-25,
+.badge.bg-primary.text-primary,
+.badge-estado-general.bg-primary,
+.badge-estado-general.text-primary,
+.cuota-detail-pill .badge.text-primary,
+.cuota-detail-pill .badge.bg-primary {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+    border: 1px solid #bfdbfe !important;
+}
+
+.badge-subtle-primary i,
+.badge-soft-primary i,
+.badge.bg-primary-subtle i,
+.badge.bg-primary.text-primary i,
+.badge-estado-general.bg-primary i,
+.badge-estado-general.text-primary i,
+.cuota-detail-pill .badge.text-primary i {
+    color: #1e40af !important;
+}
+
+/* --- SECUNDARIO / EXENTO / OPCIONAL (SECONDARY) --- */
+.badge-subtle-secondary,
+.badge-soft-secondary,
+.badge.bg-secondary-subtle,
+.badge.bg-secondary.bg-opacity-10,
+.badge.bg-secondary.bg-opacity-15,
+.badge.bg-secondary.bg-opacity-20,
+.badge.bg-secondary.bg-opacity-25,
+.badge.bg-secondary.text-secondary,
+.badge-estado-general.bg-secondary,
+.badge-estado-general.text-secondary,
+.cuota-detail-pill .badge.text-secondary,
+.cuota-detail-pill .badge.bg-secondary {
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.badge-subtle-secondary i,
+.badge-soft-secondary i,
+.badge.bg-secondary-subtle i,
+.badge.bg-secondary.text-secondary i,
+.badge-estado-general.bg-secondary i,
+.badge-estado-general.text-secondary i,
+.cuota-detail-pill .badge.text-secondary i {
+    color: #334155 !important;
+}
+
+/* --- INFORMACIÓN / EXONERADO (INFO) --- */
+.badge-subtle-info,
+.badge-soft-info,
+.badge.bg-info-subtle,
+.badge.bg-info.bg-opacity-10,
+.badge.bg-info.bg-opacity-15,
+.badge.bg-info.bg-opacity-20,
+.badge.bg-info.bg-opacity-25,
+.badge.bg-info.text-info,
+.badge-estado-general.bg-info,
+.badge-estado-general.text-info,
+.cuota-detail-pill .badge.text-info,
+.cuota-detail-pill .badge.bg-info {
+    background-color: #e0f2fe !important;
+    color: #075985 !important;
+    border: 1px solid #bae6fd !important;
+}
+
+.badge-subtle-info i,
+.badge-soft-info i,
+.badge.bg-info-subtle i,
+.badge.bg-info.text-info i,
+.badge-estado-general.bg-info i,
+.badge-estado-general.text-info i,
+.cuota-detail-pill .badge.text-info i {
+    color: #075985 !important;
+}
+
+/* --- BRAND / WISTUS (BRAND) --- */
+.badge-subtle-brand,
+.badge-soft-brand,
+.badge.bg-brand-subtle {
+    background-color: #ede9fe !important;
+    color: #6d28d9 !important;
+    border: 1px solid #ddd6fe !important;
+}
+
+.badge-subtle-brand i,
+.badge-soft-brand i,
+.badge.bg-brand-subtle i {
+    color: #6d28d9 !important;
+}
+
+/* Botón de comprobante dentro de micro-pill */
+.btn-verif-pill {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+    box-shadow: 0 1px 2px rgba(146, 64, 14, 0.08);
+}
+.btn-verif-pill:hover, .btn-verif-pill:focus {
+    background-color: #fde68a !important;
+    color: #78350f !important;
+    border-color: #f59e0b !important;
+}
+
+/* 3. Badges Sólidos Protegidos (Texto BLANCO garantizado) */
+.badge.bg-danger:not(.badge-subtle-danger):not(.badge-soft-danger):not([class*="bg-opacity"]):not(.text-danger):not(.bg-danger-subtle),
+.badge.bg-danger.text-white,
+.sidebar-badge.bg-danger,
+.badge.bg-success:not(.badge-subtle-success):not(.badge-soft-success):not([class*="bg-opacity"]):not(.text-success):not(.bg-success-subtle),
+.badge.bg-success.text-white,
+.badge.bg-primary:not(.badge-subtle-primary):not(.badge-soft-primary):not([class*="bg-opacity"]):not(.text-primary):not(.bg-primary-subtle),
+.badge.bg-primary.text-white,
+.badge.bg-brand:not(.bg-brand-subtle),
+.badge.bg-brand.text-white,
+.sidebar-badge {
+    color: #ffffff !important;
+}
+.badge.bg-danger:not(.badge-subtle-danger):not(.badge-soft-danger):not([class*="bg-opacity"]):not(.text-danger):not(.bg-danger-subtle) *,
+.badge.bg-danger.text-white *,
+.sidebar-badge.bg-danger *,
+.badge.bg-success:not(.badge-subtle-success):not(.badge-soft-success):not([class*="bg-opacity"]):not(.text-success):not(.bg-success-subtle) *,
+.badge.bg-primary:not(.badge-subtle-primary):not(.badge-soft-primary):not([class*="bg-opacity"]):not(.text-primary):not(.bg-primary-subtle) *,
+.sidebar-badge * {
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   ADAPTACIONES PARA TEMA OSCURO (DARK MODE COMPATIBILITY)
+   Asegura contraste perfecto de texto y fondos cuando la interfaz está en modo oscuro.
+   ========================================================================== */
+[data-bs-theme="dark"],
+[data-theme="dark"],
+.dark-theme,
+body.dark-mode,
+body.dark {
+    --bg-base: #0f172a;
+    --bg-surface-1: #1e293b;
+    --bg-surface-2: #334155;
+    --bg-surface-3: #475569;
+    --text-primary: #f8fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-subtle: #334155;
+    --border-card: rgba(255, 255, 255, 0.08);
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .cuota-detail-pill,
+[data-theme="dark"] .cuota-detail-pill,
+.dark-theme .cuota-detail-pill,
+body.dark-mode .cuota-detail-pill,
+body.dark .cuota-detail-pill {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .cuota-detail-pill:hover,
+[data-theme="dark"] .cuota-detail-pill:hover,
+.dark-theme .cuota-detail-pill:hover,
+body.dark-mode .cuota-detail-pill:hover,
+body.dark .cuota-detail-pill:hover {
+    background: #273549 !important;
+    border-color: #475569 !important;
+}
+
+[data-bs-theme="dark"] .cuota-detail-pill.cuota-pill-warning,
+[data-theme="dark"] .cuota-detail-pill.cuota-pill-warning,
+.dark-theme .cuota-detail-pill.cuota-pill-warning,
+body.dark-mode .cuota-detail-pill.cuota-pill-warning,
+body.dark .cuota-detail-pill.cuota-pill-warning {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .cuota-detail-pill.cuota-pill-primary,
+[data-theme="dark"] .cuota-detail-pill.cuota-pill-primary,
+.dark-theme .cuota-detail-pill.cuota-pill-primary,
+body.dark-mode .cuota-detail-pill.cuota-pill-primary,
+body.dark .cuota-detail-pill.cuota-pill-primary {
+    background: rgba(59, 130, 246, 0.12) !important;
+    border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .cuota-detail-title,
+[data-theme="dark"] .cuota-detail-title,
+.dark-theme .cuota-detail-title,
+body.dark-mode .cuota-detail-title,
+body.dark .cuota-detail-title {
+    color: #f8fafc !important;
+}
+
+/* Tabla directiva de cuotas en Modo Oscuro */
+[data-bs-theme="dark"] .table-fraternos-cuotas th,
+[data-theme="dark"] .table-fraternos-cuotas th,
+.dark-theme .table-fraternos-cuotas th,
+body.dark-mode .table-fraternos-cuotas th,
+body.dark .table-fraternos-cuotas th {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+    border-bottom: 2px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] .table-fraternos-cuotas td,
+[data-theme="dark"] .table-fraternos-cuotas td,
+.dark-theme .table-fraternos-cuotas td,
+body.dark-mode .table-fraternos-cuotas td,
+body.dark .table-fraternos-cuotas td {
+    border-bottom: 1px solid #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .table-fraternos-cuotas tr:hover td,
+[data-theme="dark"] .table-fraternos-cuotas tr:hover td,
+.dark-theme .table-fraternos-cuotas tr:hover td,
+body.dark-mode .table-fraternos-cuotas tr:hover td,
+body.dark .table-fraternos-cuotas tr:hover td {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Resumen financiero en Modo Oscuro */
+[data-bs-theme="dark"] .fin-summary-card,
+[data-theme="dark"] .fin-summary-card,
+.dark-theme .fin-summary-card,
+body.dark-mode .fin-summary-card,
+body.dark .fin-summary-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .fin-summary-card .fin-label,
+[data-theme="dark"] .fin-summary-card .fin-label,
+.dark-theme .fin-summary-card .fin-label,
+body.dark-mode .fin-summary-card .fin-label,
+body.dark .fin-summary-card .fin-label {
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .fin-summary-card .fin-value.text-dark,
+[data-theme="dark"] .fin-summary-card .fin-value.text-dark,
+.dark-theme .fin-summary-card .fin-value.text-dark,
+body.dark-mode .fin-summary-card .fin-value.text-dark,
+body.dark .fin-summary-card .fin-value.text-dark {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .fin-summary-card .fin-value.text-danger,
+[data-bs-theme="dark"] .fin-summary-card .fin-label.text-danger,
+[data-theme="dark"] .fin-summary-card .fin-value.text-danger,
+[data-theme="dark"] .fin-summary-card .fin-label.text-danger,
+.dark-theme .fin-summary-card .fin-value.text-danger,
+.dark-theme .fin-summary-card .fin-label.text-danger,
+body.dark-mode .fin-summary-card .fin-value.text-danger,
+body.dark-mode .fin-summary-card .fin-label.text-danger,
+body.dark .fin-summary-card .fin-value.text-danger,
+body.dark .fin-summary-card .fin-label.text-danger {
+    color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .fin-summary-card .fin-value.text-success,
+[data-bs-theme="dark"] .fin-summary-card .fin-label.text-success,
+[data-theme="dark"] .fin-summary-card .fin-value.text-success,
+[data-theme="dark"] .fin-summary-card .fin-label.text-success,
+.dark-theme .fin-summary-card .fin-value.text-success,
+.dark-theme .fin-summary-card .fin-label.text-success,
+body.dark-mode .fin-summary-card .fin-value.text-success,
+body.dark-mode .fin-summary-card .fin-label.text-success,
+body.dark .fin-summary-card .fin-value.text-success,
+body.dark .fin-summary-card .fin-label.text-success {
+    color: #86efac !important;
+}
+
+[data-bs-theme="dark"] .fin-summary-card .progress,
+[data-theme="dark"] .fin-summary-card .progress,
+.dark-theme .fin-summary-card .progress,
+body.dark-mode .fin-summary-card .progress,
+body.dark .fin-summary-card .progress {
+    background-color: #334155 !important;
+}
+
+/* Botón de verificación de voucher en micro-pill en Modo Oscuro */
+[data-bs-theme="dark"] .btn-verif-pill,
+[data-theme="dark"] .btn-verif-pill,
+.dark-theme .btn-verif-pill,
+body.dark-mode .btn-verif-pill,
+body.dark .btn-verif-pill {
+    background-color: rgba(245, 158, 11, 0.22) !important;
+    color: #fde68a !important;
+    border: 1px solid rgba(245, 158, 11, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .btn-verif-pill:hover,
+[data-theme="dark"] .btn-verif-pill:hover,
+.dark-theme .btn-verif-pill:hover,
+body.dark-mode .btn-verif-pill:hover,
+body.dark .btn-verif-pill:hover {
+    background-color: rgba(245, 158, 11, 0.35) !important;
+    color: #ffffff !important;
+    border-color: rgba(245, 158, 11, 0.7) !important;
+}
+
+/* Textos generales en tema oscuro para prevenir texto negro (#212529) en superficies oscuras */
+[data-bs-theme="dark"] .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-subtle-warning):not(.btn-verif-pill):not(.badge-socavon-gold):not([class*="bg-warning"]):not([class*="alert-warning"]),
+[data-theme="dark"] .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-subtle-warning):not(.btn-verif-pill):not(.badge-socavon-gold):not([class*="bg-warning"]):not([class*="alert-warning"]),
+.dark-theme .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-subtle-warning):not(.btn-verif-pill):not(.badge-socavon-gold):not([class*="bg-warning"]):not([class*="alert-warning"]),
+body.dark-mode .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-subtle-warning):not(.btn-verif-pill):not(.badge-socavon-gold):not([class*="bg-warning"]):not([class*="alert-warning"]),
+body.dark .text-dark:not(.btn-warning):not(.btn-warning *):not(.badge-subtle-warning):not(.btn-verif-pill):not(.badge-socavon-gold):not([class*="bg-warning"]):not([class*="alert-warning"]) {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .text-muted,
+[data-theme="dark"] .text-muted,
+.dark-theme .text-muted,
+body.dark-mode .text-muted,
+body.dark .text-muted {
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .text-secondary,
+[data-theme="dark"] .text-secondary,
+.dark-theme .text-secondary,
+body.dark-mode .text-secondary,
+body.dark .text-secondary {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .text-danger:not(.badge):not(.badge-subtle-danger),
+[data-theme="dark"] .text-danger:not(.badge):not(.badge-subtle-danger),
+.dark-theme .text-danger:not(.badge):not(.badge-subtle-danger),
+body.dark-mode .text-danger:not(.badge):not(.badge-subtle-danger),
+body.dark .text-danger:not(.badge):not(.badge-subtle-danger) {
+    color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .text-success:not(.badge):not(.badge-subtle-success),
+[data-theme="dark"] .text-success:not(.badge):not(.badge-subtle-success),
+.dark-theme .text-success:not(.badge):not(.badge-subtle-success),
+body.dark-mode .text-success:not(.badge):not(.badge-subtle-success),
+body.dark .text-success:not(.badge):not(.badge-subtle-success) {
+    color: #86efac !important;
+}
+
+/* ==========================================================================
+   SOFT BADGES EN MODO OSCURO (Fondos oscurecidos translúcidos + Textos claros brillantes)
+   ========================================================================== */
+
+/* --- PELIGRO / MORA / CON SALDO (DANGER DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-danger,
+[data-bs-theme="dark"] .badge-soft-danger,
+[data-bs-theme="dark"] .badge.bg-danger-subtle,
+[data-bs-theme="dark"] .badge.bg-danger.text-danger,
+[data-bs-theme="dark"] .badge.bg-danger[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-danger,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-danger,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-danger,
+[data-theme="dark"] .badge-subtle-danger,
+[data-theme="dark"] .badge-soft-danger,
+[data-theme="dark"] .badge.bg-danger-subtle,
+[data-theme="dark"] .badge.bg-danger.text-danger,
+[data-theme="dark"] .badge.bg-danger[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-danger,
+[data-theme="dark"] .cuota-detail-pill .badge.text-danger,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-danger,
+.dark-theme .badge-subtle-danger,
+.dark-theme .badge-soft-danger,
+.dark-theme .badge.bg-danger-subtle,
+.dark-theme .badge.bg-danger.text-danger,
+.dark-theme .badge.bg-danger[class*="opacity"],
+.dark-theme .badge-estado-general.bg-danger,
+.dark-theme .cuota-detail-pill .badge.text-danger,
+body.dark-mode .badge-subtle-danger,
+body.dark-mode .badge-soft-danger,
+body.dark-mode .badge.bg-danger-subtle,
+body.dark-mode .badge.bg-danger.text-danger,
+body.dark-mode .badge.bg-danger[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-danger,
+body.dark-mode .cuota-detail-pill .badge.text-danger,
+body.dark .badge-subtle-danger {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-danger i,
+[data-theme="dark"] .badge-subtle-danger i,
+.dark-theme .badge-subtle-danger i,
+body.dark-mode .badge-subtle-danger i,
+body.dark .badge-subtle-danger i {
+    color: #fca5a5 !important;
+}
+
+/* --- ÉXITO / AL DÍA / CUBIERTO (SUCCESS DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-success,
+[data-bs-theme="dark"] .badge-soft-success,
+[data-bs-theme="dark"] .badge.bg-success-subtle,
+[data-bs-theme="dark"] .badge.bg-success.text-success,
+[data-bs-theme="dark"] .badge.bg-success[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-success,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-success,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-success,
+[data-theme="dark"] .badge-subtle-success,
+[data-theme="dark"] .badge-soft-success,
+[data-theme="dark"] .badge.bg-success-subtle,
+[data-theme="dark"] .badge.bg-success.text-success,
+[data-theme="dark"] .badge.bg-success[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-success,
+[data-theme="dark"] .cuota-detail-pill .badge.text-success,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-success,
+.dark-theme .badge-subtle-success,
+.dark-theme .badge-soft-success,
+.dark-theme .badge.bg-success-subtle,
+.dark-theme .badge.bg-success.text-success,
+.dark-theme .badge.bg-success[class*="opacity"],
+.dark-theme .badge-estado-general.bg-success,
+.dark-theme .cuota-detail-pill .badge.text-success,
+body.dark-mode .badge-subtle-success,
+body.dark-mode .badge-soft-success,
+body.dark-mode .badge.bg-success-subtle,
+body.dark-mode .badge.bg-success.text-success,
+body.dark-mode .badge.bg-success[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-success,
+body.dark-mode .cuota-detail-pill .badge.text-success,
+body.dark .badge-subtle-success {
+    background-color: rgba(34, 197, 94, 0.2) !important;
+    color: #86efac !important;
+    border: 1px solid rgba(34, 197, 94, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-success i,
+[data-theme="dark"] .badge-subtle-success i,
+.dark-theme .badge-subtle-success i,
+body.dark-mode .badge-subtle-success i,
+body.dark .badge-subtle-success i {
+    color: #86efac !important;
+}
+
+/* --- ADVERTENCIA / VERIFICACIÓN / PARCIAL (WARNING DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-warning,
+[data-bs-theme="dark"] .badge-soft-warning,
+[data-bs-theme="dark"] .badge.bg-warning-subtle,
+[data-bs-theme="dark"] .badge.bg-warning.text-warning,
+[data-bs-theme="dark"] .badge.bg-warning.text-dark,
+[data-bs-theme="dark"] .badge.bg-warning[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-warning,
+[data-bs-theme="dark"] .badge-estado-general.text-warning,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-warning,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-warning,
+[data-theme="dark"] .badge-subtle-warning,
+[data-theme="dark"] .badge-soft-warning,
+[data-theme="dark"] .badge.bg-warning-subtle,
+[data-theme="dark"] .badge.bg-warning.text-warning,
+[data-theme="dark"] .badge.bg-warning.text-dark,
+[data-theme="dark"] .badge.bg-warning[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-warning,
+[data-theme="dark"] .badge-estado-general.text-warning,
+[data-theme="dark"] .cuota-detail-pill .badge.text-warning,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-warning,
+.dark-theme .badge-subtle-warning,
+.dark-theme .badge-soft-warning,
+.dark-theme .badge.bg-warning-subtle,
+.dark-theme .badge.bg-warning.text-warning,
+.dark-theme .badge.bg-warning.text-dark,
+.dark-theme .badge.bg-warning[class*="opacity"],
+.dark-theme .badge-estado-general.bg-warning,
+.dark-theme .badge-estado-general.text-warning,
+.dark-theme .cuota-detail-pill .badge.text-warning,
+body.dark-mode .badge-subtle-warning,
+body.dark-mode .badge-soft-warning,
+body.dark-mode .badge.bg-warning-subtle,
+body.dark-mode .badge.bg-warning.text-warning,
+body.dark-mode .badge.bg-warning.text-dark,
+body.dark-mode .badge.bg-warning[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-warning,
+body.dark-mode .badge-estado-general.text-warning,
+body.dark-mode .cuota-detail-pill .badge.text-warning,
+body.dark .badge-subtle-warning {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #fde68a !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-warning i,
+[data-theme="dark"] .badge-subtle-warning i,
+.dark-theme .badge-subtle-warning i,
+body.dark-mode .badge-subtle-warning i,
+body.dark .badge-subtle-warning i {
+    color: #fde68a !important;
+}
+
+/* --- PRIMARIO / COBRO ÚNICO / OBLIGATORIO (PRIMARY DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-primary,
+[data-bs-theme="dark"] .badge-soft-primary,
+[data-bs-theme="dark"] .badge.bg-primary-subtle,
+[data-bs-theme="dark"] .badge.bg-primary.text-primary,
+[data-bs-theme="dark"] .badge.bg-primary[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-primary,
+[data-bs-theme="dark"] .badge-estado-general.text-primary,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-primary,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-primary,
+[data-theme="dark"] .badge-subtle-primary,
+[data-theme="dark"] .badge-soft-primary,
+[data-theme="dark"] .badge.bg-primary-subtle,
+[data-theme="dark"] .badge.bg-primary.text-primary,
+[data-theme="dark"] .badge.bg-primary[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-primary,
+[data-theme="dark"] .badge-estado-general.text-primary,
+[data-theme="dark"] .cuota-detail-pill .badge.text-primary,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-primary,
+.dark-theme .badge-subtle-primary,
+.dark-theme .badge-soft-primary,
+.dark-theme .badge.bg-primary-subtle,
+.dark-theme .badge.bg-primary.text-primary,
+.dark-theme .badge.bg-primary[class*="opacity"],
+.dark-theme .badge-estado-general.bg-primary,
+.dark-theme .cuota-detail-pill .badge.text-primary,
+body.dark-mode .badge-subtle-primary,
+body.dark-mode .badge-soft-primary,
+body.dark-mode .badge.bg-primary-subtle,
+body.dark-mode .badge.bg-primary.text-primary,
+body.dark-mode .badge.bg-primary[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-primary,
+body.dark-mode .cuota-detail-pill .badge.text-primary,
+body.dark .badge-subtle-primary {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(59, 130, 246, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-primary i,
+[data-theme="dark"] .badge-subtle-primary i,
+.dark-theme .badge-subtle-primary i,
+body.dark-mode .badge-subtle-primary i,
+body.dark .badge-subtle-primary i {
+    color: #93c5fd !important;
+}
+
+/* --- SECUNDARIO / EXENTO / OPCIONAL (SECONDARY DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-secondary,
+[data-bs-theme="dark"] .badge-soft-secondary,
+[data-bs-theme="dark"] .badge.bg-secondary-subtle,
+[data-bs-theme="dark"] .badge.bg-secondary.text-secondary,
+[data-bs-theme="dark"] .badge.bg-secondary[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-secondary,
+[data-bs-theme="dark"] .badge-estado-general.text-secondary,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-secondary,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-secondary,
+[data-theme="dark"] .badge-subtle-secondary,
+[data-theme="dark"] .badge-soft-secondary,
+[data-theme="dark"] .badge.bg-secondary-subtle,
+[data-theme="dark"] .badge.bg-secondary.text-secondary,
+[data-theme="dark"] .badge.bg-secondary[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-secondary,
+[data-theme="dark"] .badge-estado-general.text-secondary,
+[data-theme="dark"] .cuota-detail-pill .badge.text-secondary,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-secondary,
+.dark-theme .badge-subtle-secondary,
+.dark-theme .badge-soft-secondary,
+.dark-theme .badge.bg-secondary-subtle,
+.dark-theme .badge.bg-secondary.text-secondary,
+.dark-theme .badge.bg-secondary[class*="opacity"],
+.dark-theme .badge-estado-general.bg-secondary,
+.dark-theme .cuota-detail-pill .badge.text-secondary,
+body.dark-mode .badge-subtle-secondary,
+body.dark-mode .badge-soft-secondary,
+body.dark-mode .badge.bg-secondary-subtle,
+body.dark-mode .badge.bg-secondary.text-secondary,
+body.dark-mode .badge.bg-secondary[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-secondary,
+body.dark-mode .cuota-detail-pill .badge.text-secondary,
+body.dark .badge-subtle-secondary {
+    background-color: rgba(148, 163, 184, 0.2) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(148, 163, 184, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-secondary i,
+[data-theme="dark"] .badge-subtle-secondary i,
+.dark-theme .badge-subtle-secondary i,
+body.dark-mode .badge-subtle-secondary i,
+body.dark .badge-subtle-secondary i {
+    color: #cbd5e1 !important;
+}
+
+/* --- INFORMACIÓN / EXONERADO (INFO DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-info,
+[data-bs-theme="dark"] .badge-soft-info,
+[data-bs-theme="dark"] .badge.bg-info-subtle,
+[data-bs-theme="dark"] .badge.bg-info.text-info,
+[data-bs-theme="dark"] .badge.bg-info[class*="opacity"],
+[data-bs-theme="dark"] .badge-estado-general.bg-info,
+[data-bs-theme="dark"] .badge-estado-general.text-info,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.text-info,
+[data-bs-theme="dark"] .cuota-detail-pill .badge.bg-info,
+[data-theme="dark"] .badge-subtle-info,
+[data-theme="dark"] .badge-soft-info,
+[data-theme="dark"] .badge.bg-info-subtle,
+[data-theme="dark"] .badge.bg-info.text-info,
+[data-theme="dark"] .badge.bg-info[class*="opacity"],
+[data-theme="dark"] .badge-estado-general.bg-info,
+[data-theme="dark"] .badge-estado-general.text-info,
+[data-theme="dark"] .cuota-detail-pill .badge.text-info,
+[data-theme="dark"] .cuota-detail-pill .badge.bg-info,
+.dark-theme .badge-subtle-info,
+.dark-theme .badge-soft-info,
+.dark-theme .badge.bg-info-subtle,
+.dark-theme .badge.bg-info.text-info,
+.dark-theme .badge.bg-info[class*="opacity"],
+.dark-theme .badge-estado-general.bg-info,
+.dark-theme .cuota-detail-pill .badge.text-info,
+body.dark-mode .badge-subtle-info,
+body.dark-mode .badge-soft-info,
+body.dark-mode .badge.bg-info-subtle,
+body.dark-mode .badge.bg-info.text-info,
+body.dark-mode .badge.bg-info[class*="opacity"],
+body.dark-mode .badge-estado-general.bg-info,
+body.dark-mode .cuota-detail-pill .badge.text-info,
+body.dark .badge-subtle-info {
+    background-color: rgba(14, 165, 233, 0.2) !important;
+    color: #7dd3fc !important;
+    border: 1px solid rgba(14, 165, 233, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-info i,
+[data-theme="dark"] .badge-subtle-info i,
+.dark-theme .badge-subtle-info i,
+body.dark-mode .badge-subtle-info i,
+body.dark .badge-subtle-info i {
+    color: #7dd3fc !important;
+}
+
+/* --- BRAND / WISTUS (BRAND DARK) --- */
+[data-bs-theme="dark"] .badge-subtle-brand,
+[data-bs-theme="dark"] .badge-soft-brand,
+[data-bs-theme="dark"] .badge.bg-brand-subtle,
+[data-bs-theme="dark"] .badge.bg-brand.text-brand,
+[data-bs-theme="dark"] .badge.bg-brand[class*="opacity"],
+[data-theme="dark"] .badge-subtle-brand,
+[data-theme="dark"] .badge-soft-brand,
+[data-theme="dark"] .badge.bg-brand-subtle,
+[data-theme="dark"] .badge.bg-brand.text-brand,
+[data-theme="dark"] .badge.bg-brand[class*="opacity"],
+.dark-theme .badge-subtle-brand,
+.dark-theme .badge-soft-brand,
+.dark-theme .badge.bg-brand-subtle,
+body.dark-mode .badge-subtle-brand,
+body.dark-mode .badge-soft-brand,
+body.dark-mode .badge.bg-brand-subtle,
+body.dark .badge-subtle-brand {
+    background-color: rgba(124, 58, 237, 0.22) !important;
+    color: #c4b5fd !important;
+    border: 1px solid rgba(168, 85, 247, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .badge-subtle-brand i,
+[data-theme="dark"] .badge-subtle-brand i,
+.dark-theme .badge-subtle-brand i,
+body.dark-mode .badge-subtle-brand i,
+body.dark .badge-subtle-brand i {
+    color: #c4b5fd !important;
+}
+
 
 

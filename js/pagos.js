@@ -20,6 +20,16 @@ class PagosManager {
             fechaDesde: '',
             fechaHasta: ''
         };
+        this.controlFraternosFilter = {
+            search: '',
+            filial: 'all',
+            rol: 'all',
+            estado: 'all',
+            cuota: 'all'
+        };
+        this.selectedFraternoCIs = new Set();
+        this.activeEditingCI = null;
+        this.activeRenameCuotaId = null;
         this.memberReceiptsFilter = {
             search: ''
         };
@@ -99,7 +109,7 @@ class PagosManager {
         const member = window.PortalState.getMemberByCI(session.ci);
         if (!member) return;
 
-        const cuotasDef = window.PortalState.getCuotas();
+        const cuotasDef = window.PortalState.getMemberCuotas ? window.PortalState.getMemberCuotas(session.ci) : window.PortalState.getCuotas();
         const containerCuotas = document.getElementById('memberCuotasCards');
 
         let totalAportado = 0;
@@ -144,11 +154,11 @@ class PagosManager {
         }
         if (elEstadoFinanciero) {
             if (saldoPendiente === 0) {
-                elEstadoFinanciero.innerHTML = '<span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> CUOTAS 100% AL DÍA</span>';
+                elEstadoFinanciero.innerHTML = '<span class="badge badge-subtle-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> CUOTAS 100% AL DÍA</span>';
             } else if (porcentajePago >= 60) {
-                elEstadoFinanciero.innerHTML = '<span class="chip-warning px-3 py-2 rounded-pill"><i class="bi bi-clock-history me-1"></i> PAGO PARCIAL (SALDO PENDIENTE)</span>';
+                elEstadoFinanciero.innerHTML = '<span class="badge badge-subtle-warning px-3 py-2 rounded-pill"><i class="bi bi-clock-history me-1"></i> PAGO PARCIAL (SALDO PENDIENTE)</span>';
             } else {
-                elEstadoFinanciero.innerHTML = '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-2 rounded-pill"><i class="bi bi-exclamation-triangle-fill me-1"></i> PAGO ATRASADO</span>';
+                elEstadoFinanciero.innerHTML = '<span class="badge badge-subtle-danger px-3 py-2 rounded-pill"><i class="bi bi-exclamation-triangle-fill me-1"></i> PAGO ATRASADO</span>';
             }
         }
 
@@ -167,14 +177,16 @@ class PagosManager {
                 const voucherRechazado = rejectedVouchers.find(v => v.cuota_id === c.id);
 
                 let badge = '';
-                if (pendienteEnEsta === 0) {
+                if (c.asignada === false) {
+                    badge = '<span class="badge badge-subtle-secondary px-3 py-1 rounded-pill"><i class="bi bi-slash-circle me-1"></i>Exonerado / Exento</span>';
+                } else if (pendienteEnEsta === 0) {
                     badge = '<span class="badge badge-socavon-gold px-3 py-1 rounded-pill"><i class="bi bi-check2-circle me-1"></i>Completado (Al día)</span>';
                 } else if (voucherPendiente) {
-                    badge = `<span class="badge bg-warning text-dark px-3 py-1 rounded-pill"><i class="bi bi-clock-history me-1"></i>En Verificación (Bs. ${voucherPendiente.monto})</span>`;
+                    badge = `<span class="badge badge-subtle-warning px-3 py-1 rounded-pill"><i class="bi bi-clock-history me-1"></i>En Verificación (Bs. ${voucherPendiente.monto})</span>`;
                 } else if (pagadoEnEsta > 0) {
-                    badge = `<span class="chip-warning px-3 py-1 rounded-pill"><i class="bi bi-pie-chart me-1"></i>Abonado Bs. ${pagadoEnEsta} (${porcentajeCuota}%)</span>`;
+                    badge = `<span class="badge badge-subtle-warning px-3 py-1 rounded-pill"><i class="bi bi-pie-chart me-1"></i>Abonado Bs. ${pagadoEnEsta} (${porcentajeCuota}%)</span>`;
                 } else {
-                    badge = '<span class="badge bg-danger px-3 py-1 rounded-pill"><i class="bi bi-hourglass-split me-1"></i>Sin Pagar</span>';
+                    badge = '<span class="badge badge-subtle-danger px-3 py-1 rounded-pill"><i class="bi bi-hourglass-split me-1"></i>Sin Pagar</span>';
                 }
 
                 let feedbackRechazo = '';
@@ -592,22 +604,833 @@ class PagosManager {
         const elAlDia = document.getElementById('controlFinAlDia');
         const elMorosos = document.getElementById('controlFinMorosos');
         const badgePending = document.getElementById('badgePendingVouchersCount');
+        const tabVouchersBadge = document.getElementById('tabVouchersBadge');
+        const alertBanner = document.getElementById('ctrlVouchersAlertBanner');
+        const bannerCount = document.getElementById('ctrlBannerVoucherCount');
 
         if (elRecaudado) elRecaudado.textContent = `Bs. ${summary.totalRecaudado.toLocaleString('es-BO')}`;
         if (elProyectado) elProyectado.textContent = `Bs. ${summary.totalProyectado.toLocaleString('es-BO')}`;
         if (elAlDia) elAlDia.textContent = `${summary.fraternosAlDia} fraternos`;
         if (elMorosos) elMorosos.textContent = `${summary.fraternosConSaldo} con saldo`;
         if (badgePending) badgePending.textContent = summary.pendingVouchersCount;
+        if (tabVouchersBadge) {
+            tabVouchersBadge.textContent = summary.pendingVouchersCount;
+            tabVouchersBadge.style.display = summary.pendingVouchersCount > 0 ? 'inline-block' : 'none';
+        }
+        const sidebarVouchersBadge = document.getElementById('sidebarBadgeVouchers');
+        if (sidebarVouchersBadge) {
+            sidebarVouchersBadge.textContent = summary.pendingVouchersCount;
+            sidebarVouchersBadge.style.display = summary.pendingVouchersCount > 0 ? 'inline-block' : 'none';
+        }
+
+        if (alertBanner) {
+            if (summary.pendingVouchersCount > 0) {
+                alertBanner.classList.remove('d-none');
+                alertBanner.classList.add('d-flex');
+                if (bannerCount) bannerCount.textContent = summary.pendingVouchersCount;
+            } else {
+                alertBanner.classList.add('d-none');
+                alertBanner.classList.remove('d-flex');
+            }
+        }
 
         // Renderizar pestañas
-        this.renderControlPaymentsTable();
+        this.renderControlFraternosCuotasTable();
         this.renderControlVouchersTable();
         this.renderControlCuotasTable();
+        this.renderControlPaymentsTable();
         this.renderControlFilialesSummary(summary.porFilial || summary.porBloque);
 
         // Poblar selects dinámicos
         this.populatePaymentMemberSelect();
         this.populatePaymentCuotasSelect();
+        this.populateFraternosFilterCuotasSelect();
+    }
+
+    getFilteredFraternos() {
+        const members = window.PortalState.getMembers();
+        const f = this.controlFraternosFilter;
+
+        return members.filter(m => {
+            if (f.search) {
+                const q = f.search.toLowerCase().trim();
+                const fullName = `${m.nombres || ''} ${m.apellidos || ''}`.toLowerCase();
+                const ciStr = String(m.ci || '').toLowerCase();
+                if (!fullName.includes(q) && !ciStr.includes(q)) return false;
+            }
+            if (f.filial && f.filial !== 'all' && (m.filial_id || 'matriz_lp') !== f.filial) return false;
+            if (f.rol && f.rol !== 'all' && m.rol_fraternal !== f.rol) return false;
+
+            const st = window.PortalState.getMemberFinancialStatus(m.ci);
+            if (!st) return false;
+
+            if (f.estado && f.estado !== 'all') {
+                if (f.estado === 'al_dia' && !st.alDia) return false;
+                if (f.estado === 'con_saldo' && st.saldoPendiente <= 0) return false;
+                if (f.estado === 'con_voucher' && !st.hasPendingVouchers) return false;
+                if (f.estado === 'con_cobro_unico') {
+                    if (!st.cuotas.some(c => c.is_cobro_unico)) return false;
+                }
+            }
+            if (f.cuota && f.cuota !== 'all') {
+                if (!st.cuotas.some(c => (c.cuota_id === f.cuota || c.id === f.cuota) && c.asignada !== false)) return false;
+            }
+            return true;
+        });
+    }
+
+    renderControlFraternosCuotasTable() {
+        const tableBody = document.getElementById('controlFraternosTableBody');
+        if (!tableBody) return;
+
+        const filtered = this.getFilteredFraternos();
+
+        // Contadores
+        const elCount = document.getElementById('ctrlFraternosFilterCount');
+        const elTotalSaldo = document.getElementById('ctrlFraternosFilterTotalSaldo');
+        if (elCount) elCount.textContent = filtered.length;
+        if (elTotalSaldo) {
+            const sumSaldo = filtered.reduce((acc, m) => {
+                const st = window.PortalState.getMemberFinancialStatus(m.ci);
+                return acc + (st ? st.saldoPendiente : 0);
+            }, 0);
+            elTotalSaldo.textContent = `Bs. ${sumSaldo.toLocaleString('es-BO')}`;
+        }
+
+        // Sincronizar master checkbox
+        const masterCb = document.getElementById('cbSelectAllFraternos');
+        if (masterCb) {
+            const allSelected = filtered.length > 0 && filtered.every(m => this.selectedFraternoCIs.has(m.ci));
+            masterCb.checked = allSelected;
+            masterCb.indeterminate = !allSelected && filtered.some(m => this.selectedFraternoCIs.has(m.ci));
+        }
+
+        this.updateBatchActionBar();
+
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-5"><i class="bi bi-people text-secondary fs-3 d-block mb-1"></i>No se encontraron fraternos con los filtros seleccionados.</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(m => {
+            const st = window.PortalState.getMemberFinancialStatus(m.ci);
+            const isSelected = this.selectedFraternoCIs.has(m.ci);
+            const pendingVouchers = m.vouchers_pendientes || [];
+            const pendingVoucher = pendingVouchers[0];
+
+            // Renderizar desglose estructurado de cuotas (Micro-pills con ancho controlado y sin desbordes)
+            let cuotasDetailHtml = '';
+            if (!st.cuotas || st.cuotas.length === 0) {
+                cuotasDetailHtml = '<div class="text-muted small p-2 rounded-2 bg-surface-2 border border-subtle text-center">Sin cuotas asignadas</div>';
+            } else {
+                cuotasDetailHtml = '<div class="cuotas-detail-container">';
+                st.cuotas.forEach(c => {
+                    if (c.asignada === false) {
+                        cuotasDetailHtml += `
+                        <div class="cuota-detail-pill">
+                            <div class="d-flex align-items-center gap-1.5 min-w-0 flex-grow-1" title="Exento: ${c.title} (${c.motivo_exencion || 'Exonerado'})">
+                                <span class="status-indicator-dot status-dot-secondary"></span>
+                                <span class="cuota-detail-title text-muted">${c.title}</span>
+                            </div>
+                            <span class="badge badge-subtle-secondary rounded-pill font-mono fw-normal" style="font-size: 0.68rem;">Exento</span>
+                        </div>`;
+                        return;
+                    }
+
+                    const isPaid = c.pagado >= c.monto && c.monto > 0;
+                    const vPend = c.voucher_pendiente;
+
+                    if (isPaid) {
+                        cuotasDetailHtml += `
+                        <div class="cuota-detail-pill">
+                            <div class="d-flex align-items-center gap-1.5 min-w-0 flex-grow-1" title="Cubierto: ${c.title} (Bs. ${c.pagado} de Bs. ${c.monto})">
+                                <span class="status-indicator-dot status-dot-success"></span>
+                                <span class="cuota-detail-title text-dark">${c.title}</span>
+                            </div>
+                            <span class="badge badge-subtle-success rounded-pill font-mono fw-bold" style="font-size: 0.68rem;">
+                                <i class="bi bi-check2 me-1"></i>Cubierto
+                            </span>
+                        </div>`;
+                    } else if (vPend) {
+                        cuotasDetailHtml += `
+                        <div class="cuota-detail-pill cuota-pill-warning">
+                            <div class="d-flex align-items-center gap-1.5 min-w-0 flex-grow-1" title="En Verificación: ${c.title} (Comprobante por Bs. ${vPend.monto})">
+                                <span class="status-indicator-dot status-dot-warning"></span>
+                                <span class="cuota-detail-title text-dark fw-bold">${c.title}</span>
+                            </div>
+                            <button type="button" class="btn btn-warning text-dark btn-xs px-2 py-0.5 rounded-pill fw-bold font-mono btn-verif-pill" style="font-size: 0.68rem;" title="Validar comprobante" onclick="window.Pagos.openViewVoucherModal('${m.ci}', '${vPend.id}', true)">
+                                <i class="bi bi-clock-history me-1"></i>Voucher Bs. ${vPend.monto} &rarr;
+                            </button>
+                        </div>`;
+                    } else if (c.is_cobro_unico) {
+                        cuotasDetailHtml += `
+                        <div class="cuota-detail-pill cuota-pill-primary">
+                            <div class="d-flex align-items-center gap-1.5 min-w-0 flex-grow-1" title="Cobro Único: ${c.title} (Debe Bs. ${c.saldo_pendiente})">
+                                <span class="status-indicator-dot status-dot-primary"></span>
+                                <span class="cuota-detail-title text-primary"><i class="bi bi-star-fill text-warning me-1"></i>${c.title}</span>
+                            </div>
+                            <span class="badge badge-subtle-primary rounded-pill font-mono fw-bold" style="font-size: 0.68rem;">
+                                Debe Bs. ${c.saldo_pendiente}
+                            </span>
+                        </div>`;
+                    } else if (c.saldo_pendiente > 0) {
+                        cuotasDetailHtml += `
+                        <div class="cuota-detail-pill">
+                            <div class="d-flex align-items-center gap-1.5 min-w-0 flex-grow-1" title="Saldo pendiente: ${c.title} (Debe Bs. ${c.saldo_pendiente} de Bs. ${c.monto})">
+                                <span class="status-indicator-dot status-dot-danger"></span>
+                                <span class="cuota-detail-title text-dark">${c.title}</span>
+                            </div>
+                            <span class="badge badge-subtle-danger rounded-pill font-mono fw-bold" style="font-size: 0.68rem;">
+                                Debe Bs. ${c.saldo_pendiente}
+                            </span>
+                        </div>`;
+                    }
+                });
+                cuotasDetailHtml += '</div>';
+            }
+
+            // Resumen financiero estructurado en tarjeta visual de alta claridad
+            const finSummaryHtml = `
+            <div class="fin-summary-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fin-label">Asignado:</span>
+                    <span class="fin-value text-dark">Bs. ${st.totalExigido.toLocaleString('es-BO')}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fin-label">Abonado:</span>
+                    <span class="fin-value text-success">Bs. ${st.totalPagado.toLocaleString('es-BO')}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-1 border-top border-subtle mb-1.5">
+                    <span class="fin-label fw-bold ${st.saldoPendiente > 0 ? 'text-danger' : 'text-success'}">Saldo:</span>
+                    <span class="fin-value ${st.saldoPendiente > 0 ? 'text-danger' : 'text-success'}">
+                        Bs. ${st.saldoPendiente.toLocaleString('es-BO')}
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-1.5">
+                    <div class="progress flex-grow-1" style="height: 5px; background: #e2e8f0; border-radius: 4px;">
+                        <div class="progress-bar ${st.porcentajePago >= 100 ? 'bg-success' : (st.porcentajePago >= 50 ? 'bg-brand' : 'bg-danger')}" 
+                             role="progressbar" 
+                             style="width: ${st.porcentajePago}%; border-radius: 4px;"></div>
+                    </div>
+                    <span class="font-mono text-muted fw-bold" style="font-size: 0.70rem; min-width: 28px; text-align: right;">${st.porcentajePago}%</span>
+                </div>
+            </div>`;
+
+            // Estado general claro, centrado y con contexto informativo
+            let statusBadgeHtml = '';
+            if (st.totalExigido === 0) {
+                statusBadgeHtml = `
+                <div class="text-center">
+                    <span class="badge badge-subtle-info rounded-pill badge-estado-general fw-bold">
+                        <i class="bi bi-shield-check"></i> Exonerado
+                    </span>
+                    <div class="small text-muted mt-1" style="font-size: 0.72rem;">Sin cuotas exigidas</div>
+                </div>`;
+            } else if (st.alDia) {
+                statusBadgeHtml = `
+                <div class="text-center">
+                    <span class="badge badge-subtle-success rounded-pill badge-estado-general fw-bold">
+                        <i class="bi bi-check2-circle"></i> Al Día
+                    </span>
+                    <div class="small text-success fw-semibold mt-1" style="font-size: 0.72rem;">100% Cubierto</div>
+                </div>`;
+            } else if (st.hasPendingVouchers) {
+                statusBadgeHtml = `
+                <div class="text-center">
+                    <button type="button" class="btn btn-warning text-dark btn-sm rounded-pill px-2.5 py-1 fw-bold shadow-sm d-inline-flex align-items-center gap-1" style="font-size: 0.78rem;" onclick="window.Pagos.openViewVoucherModal('${m.ci}', '${pendingVoucher.id}', true)">
+                        <i class="bi bi-clock-history"></i> En Verificación
+                    </button>
+                    <div class="small text-muted mt-1" style="font-size: 0.72rem;">${pendingVouchers.length} voucher(s) en cola</div>
+                </div>`;
+            } else {
+                statusBadgeHtml = `
+                <div class="text-center">
+                    <span class="badge badge-subtle-danger rounded-pill badge-estado-general fw-bold">
+                        <i class="bi bi-hourglass-split"></i> Con Saldo
+                    </span>
+                    <div class="small text-danger fw-bold font-mono mt-1" style="font-size: 0.74rem;">Resta Bs. ${st.saldoPendiente.toLocaleString('es-BO')}</div>
+                </div>`;
+            }
+
+            const avatarUrl = m.foto || 'assets/img/avatar-default.svg';
+
+            html += `
+            <tr class="align-middle ${isSelected ? 'table-active' : ''}">
+                <td class="text-center" style="width: 44px;">
+                    <input type="checkbox" class="form-check-input fraterno-select-cb" data-ci="${m.ci}" ${isSelected ? 'checked' : ''} onchange="window.Pagos.toggleSelectFraterno('${m.ci}', this.checked)">
+                </td>
+                <td>
+                    <div class="d-flex align-items-center gap-2.5">
+                        <img src="${avatarUrl}" alt="Avatar" class="rounded-circle border border-subtle" style="width: 38px; height: 38px; object-fit: cover;">
+                        <div>
+                            <div class="fw-bold text-dark">${m.nombres} ${m.apellidos}</div>
+                            <div class="text-muted small font-mono">CI: <span class="text-brand fw-semibold">${m.ci}</span> ${m.ci_exp ? `<span class="badge bg-surface-2 text-muted px-1.5 py-0">${m.ci_exp}</span>` : ''}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="badge bg-surface-2 text-brand border border-subtle mb-1">${m.filial_nombre || m.filial_id || 'Matriz (La Paz)'}</div>
+                    <div class="small text-muted">${m.rol_fraternal || 'Fraterno Titular'}</div>
+                </td>
+                <td class="col-cuotas">
+                    ${cuotasDetailHtml}
+                </td>
+                <td class="col-finanzas">
+                    ${finSummaryHtml}
+                </td>
+                <td class="col-estado text-center">
+                    ${statusBadgeHtml}
+                </td>
+                <td class="text-end">
+                    <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                        <button class="btn btn-outline-brand btn-sm rounded-pill px-2.5 py-1" title="Editar fraterno y sus cuotas asignadas" onclick="window.Pagos.openEditFraternoCuotasModal('${m.ci}')">
+                            <i class="bi bi-pencil-square me-1"></i> Editar
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-1" title="Asignar cobro único a este fraterno" onclick="window.Pagos.openCobroUnicoModal('${m.ci}')">
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </button>
+                        <button class="btn btn-portal-primary btn-sm rounded-pill px-2 py-1" style="width: auto;" title="Registrar cobro manual" onclick="window.Pagos.openRegisterPaymentModal('${m.ci}')">
+                            <i class="bi bi-cash-stack"></i>
+                        </button>
+                        ${pendingVoucher ? `
+                        <button class="btn btn-warning text-dark fw-bold btn-sm rounded-pill px-2.5 py-1" title="Verificar voucher pendiente" onclick="window.Pagos.openViewVoucherModal('${m.ci}', '${pendingVoucher.id}', true)">
+                            <i class="bi bi-patch-check-fill me-1"></i> Validar
+                        </button>` : ''}
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        tableBody.innerHTML = html;
+    }
+
+    toggleSelectAllVisibleFraternos(checked) {
+        const visible = this.getFilteredFraternos();
+
+        visible.forEach(m => {
+            if (checked) {
+                this.selectedFraternoCIs.add(m.ci);
+            } else {
+                this.selectedFraternoCIs.delete(m.ci);
+            }
+        });
+
+        this.renderControlFraternosCuotasTable();
+    }
+
+    toggleSelectFraterno(ci, checked) {
+        if (checked) {
+            this.selectedFraternoCIs.add(ci);
+        } else {
+            this.selectedFraternoCIs.delete(ci);
+        }
+        this.updateBatchActionBar();
+
+        const masterCb = document.getElementById('cbSelectAllFraternos');
+        if (masterCb) {
+            const tableBody = document.getElementById('controlFraternosTableBody');
+            const cbs = tableBody ? Array.from(tableBody.querySelectorAll('.fraterno-select-cb')) : [];
+            const allChecked = cbs.length > 0 && cbs.every(cb => cb.checked);
+            masterCb.checked = allChecked;
+            masterCb.indeterminate = !allChecked && cbs.some(cb => cb.checked);
+        }
+    }
+
+    updateBatchActionBar() {
+        const bar = document.getElementById('ctrlFraternosBatchBar');
+        const countSpan = document.getElementById('ctrlBatchSelectedCount');
+        if (!bar) return;
+
+        const count = this.selectedFraternoCIs.size;
+        if (count > 0) {
+            bar.classList.remove('d-none');
+            bar.classList.add('d-flex');
+            if (countSpan) countSpan.textContent = count;
+        } else {
+            bar.classList.add('d-none');
+            bar.classList.remove('d-flex');
+        }
+    }
+
+    clearFraternoSelection() {
+        this.selectedFraternoCIs.clear();
+        this.renderControlFraternosCuotasTable();
+    }
+
+    openEditFraternoCuotasModal(ci) {
+        const member = window.PortalState.getMemberByCI(ci);
+        if (!member) return;
+
+        this.activeEditingCI = ci;
+        const modalEl = document.getElementById('modalEditFraternoCuotas');
+        if (!modalEl || !window.bootstrap) return;
+
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.tagName === 'SPAN') {
+                el.textContent = val !== undefined ? val : '';
+            } else {
+                el.value = val !== undefined ? val : '';
+            }
+        };
+        setVal('editFraternoCI', member.ci);
+        setVal('editFraternoExp', member.ci_exp || 'LP');
+        setVal('editFraternoNombres', member.nombres || '');
+        setVal('editFraternoApellidos', member.apellidos || '');
+        setVal('editFraternoTelefono', member.telefono || '');
+        setVal('editFraternoFilial', member.filial_id || 'matriz_lp');
+        setVal('editFraternoRol', member.rol_fraternal || 'Fraterno Titular');
+        setVal('editFraternoEstado', member.estado_fraterno || 'activo');
+
+        const tableBody = document.getElementById('editFraternoCuotasTableBody');
+        if (tableBody) {
+            const memberCuotas = window.PortalState.getMemberCuotas(ci, true);
+            const pagos = member.pagos || [];
+            let html = '';
+
+            memberCuotas.filter(c => !c.is_cobro_unico).forEach(c => {
+                const pagosEsta = pagos.filter(p => p.cuota_id === c.id || p.cuota_id === c.cuota_id);
+                const pagado = pagosEsta.reduce((sum, p) => sum + (parseFloat(p.monto) || 0), 0);
+                const pendiente = Math.max(0, (parseFloat(c.monto) || 0) - pagado);
+
+                html += `
+                <tr class="align-middle">
+                    <td class="text-center" style="width: 50px;">
+                        <input type="checkbox" class="form-check-input cuota-assign-cb" data-cuota-id="${c.id}" ${c.asignada !== false ? 'checked' : ''}>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">${c.title}</div>
+                        <span class="badge bg-surface-2 text-muted small">${c.categoria || 'General'}</span>
+                    </td>
+                    <td class="text-muted font-mono">Bs. ${(c.monto_original !== undefined ? c.monto_original : c.monto).toLocaleString('es-BO')}</td>
+                    <td style="width: 140px;">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-surface-2 border-subtle text-dark">Bs.</span>
+                            <input type="number" min="0" step="any" class="form-control bg-surface-2 text-dark border-subtle cuota-monto-input fw-bold" data-cuota-id="${c.id}" value="${c.monto}">
+                        </div>
+                    </td>
+                    <td>
+                        ${pagado >= c.monto && c.monto > 0 ? 
+                            '<span class="badge badge-subtle-success rounded-pill px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>Cubierto (Bs. ' + pagado + ')</span>' :
+                            (pagado > 0 ? 
+                                '<span class="badge badge-subtle-warning rounded-pill px-2 py-1"><i class="bi bi-pie-chart me-1"></i>Abonado Bs. ' + pagado + ' (Debe Bs. ' + pendiente + ')</span>' :
+                                '<span class="badge badge-subtle-danger rounded-pill px-2 py-1"><i class="bi bi-hourglass-split me-1"></i>Sin Pagar (Bs. ' + c.monto + ')</span>'
+                            )
+                        }
+                    </td>
+                </tr>`;
+            });
+
+            tableBody.innerHTML = html;
+        }
+
+        const cobrosContainer = document.getElementById('editFraternoCobrosUnicosContainer');
+        if (cobrosContainer) {
+            const memberCuotas = window.PortalState.getMemberCuotas(ci, true);
+            const cobrosUnicos = memberCuotas.filter(c => c.is_cobro_unico);
+
+            if (cobrosUnicos.length === 0) {
+                cobrosContainer.innerHTML = `<div class="p-3 bg-surface-2 rounded-3 text-muted small text-center"><i class="bi bi-info-circle me-1"></i>No tiene cobros únicos extraordinarios asignados actualmente.</div>`;
+            } else {
+                let cuHtml = '<div class="row g-2">';
+                cobrosUnicos.forEach(cu => {
+                    cuHtml += `
+                    <div class="col-md-6">
+                        <div class="p-2.5 bg-surface-2 rounded-3 border border-subtle d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold small text-dark"><i class="bi bi-star-fill text-warning me-1"></i>${cu.title}</div>
+                                <div class="text-brand font-mono small fw-bold">Bs. ${cu.monto} &bull; <span class="text-muted">${cu.vencimiento || 'Sin fecha'}</span></div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1" title="Eliminar este cobro único" onclick="window.Pagos.deleteCobroUnicoFromMember('${ci}', '${cu.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                });
+                cuHtml += '</div>';
+                cobrosContainer.innerHTML = cuHtml;
+            }
+        }
+
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        bsModal.show();
+    }
+
+    saveEditFraternoCuotas(event) {
+        if (event) event.preventDefault();
+        const ci = this.activeEditingCI;
+        if (!ci) return;
+
+        const getVal = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        const nombres = getVal('editFraternoNombres');
+        const apellidos = getVal('editFraternoApellidos');
+        const telefono = getVal('editFraternoTelefono');
+        const filialId = getVal('editFraternoFilial');
+        const rol = getVal('editFraternoRol');
+        const estado = getVal('editFraternoEstado') || 'activo';
+
+        if (!nombres || !apellidos) {
+            window.PortalApp.showToast('Nombres y apellidos son requeridos', 'error');
+            return;
+        }
+
+        // 1. Actualizar datos generales del miembro
+        window.PortalState.updateMember(ci, {
+            nombres,
+            apellidos,
+            telefono,
+            filial_id: filialId,
+            rol_fraternal: rol,
+            estado_fraterno: estado
+        });
+
+        // 2. Construir lista de cuotas asignadas
+        const currentCuotas = window.PortalState.getMemberCuotas(ci, true);
+        const assignedList = [];
+
+        const tableBody = document.getElementById('editFraternoCuotasTableBody');
+        if (tableBody) {
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cb = row.querySelector('.cuota-assign-cb');
+                const montoInput = row.querySelector('.cuota-monto-input');
+                if (cb && montoInput) {
+                    const cuotaId = cb.getAttribute('data-cuota-id');
+                    const isChecked = cb.checked;
+                    const customMonto = Math.max(0, parseFloat(montoInput.value) || 0);
+                    const catCuota = window.PortalState.getCuotaById(cuotaId);
+
+                    assignedList.push({
+                        id: cuotaId,
+                        cuota_id: cuotaId,
+                        title: catCuota ? catCuota.title : cuotaId,
+                        monto: customMonto,
+                        asignada: isChecked,
+                        is_cobro_unico: false,
+                        motivo_exencion: !isChecked ? 'Exonerado en edición de fraterno' : ''
+                    });
+                }
+            });
+        }
+
+        // Mantener cobros únicos asignados
+        currentCuotas.filter(c => c.is_cobro_unico).forEach(cu => {
+            assignedList.push({
+                id: cu.id,
+                cuota_id: cu.id,
+                title: cu.title,
+                monto: parseFloat(cu.monto) || 0,
+                vencimiento: cu.vencimiento,
+                obligatorio: cu.obligatorio !== false,
+                categoria: cu.categoria || 'Cobro Único',
+                is_cobro_unico: true,
+                asignada: true,
+                fecha_asignacion: cu.fecha_asignacion || new Date().toISOString().substring(0, 10),
+                observacion: cu.observacion || ''
+            });
+        });
+
+        window.PortalState.setMemberCuotasAsignadas(ci, assignedList);
+
+        const modalEl = document.getElementById('modalEditFraternoCuotas');
+        if (modalEl && window.bootstrap) {
+            const bs = bootstrap.Modal.getInstance(modalEl);
+            if (bs) bs.hide();
+        }
+
+        window.PortalApp.showToast(`Fraterno ${nombres} ${apellidos} y sus cuotas asignadas actualizados.`, 'success');
+        this.renderControlPayments();
+        this.renderMemberPayments();
+    }
+
+    deleteCobroUnicoFromMember(ci, cobroId) {
+        const member = window.PortalState.getMemberByCI(ci);
+        if (!member) return;
+
+        const currentCuotas = window.PortalState.getMemberCuotas(ci, true);
+        const updated = currentCuotas
+            .filter(c => !(c.is_cobro_unico && c.id === cobroId))
+            .map(c => ({
+                id: c.id,
+                cuota_id: c.cuota_id || c.id,
+                title: c.title,
+                monto: c.monto,
+                asignada: c.asignada !== false,
+                is_cobro_unico: !!c.is_cobro_unico,
+                vencimiento: c.vencimiento,
+                obligatorio: c.obligatorio !== false
+            }));
+
+        window.PortalState.setMemberCuotasAsignadas(ci, updated);
+        window.PortalApp.showToast('Cobro único retirado del fraterno.', 'info');
+        this.openEditFraternoCuotasModal(ci);
+        this.renderControlPayments();
+    }
+
+    openCobroUnicoModal(targetCI = null) {
+        const modalEl = document.getElementById('modalCobroUnico');
+        if (!modalEl || !window.bootstrap) return;
+
+        const members = window.PortalState.getMembers();
+        const singleSel = document.getElementById('cobroUnicoSingleMemberSelect');
+        if (singleSel) {
+            singleSel.innerHTML = members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci} - ${m.filial_nombre || m.filial_id})</option>`).join('');
+        }
+
+        const inTitle = document.getElementById('cobroUnicoTitle');
+        const inMonto = document.getElementById('cobroUnicoMonto');
+        const inVencimiento = document.getElementById('cobroUnicoVencimiento');
+        const inObservacion = document.getElementById('cobroUnicoObservacion');
+        if (inTitle) inTitle.value = '';
+        if (inMonto) inMonto.value = 100;
+        if (inVencimiento) {
+            const nextDate = new Date();
+            nextDate.setDate(nextDate.getDate() + 30);
+            inVencimiento.value = nextDate.toISOString().substring(0, 10);
+        }
+        if (inObservacion) inObservacion.value = '';
+
+        const radSelected = document.getElementById('targetTypeSelected');
+        const radSingle = document.getElementById('targetTypeSingle');
+        const countBadge = document.getElementById('targetSelectedCountBadge');
+        if (countBadge) countBadge.textContent = this.selectedFraternoCIs.size;
+
+        if (targetCI) {
+            if (radSingle) radSingle.checked = true;
+            if (singleSel) singleSel.value = targetCI;
+        } else if (this.selectedFraternoCIs.size > 0) {
+            if (radSelected) radSelected.checked = true;
+        } else {
+            if (radSingle) radSingle.checked = true;
+        }
+
+        this.updateCobroUnicoTargetUI();
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        bsModal.show();
+    }
+
+    updateCobroUnicoTargetUI() {
+        const radSingle = document.getElementById('targetTypeSingle');
+        const radFilter = document.getElementById('targetTypeFilter');
+        const singleWrap = document.getElementById('cobroUnicoSingleSelectWrapper');
+        const filterWrap = document.getElementById('cobroUnicoFilterSelectWrapper');
+
+        if (singleWrap) {
+            singleWrap.classList.toggle('d-none', !(radSingle && radSingle.checked));
+        }
+        if (filterWrap) {
+            filterWrap.classList.toggle('d-none', !(radFilter && radFilter.checked));
+        }
+    }
+
+    saveCobroUnico(event) {
+        if (event) event.preventDefault();
+        const inTitle = document.getElementById('cobroUnicoTitle');
+        const inMonto = document.getElementById('cobroUnicoMonto');
+        const inVencimiento = document.getElementById('cobroUnicoVencimiento');
+        const inCategoria = document.getElementById('cobroUnicoCategoria');
+        const inObservacion = document.getElementById('cobroUnicoObservacion');
+
+        const title = inTitle ? inTitle.value.trim() : '';
+        const monto = inMonto ? (parseFloat(inMonto.value) || 0) : 0;
+        const vencimiento = inVencimiento ? inVencimiento.value : '';
+        const categoria = inCategoria ? inCategoria.value : 'Cobro Único';
+        const observacion = inObservacion ? inObservacion.value.trim() : '';
+
+        if (!title) {
+            window.PortalApp.showToast('El título o concepto del cobro único es requerido', 'error');
+            return;
+        }
+        if (monto <= 0) {
+            window.PortalApp.showToast('El monto debe ser mayor a 0 Bs.', 'error');
+            return;
+        }
+
+        const radSelected = document.getElementById('targetTypeSelected');
+        const radFilter = document.getElementById('targetTypeFilter');
+
+        let destinatarios;
+        if (radSelected && radSelected.checked) {
+            if (this.selectedFraternoCIs.size === 0) {
+                window.PortalApp.showToast('No hay fraternos seleccionados en la tabla', 'error');
+                return;
+            }
+            destinatarios = Array.from(this.selectedFraternoCIs);
+        } else if (radFilter && radFilter.checked) {
+            const fSel = document.getElementById('cobroUnicoFilterFilial');
+            const rSel = document.getElementById('cobroUnicoFilterRol');
+            destinatarios = {
+                filial_id: fSel ? fSel.value : 'all',
+                rol: rSel ? rSel.value : 'all'
+            };
+        } else {
+            const singleSel = document.getElementById('cobroUnicoSingleMemberSelect');
+            const ci = singleSel ? singleSel.value : null;
+            if (!ci) {
+                window.PortalApp.showToast('Selecciona un fraterno destinatario', 'error');
+                return;
+            }
+            destinatarios = [ci];
+        }
+
+        try {
+            const res = window.PortalState.assignCobroUnico(destinatarios, {
+                title,
+                monto,
+                vencimiento,
+                categoria,
+                observacion
+            });
+
+            const modalEl = document.getElementById('modalCobroUnico');
+            if (modalEl && window.bootstrap) {
+                const bs = bootstrap.Modal.getInstance(modalEl);
+                if (bs) bs.hide();
+            }
+
+            window.PortalApp.showToast(`¡Cobro único asignado exitosamente a ${res.countAssigned} fraterno(s)!`, 'success');
+            this.renderControlPayments();
+        } catch (e) {
+            window.PortalApp.showToast(e.message || 'Error al asignar cobro único', 'error');
+        }
+    }
+
+    openBatchCuotasModal() {
+        if (this.selectedFraternoCIs.size === 0) {
+            window.PortalApp.showToast('Debes seleccionar al menos un fraterno en la tabla', 'warning');
+            return;
+        }
+
+        const modalEl = document.getElementById('modalBatchCuotas');
+        if (!modalEl || !window.bootstrap) return;
+
+        const countSpan = document.getElementById('batchModalCount');
+        if (countSpan) countSpan.textContent = this.selectedFraternoCIs.size;
+
+        const chipsWrap = document.getElementById('batchModalChipsPreview');
+        if (chipsWrap) {
+            const members = window.PortalState.getMembers();
+            chipsWrap.innerHTML = Array.from(this.selectedFraternoCIs).map(ci => {
+                const m = members.find(x => x.ci === ci);
+                const name = m ? `${m.nombres} ${m.apellidos}` : ci;
+                return `<span class="badge bg-surface-1 text-dark border border-subtle small py-1 px-2">${name} (${ci})</span>`;
+            }).join('');
+        }
+
+        const cuotasSel = document.getElementById('batchCuotaSelect');
+        if (cuotasSel) {
+            const cuotas = window.PortalState.getCuotas();
+            cuotasSel.innerHTML = cuotas.map(c => `<option value="${c.id}">${c.title} (Bs. ${c.monto})</option>`).join('');
+        }
+
+        const actionSel = document.getElementById('batchCuotaAction');
+        if (actionSel) actionSel.value = 'assign_cuota';
+        this.updateBatchActionUI();
+
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        bsModal.show();
+    }
+
+    updateBatchActionUI() {
+        const actionSel = document.getElementById('batchCuotaAction');
+        const montoWrap = document.getElementById('batchMontoWrapper');
+        const motivoWrap = document.getElementById('batchMotivoWrapper');
+        if (!actionSel) return;
+
+        const val = actionSel.value;
+        if (montoWrap) montoWrap.classList.toggle('d-none', val !== 'adjust_monto');
+        if (motivoWrap) motivoWrap.classList.toggle('d-none', val !== 'unassign_cuota');
+    }
+
+    applyBatchCuotas(event) {
+        if (event) event.preventDefault();
+        const actionSel = document.getElementById('batchCuotaAction');
+        const cuotaSel = document.getElementById('batchCuotaSelect');
+        const inMonto = document.getElementById('batchCuotaMonto');
+        const inMotivo = document.getElementById('batchCuotaMotivo');
+
+        const action = actionSel ? actionSel.value : 'assign_cuota';
+        const cuotaId = cuotaSel ? cuotaSel.value : null;
+        const monto = inMonto ? inMonto.value : null;
+        const motivo = inMotivo ? inMotivo.value.trim() : '';
+
+        try {
+            const res = window.PortalState.batchUpdateCuotas(
+                Array.from(this.selectedFraternoCIs),
+                action,
+                { cuotaId, monto, motivo }
+            );
+
+            const modalEl = document.getElementById('modalBatchCuotas');
+            if (modalEl && window.bootstrap) {
+                const bs = bootstrap.Modal.getInstance(modalEl);
+                if (bs) bs.hide();
+            }
+
+            window.PortalApp.showToast(`Modificación de cuotas aplicada a ${res.modifiedCount} fraternos.`, 'success');
+            this.clearFraternoSelection();
+            this.renderControlPayments();
+        } catch (e) {
+            window.PortalApp.showToast(e.message || 'Error en la operación masiva', 'error');
+        }
+    }
+
+    quickRenameCuota(cuotaId) {
+        const cuota = window.PortalState.getCuotaById(cuotaId);
+        if (!cuota) return;
+
+        this.activeRenameCuotaId = cuotaId;
+        const modalEl = document.getElementById('modalRenameCuota');
+        if (!modalEl || !window.bootstrap) return;
+
+        const inId = document.getElementById('renameCuotaId');
+        const inTitle = document.getElementById('renameCuotaNewTitle');
+        if (inId) inId.value = cuota.id;
+        if (inTitle) inTitle.value = cuota.title;
+
+        const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        bsModal.show();
+    }
+
+    saveQuickRenameCuota(event) {
+        if (event) event.preventDefault();
+        const inId = document.getElementById('renameCuotaId');
+        const inTitle = document.getElementById('renameCuotaNewTitle');
+
+        const id = inId ? inId.value : this.activeRenameCuotaId;
+        const title = inTitle ? inTitle.value.trim() : '';
+
+        if (!id || !title) {
+            window.PortalApp.showToast('El nuevo nombre de la cuota no puede estar vacío', 'error');
+            return;
+        }
+
+        try {
+            window.PortalState.renameCuota(id, title);
+
+            const modalEl = document.getElementById('modalRenameCuota');
+            if (modalEl && window.bootstrap) {
+                const bs = bootstrap.Modal.getInstance(modalEl);
+                if (bs) bs.hide();
+            }
+
+            window.PortalApp.showToast(`Nombre de cuota actualizado a: "${title}"`, 'success');
+            this.renderControlPayments();
+            this.renderMemberPayments();
+        } catch (e) {
+            window.PortalApp.showToast(e.message || 'Error al cambiar nombre de cuota', 'error');
+        }
+    }
+
+    populateFraternosFilterCuotasSelect() {
+        const sel = document.getElementById('ctrlFraternosCuotaSelect');
+        if (!sel) return;
+        const currentVal = this.controlFraternosFilter.cuota || 'all';
+        const cuotas = window.PortalState.getCuotas();
+        sel.innerHTML = `<option value="all">-- Todas las Cuotas --</option>` +
+            cuotas.map(c => `<option value="${c.id}" ${c.id === currentVal ? 'selected' : ''}>${c.title}</option>`).join('');
     }
 
     renderControlFilialesSummary(filiales) {
@@ -809,7 +1632,12 @@ class PagosManager {
             <tr class="align-middle">
                 <td><span class="badge bg-surface-2 text-brand font-monospace">${c.id}</span></td>
                 <td>
-                    <div class="fw-bold text-dark">${c.title}</div>
+                    <div class="fw-bold text-dark d-flex align-items-center gap-1.5">
+                        <span role="button" class="hover-brand" title="Clic para cambiar el nombre de la cuota" onclick="window.Pagos.quickRenameCuota('${c.id}')">${c.title}</span>
+                        <button type="button" class="btn btn-link btn-sm p-0 text-muted hover-brand" title="Cambiar nombre de cuota" onclick="window.Pagos.quickRenameCuota('${c.id}')">
+                            <i class="bi bi-pencil small" style="font-size: 0.75rem;"></i>
+                        </button>
+                    </div>
                     <span class="badge bg-surface-2 text-muted small">${c.categoria || 'General'}</span>
                 </td>
                 <td class="fw-bold text-dark">Bs. ${c.monto.toLocaleString('es-BO')}</td>
@@ -827,10 +1655,13 @@ class PagosManager {
                     ${c.obligatorio !== false ? '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">Obligatorio</span>' : '<span class="badge bg-secondary">Opcional</span>'}
                 </td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-outline-warning rounded-pill me-1" onclick="window.Pagos.openCuotaEditorModal('${c.id}')">
+                    <button class="btn btn-sm btn-outline-info rounded-pill me-1" title="Cambiar Nombre / Concepto" onclick="window.Pagos.quickRenameCuota('${c.id}')">
+                        <i class="bi bi-fonts"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning rounded-pill me-1" title="Editar Parámetros de Cuota" onclick="window.Pagos.openCuotaEditorModal('${c.id}')">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="window.Pagos.deleteCuotaPrompt('${c.id}')">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill" title="Eliminar Cuota" onclick="window.Pagos.deleteCuotaPrompt('${c.id}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
@@ -1129,16 +1960,28 @@ class PagosManager {
             members.map(m => `<option value="${m.ci}">${m.nombres} ${m.apellidos} (CI: ${m.ci}) - ${m.filial_nombre || 'Matriz (La Paz)'}</option>`).join('');
     }
 
-    populatePaymentCuotasSelect() {
+    populatePaymentCuotasSelect(memberCI = null) {
         const sel = document.getElementById('selectNewPaymentCuota');
         if (!sel) return;
-        const cuotas = window.PortalState.getCuotas();
-        sel.innerHTML = cuotas.map(c => `<option value="${c.id}" data-monto="${c.monto}">${c.title} (Bs. ${c.monto})</option>`).join('');
+
+        let cuotas = [];
+        if (memberCI) {
+            cuotas = window.PortalState.getMemberCuotas(memberCI, false);
+        } else {
+            cuotas = window.PortalState.getCuotas();
+        }
+
+        const currentVal = sel.value;
+        sel.innerHTML = cuotas.map(c => `<option value="${c.id}" data-monto="${c.monto}">${c.is_cobro_unico ? '[Cobro Único] ' : ''}${c.title} (Bs. ${c.monto})</option>`).join('');
+        if (currentVal && cuotas.some(c => c.id === currentVal || c.cuota_id === currentVal)) {
+            sel.value = currentVal;
+        }
 
         const filterCuotaSel = document.getElementById('ctrlPaymentsFilterCuota');
         if (filterCuotaSel && filterCuotaSel.options.length <= 1) {
+            const catalog = window.PortalState.getCuotas();
             filterCuotaSel.innerHTML = '<option value="all">-- Todas las Cuotas --</option>' +
-                cuotas.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+                catalog.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
         }
     }
 
@@ -1150,24 +1993,33 @@ class PagosManager {
 
         if (!selMember || !selMember.value) {
             if (elSaldoHint) elSaldoHint.innerHTML = '';
+            this.populatePaymentCuotasSelect();
             return;
         }
 
         const member = window.PortalState.getMemberByCI(selMember.value);
         if (!member) return;
 
+        // Actualizar lista de cuotas con las cuotas asignadas específicas de este fraterno
+        const prevCuotaId = selCuota ? selCuota.value : '';
+        this.populatePaymentCuotasSelect(member.ci);
+        if (prevCuotaId && selCuota && Array.from(selCuota.options).some(o => o.value === prevCuotaId)) {
+            selCuota.value = prevCuotaId;
+        }
+
         const cuotaId = selCuota ? selCuota.value : '';
-        const cuota = window.PortalState.getCuotaById(cuotaId);
+        const memberCuotas = window.PortalState.getMemberCuotas(member.ci, false);
+        const cuota = memberCuotas.find(c => c.id === cuotaId || c.cuota_id === cuotaId) || window.PortalState.getCuotaById(cuotaId);
         if (!cuota) return;
 
-        const pagosCuota = (member.pagos || []).filter(p => p.cuota_id === cuotaId);
+        const pagosCuota = (member.pagos || []).filter(p => p.cuota_id === cuotaId || (cuota.cuota_id && p.cuota_id === cuota.cuota_id));
         const pagado = pagosCuota.reduce((acc, p) => acc + (parseFloat(p.monto) || 0), 0);
         const restante = Math.max(0, cuota.monto - pagado);
 
         if (inputMonto) inputMonto.value = restante > 0 ? restante : cuota.monto;
         if (elSaldoHint) {
-            elSaldoHint.innerHTML = `<span class="badge ${restante === 0 ? 'bg-success' : 'bg-warning text-dark'} small">
-                ${restante === 0 ? 'Esta cuota ya está cancelada' : `Saldo pendiente de esta cuota: Bs. ${restante}`}
+            elSaldoHint.innerHTML = `<span class="badge ${restante === 0 ? 'badge-subtle-success' : 'badge-subtle-warning'} rounded-pill px-2.5 py-1 small">
+                ${restante === 0 ? '<i class="bi bi-check2-circle me-1"></i>Esta cuota ya está cancelada' : `<i class="bi bi-info-circle me-1"></i>Saldo pendiente de esta cuota: Bs. ${restante}`}
             </span>`;
         }
     }
@@ -1177,7 +2029,7 @@ class PagosManager {
         if (!modalEl || !window.bootstrap) return;
 
         this.populatePaymentMemberSelect();
-        this.populatePaymentCuotasSelect();
+        this.populatePaymentCuotasSelect(prefillCI || null);
 
         const sel = document.getElementById('selectNewPaymentMember');
         if (prefillCI && sel) {
@@ -1215,8 +2067,15 @@ class PagosManager {
             return;
         }
 
-        const cuota = window.PortalState.getCuotaById(cuotaId);
-        const concepto = cuota ? cuota.title : 'Aporte Fraternal';
+        let concepto = 'Aporte Fraternal';
+        const memberCuotas = window.PortalState.getMemberCuotas(ci, false);
+        const foundCuota = memberCuotas.find(c => c.id === cuotaId || c.cuota_id === cuotaId);
+        if (foundCuota) {
+            concepto = foundCuota.title;
+        } else {
+            const catCuota = window.PortalState.getCuotaById(cuotaId);
+            if (catCuota) concepto = catCuota.title;
+        }
 
         const payment = window.PortalState.registerPayment(ci, {
             cuota_id: cuotaId,

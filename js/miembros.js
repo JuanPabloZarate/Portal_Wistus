@@ -366,6 +366,21 @@ class MiembrosManager {
         window.PortalApp.showToast('Padrón descargado en formato CSV compatible con Excel.');
     }
 
+    openCuotasFromKardex() {
+        if (!this.currentKardexCI) return;
+        const targetCI = this.currentKardexCI;
+        const modalEl = document.getElementById('modalMemberKardex');
+        if (modalEl && window.bootstrap) {
+            const bsModal = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
+            if (bsModal) bsModal.hide();
+        }
+        setTimeout(() => {
+            if (window.Pagos && window.Pagos.openEditFraternoCuotasModal) {
+                window.Pagos.openEditFraternoCuotasModal(targetCI);
+            }
+        }, 150);
+    }
+
     openEditFromKardex() {
         if (!this.currentKardexCI) return;
         const targetCI = this.currentKardexCI;

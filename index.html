@@ -260,8 +260,9 @@
                         <span>Terminal Asistencias</span>
                     </a>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-pagos">
-                        <i class="bi bi-journal-text"></i>
-                        <span>Libro de Cuotas</span>
+                        <i class="bi bi-wallet2"></i>
+                        <span>Directiva de Cuotas</span>
+                        <span class="sidebar-badge bg-danger text-white" id="sidebarBadgeVouchers" style="display:none;">0</span>
                     </a>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-directorio">
                         <i class="bi bi-people"></i>
@@ -1269,10 +1270,13 @@
     <div id="view-control-pagos" class="app-view container py-4 d-none">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <div>
-                <h4 class="fw-bold text-white mb-1"><i class="bi bi-wallet2 text-brand me-2"></i>Libro Mayor de Cuotas & Conciliación</h4>
-                <p class="text-secondary small mb-0">Control de ingresos, verificación de transferencias, saldos por filial y emisión de recibos oficiales.</p>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-wallet2 text-brand me-2"></i>Panel Directiva de Control de Cuotas & Verificación</h4>
+                <p class="text-secondary small mb-0">Gestión unificada de fraternos, asignación y ajuste de cuotas, cobros únicos y validación de transferencias Oruro 2027.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-warning rounded-3" onclick="window.Pagos.openCobroUnicoModal()">
+                    <i class="bi bi-star-fill text-warning me-1"></i> Asignar Cobro Único
+                </button>
                 <button class="btn btn-brand-subtle rounded-3" onclick="window.Pagos.exportPaymentsCSV()">
                     <i class="bi bi-download me-1"></i> Exportar CSV
                 </button>
@@ -1329,6 +1333,27 @@
             </div>
         </div>
 
+        <!-- Banner de Alerta para Vouchers Pendientes -->
+        <div id="ctrlVouchersAlertBanner" class="alert alert-warning border border-warning border-opacity-50 rounded-4 p-3 mb-4 d-none shadow-sm align-items-center justify-content-between flex-wrap gap-2 animate__animated animate__fadeIn">
+            <div class="d-flex align-items-center gap-2">
+                <div class="p-2 bg-warning bg-opacity-25 rounded-circle text-dark">
+                    <i class="bi bi-clock-history fs-5"></i>
+                </div>
+                <div>
+                    <strong class="text-dark d-block">Comprobantes Pendientes de Verificación</strong>
+                    <span class="small text-muted">Hay <strong id="ctrlBannerVoucherCount" class="text-dark">0</strong> comprobantes enviados por fraternos esperando aprobación de Tesorería.</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-warning text-dark fw-bold btn-sm rounded-pill px-3" onclick="document.getElementById('tab-control-vouchers-btn').click()">
+                    <i class="bi bi-patch-check-fill me-1"></i> Ir a Bandeja de Verificación &rarr;
+                </button>
+                <button type="button" class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="window.Pagos.confirmAllVouchersInBatch()">
+                    <i class="bi bi-check-all me-1"></i> Aprobar Todos en Lote
+                </button>
+            </div>
+        </div>
+
         <!-- Resumen de Recaudación por Filial Oficial -->
         <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-4 shadow-sm">
             <h6 class="fw-bold text-dark text-uppercase small letter-spacing-1 mb-2">
@@ -1340,38 +1365,43 @@
         <!-- Nav Pills Pestañas Directiva -->
         <ul class="nav nav-pills nav-pills-portal mb-4" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab-control-pagos-btn" data-bs-toggle="pill" data-bs-target="#tab-control-pagos-confirmados" type="button" role="tab">
-                    <i class="bi bi-journal-text me-1"></i> 1. Historial de Pagos Confirmados (Libro Mayor)
+                <button class="nav-link active" id="tab-control-fraternos-btn" data-bs-toggle="pill" data-bs-target="#tab-control-fraternos-cuotas" type="button" role="tab">
+                    <i class="bi bi-person-lines-fill me-1"></i> 1. Fraternos & Cuotas Asignadas
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-control-vouchers-btn" data-bs-toggle="pill" data-bs-target="#tab-control-vouchers-pendientes" type="button" role="tab">
-                    <i class="bi bi-clock-history me-1"></i> 2. Vouchers Pendientes por Verificar
+                    <i class="bi bi-patch-check-fill me-1"></i> 2. Bandeja de Verificación <span class="badge bg-danger text-white rounded-pill ms-1" id="tabVouchersBadge" style="display:none;">0</span>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-control-cuotas-btn" data-bs-toggle="pill" data-bs-target="#tab-control-cuotas-definidas" type="button" role="tab">
-                    <i class="bi bi-tags me-1"></i> 3. Gestión de Cuotas y Tarifas Oruro 2027
+                    <i class="bi bi-tags me-1"></i> 3. Catálogo de Cuotas (Nombres & Parámetros)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-control-pagos-btn" data-bs-toggle="pill" data-bs-target="#tab-control-pagos-confirmados" type="button" role="tab">
+                    <i class="bi bi-journal-text me-1"></i> 4. Libro Mayor & Conciliación
                 </button>
             </li>
         </ul>
 
         <div class="tab-content">
-            <!-- Pestaña 1: Historial Confirmado con Multi-Filtros -->
-            <div class="tab-pane fade show active" id="tab-control-pagos-confirmados" role="tabpanel">
+            <!-- Pestaña 1: Control de Fraternos y Cuotas Asignadas (Panel Principal Directiva) -->
+            <div class="tab-pane fade show active" id="tab-control-fraternos-cuotas" role="tabpanel">
                 <div class="card bg-surface-1 border border-subtle rounded-4 p-4 shadow-sm">
-                    <!-- Barra de Filtros Avanzada -->
+                    <!-- Barra de Filtros Avanzada de Fraternos y Cuotas -->
                     <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
                         <div class="row g-2 align-items-center">
                             <div class="col-md-3">
                                 <div class="input-wrapper-portal py-1 px-3">
                                     <i class="bi bi-search text-brand"></i>
-                                    <input type="text" id="ctrlPaymentsFilterSearch" class="form-control-portal py-1 small" placeholder="Buscar por CI, Nombre o Recibo..." oninput="window.Pagos.controlPaymentsFilter.search = this.value; window.Pagos.renderControlPaymentsTable();">
+                                    <input type="text" id="ctrlFraternosSearchInput" class="form-control-portal py-1 small" placeholder="Buscar por CI o Nombre..." oninput="window.Pagos.controlFraternosFilter.search = this.value; window.Pagos.renderControlFraternosCuotasTable();">
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <select id="ctrlPaymentsFilterFilial" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.filial = this.value; window.Pagos.renderControlPaymentsTable();">
-                                    <option value="all">-- Todas las Filiales --</option>
+                                <select id="ctrlFraternosFilialSelect" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlFraternosFilter.filial = this.value; window.Pagos.renderControlFraternosCuotasTable();">
+                                    <option value="all">-- Filial --</option>
                                     <option value="matriz_lp">Matriz (La Paz)</option>
                                     <option value="cochabamba">Cochabamba</option>
                                     <option value="santa_cruz">Santa Cruz</option>
@@ -1381,42 +1411,81 @@
                                     <option value="estados_unidos">Estados Unidos</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <select id="ctrlPaymentsFilterCuota" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.cuota = this.value; window.Pagos.renderControlPaymentsTable();">
-                                    <option value="all">-- Todas las Cuotas --</option>
+                            <div class="col-md-2">
+                                <select id="ctrlFraternosRolSelect" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlFraternosFilter.rol = this.value; window.Pagos.renderControlFraternosCuotasTable();">
+                                    <option value="all">-- Rol --</option>
+                                    <option value="Fraterno Titular">Fraterno Titular</option>
+                                    <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                    <option value="Guía de Fila">Guía de Fila</option>
+                                    <option value="Fundador Honorario">Fundador Honorario</option>
+                                    <option value="Directiva">Directiva</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <select id="ctrlPaymentsFilterMetodo" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.metodo = this.value; window.Pagos.renderControlPaymentsTable();">
-                                    <option value="all">-- Todo Método --</option>
-                                    <option value="QR">QR Banco / Simple</option>
-                                    <option value="Transferencia">Transferencia</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                    <option value="Depósito">Depósito</option>
+                                <select id="ctrlFraternosEstadoSelect" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlFraternosFilter.estado = this.value; window.Pagos.renderControlFraternosCuotasTable();">
+                                    <option value="all">-- Estado Cuota --</option>
+                                    <option value="al_dia">Al Día (100% Cubierto)</option>
+                                    <option value="con_saldo">Con Saldo Pendiente</option>
+                                    <option value="con_voucher">En Verificación (Voucher)</option>
+                                    <option value="con_cobro_unico">Con Cobro Único Asignado</option>
                                 </select>
                             </div>
-                            <div class="col-md-2 text-end">
-                                <span class="badge bg-brand text-dark px-2 py-2 rounded-pill font-mono small">
-                                    <span id="ctrlPaymentsFilterCount">0</span> pagos &bull; <span id="ctrlPaymentsFilterTotal">Bs. 0</span>
-                                </span>
+                            <div class="col-md-3">
+                                <select id="ctrlFraternosCuotaSelect" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlFraternosFilter.cuota = this.value; window.Pagos.renderControlFraternosCuotasTable();">
+                                    <option value="all">-- Todas las Cuotas --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2 pt-2 border-top border-subtle">
+                            <div class="small text-muted">
+                                Fraternos visibles: <strong id="ctrlFraternosFilterCount" class="text-dark">0</strong> &bull; Saldo pendiente filtrado: <strong id="ctrlFraternosFilterTotalSaldo" class="text-danger">Bs. 0</strong>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-brand btn-sm rounded-pill px-3" onclick="window.Pagos.openCobroUnicoModal()">
+                                    <i class="bi bi-star-fill text-warning me-1"></i> Asignar Cobro Único
+                                </button>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Barra de Acciones Masivas por Selección Múltiple -->
+                    <div id="ctrlFraternosBatchBar" class="batch-actions-bar p-3 mb-3 d-none rounded-4 d-flex justify-content-between align-items-center flex-wrap gap-2 shadow animate__animated animate__fadeIn">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold fs-6">
+                                <i class="bi bi-check2-all me-1"></i> <span id="ctrlBatchSelectedCount">0</span> seleccionados
+                            </span>
+                            <span class="small text-white-50 d-none d-md-inline">Acciones en lote para fraternos filtrados:</span>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-light btn-sm rounded-pill fw-semibold shadow-sm" onclick="window.Pagos.openBatchCuotasModal()">
+                                <i class="bi bi-layers-half text-brand me-1"></i> Modificar Cuotas en Lote
+                            </button>
+                            <button type="button" class="btn btn-warning text-dark btn-sm rounded-pill fw-semibold shadow-sm" onclick="window.Pagos.openCobroUnicoModal(null)">
+                                <i class="bi bi-star-fill me-1"></i> Asignar Cobro Único a Seleccionados
+                            </button>
+                            <button type="button" class="btn btn-outline-light btn-sm rounded-pill" onclick="window.Pagos.clearFraternoSelection()">
+                                <i class="bi bi-x-circle me-1"></i> Deseleccionar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Fraternos y Cuotas Asignadas -->
                     <div class="table-responsive">
-                        <table class="table-minimal">
+                        <table class="table-minimal table-fraternos-cuotas">
                             <thead>
                                 <tr>
-                                    <th>Nro Recibo</th>
-                                    <th>Fraterno / CI</th>
-                                    <th>Concepto</th>
-                                    <th>Monto</th>
-                                    <th>Fecha</th>
-                                    <th>Forma de Pago</th>
-                                    <th class="text-end">Comprobante</th>
+                                    <th class="col-select text-center">
+                                        <input type="checkbox" class="form-check-input" id="cbSelectAllFraternos" onchange="window.Pagos.toggleSelectAllVisibleFraternos(this.checked)" title="Seleccionar todos los fraternos visibles">
+                                    </th>
+                                    <th class="col-fraterno">Fraterno / CI</th>
+                                    <th class="col-filial">Filial & Rol</th>
+                                    <th class="col-cuotas">Cuotas Asignadas & Detalle</th>
+                                    <th class="col-finanzas">Resumen Financiero</th>
+                                    <th class="col-estado text-center">Estado General</th>
+                                    <th class="col-acciones text-end">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="controlPaymentsTableBody"></tbody>
+                            <tbody id="controlFraternosTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1480,6 +1549,71 @@
                                 </tr>
                             </thead>
                             <tbody id="controlCuotasTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña 4: Historial Confirmado con Multi-Filtros (Libro Mayor) -->
+            <div class="tab-pane fade" id="tab-control-pagos-confirmados" role="tabpanel">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4 shadow-sm">
+                    <!-- Barra de Filtros Avanzada -->
+                    <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-3">
+                                <div class="input-wrapper-portal py-1 px-3">
+                                    <i class="bi bi-search text-brand"></i>
+                                    <input type="text" id="ctrlPaymentsFilterSearch" class="form-control-portal py-1 small" placeholder="Buscar por CI, Nombre o Recibo..." oninput="window.Pagos.controlPaymentsFilter.search = this.value; window.Pagos.renderControlPaymentsTable();">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <select id="ctrlPaymentsFilterFilial" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.filial = this.value; window.Pagos.renderControlPaymentsTable();">
+                                    <option value="all">-- Todas las Filiales --</option>
+                                    <option value="matriz_lp">Matriz (La Paz)</option>
+                                    <option value="cochabamba">Cochabamba</option>
+                                    <option value="santa_cruz">Santa Cruz</option>
+                                    <option value="peru">Perú</option>
+                                    <option value="chile">Chile</option>
+                                    <option value="europa">Europa</option>
+                                    <option value="estados_unidos">Estados Unidos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="ctrlPaymentsFilterCuota" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.cuota = this.value; window.Pagos.renderControlPaymentsTable();">
+                                    <option value="all">-- Todas las Cuotas --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select id="ctrlPaymentsFilterMetodo" class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" onchange="window.Pagos.controlPaymentsFilter.metodo = this.value; window.Pagos.renderControlPaymentsTable();">
+                                    <option value="all">-- Todo Método --</option>
+                                    <option value="QR">QR Banco / Simple</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Depósito">Depósito</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <span class="badge bg-brand text-dark px-2 py-2 rounded-pill font-mono small">
+                                    <span id="ctrlPaymentsFilterCount">0</span> pagos &bull; <span id="ctrlPaymentsFilterTotal">Bs. 0</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>Nro Recibo</th>
+                                    <th>Fraterno / CI</th>
+                                    <th>Concepto</th>
+                                    <th>Monto</th>
+                                    <th>Fecha</th>
+                                    <th>Forma de Pago</th>
+                                    <th class="text-end">Comprobante</th>
+                                </tr>
+                            </thead>
+                            <tbody id="controlPaymentsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1979,7 +2113,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-outline-brand btn-sm rounded-3" onclick="window.Miembros.openCuotasFromKardex()" title="Gestionar cuotas asignadas y cobros únicos">
+                                <i class="bi bi-wallet2 me-1"></i> Cuotas Asignadas
+                            </button>
                             <button type="button" class="btn btn-outline-warning text-dark btn-sm rounded-3" onclick="window.Miembros.openEditFromKardex()" title="Editar todos los datos del fraterno">
                                 <i class="bi bi-pencil-square me-1"></i> Editar Fraterno
                             </button>
@@ -2485,7 +2622,7 @@
                                 <label class="form-label small fw-semibold text-secondary">Monto Exigido (Bs.) <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-surface-2 border-subtle text-dark fw-bold">Bs.</span>
-                                    <input type="number" min="1" step="5" class="form-control bg-surface-2 text-dark border-subtle rounded-end-3 fw-bold" id="cuotaEditMonto" value="200" required>
+                                    <input type="number" min="0" step="any" class="form-control bg-surface-2 text-dark border-subtle rounded-end-3 fw-bold" id="cuotaEditMonto" value="200" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -2517,6 +2654,301 @@
                         <button type="button" class="btn btn-brand-subtle rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-portal-primary rounded-pill px-4" style="width: auto;">
                             <i class="bi bi-check-lg me-1"></i> Guardar Cuota
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 11: EDITAR FRATERNO & CUOTAS ASIGNADAS (DIRECTIVA) -->
+    <div class="modal fade" id="modalEditFraternoCuotas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-person-gear text-brand me-2"></i>Editar Fraterno & Cuotas Asignadas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formEditFraternoCuotas" onsubmit="window.Pagos.saveEditFraternoCuotas(event)">
+                    <div class="modal-body p-4">
+                        <!-- Sección 1: Información General del Fraterno -->
+                        <h6 class="fw-bold text-brand small text-uppercase letter-spacing-1 mb-2"><i class="bi bi-person-badge me-1"></i> 1. Información General del Fraterno</h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Nombres <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoNombres" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Apellidos <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoApellidos" required>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-secondary mb-1">CI (Identificador)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-surface-2 text-muted border-subtle rounded-start-3 font-mono fw-bold" id="editFraternoCI" readonly>
+                                    <span class="input-group-text bg-surface-2 border-subtle text-muted" id="editFraternoExp">LP</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Teléfono</label>
+                                <input type="tel" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoTelefono">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Filial Oficial</label>
+                                <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoFilial">
+                                    <option value="matriz_lp">Matriz (La Paz)</option>
+                                    <option value="cochabamba">Cochabamba</option>
+                                    <option value="santa_cruz">Santa Cruz</option>
+                                    <option value="peru">Perú</option>
+                                    <option value="chile">Chile</option>
+                                    <option value="europa">Europa</option>
+                                    <option value="estados_unidos">Estados Unidos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Rol Fraternal</label>
+                                <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoRol">
+                                    <option value="Fraterno Titular">Fraterno Titular</option>
+                                    <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                    <option value="Guía de Fila">Guía de Fila</option>
+                                    <option value="Fundador Honorario">Fundador Honorario</option>
+                                    <option value="Directiva">Directiva</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Estado de Membresía</label>
+                                <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="editFraternoEstado">
+                                    <option value="activo">Activo</option>
+                                    <option value="licencia">Con Licencia</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Sección 2: Cuotas Asignadas y Tarifas Personalizadas -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                            <h6 class="fw-bold text-brand small text-uppercase letter-spacing-1 mb-0"><i class="bi bi-wallet2 me-1"></i> 2. Cuotas Asignadas & Tarifas Personalizadas</h6>
+                            <span class="badge bg-brand-subtle text-brand small">Personalización Individual</span>
+                        </div>
+                        <p class="text-secondary small mb-2">Marca las cuotas exigidas a este fraterno o ajusta el monto exigido (descuentos o exoneraciones especiales autorizadas).</p>
+                        <div class="table-responsive bg-surface-2 p-2 rounded-3 border border-subtle mb-3">
+                            <table class="table-minimal small mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width: 50px;">Asignada</th>
+                                        <th>Concepto / Cuota</th>
+                                        <th>Catálogo</th>
+                                        <th>Monto Asignado (Bs.)</th>
+                                        <th>Estado de Pago</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="editFraternoCuotasTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Sección 3: Cobros Únicos Asignados -->
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                            <h6 class="fw-bold text-brand small text-uppercase letter-spacing-1 mb-0"><i class="bi bi-star-fill text-warning me-1"></i> 3. Cobros Únicos Extraordinarios</h6>
+                            <button type="button" class="btn btn-sm btn-outline-brand rounded-pill px-3" onclick="window.Pagos.openCobroUnicoModal(window.Pagos.activeEditingCI)">
+                                <i class="bi bi-plus-lg me-1"></i> + Asignar Cobro Único
+                            </button>
+                        </div>
+                        <div id="editFraternoCobrosUnicosContainer"></div>
+                    </div>
+                    <div class="modal-footer border-subtle bg-surface-2">
+                        <button type="button" class="btn btn-brand-subtle rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-portal-primary rounded-pill px-4" style="width: auto;">
+                            <i class="bi bi-check-lg me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 12: ASIGNAR COBRO ÚNICO / EXTRAORDINARIO (DIRECTIVA) -->
+    <div class="modal fade" id="modalCobroUnico" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-star-fill text-warning me-2"></i>Asignar Cobro Único / Extraordinario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formCobroUnico" onsubmit="window.Pagos.saveCobroUnico(event)">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Concepto o Título del Cobro Único <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="cobroUnicoTitle" required placeholder="Ej: Polera Oficial de Confraternización 2027">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Monto (Bs.) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-surface-2 border-subtle text-dark fw-bold">Bs.</span>
+                                    <input type="number" min="0" step="any" class="form-control bg-surface-2 text-dark border-subtle rounded-end-3 fw-bold" id="cobroUnicoMonto" required value="100">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Fecha Límite</label>
+                                <input type="date" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="cobroUnicoVencimiento" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Categoría del Cobro</label>
+                            <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="cobroUnicoCategoria">
+                                <option value="Cobro Único">Cobro Único General</option>
+                                <option value="Indumentaria Extra">Indumentaria Extra / Polera</option>
+                                <option value="Transporte & Viaje">Transporte & Logística Convite</option>
+                                <option value="Multa / Sanción">Multa / Inasistencia Ensayo</option>
+                                <option value="Extraordinario">Aporte Extraordinario</option>
+                            </select>
+                        </div>
+
+                        <!-- Selección de Destinatarios -->
+                        <div class="p-3 bg-surface-2 rounded-3 border border-subtle mb-3">
+                            <label class="form-label small fw-bold text-dark mb-2"><i class="bi bi-people-fill text-brand me-1"></i> Asignar Destinatarios:</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="cobroUnicoTargetType" id="targetTypeSelected" value="selected" onchange="window.Pagos.updateCobroUnicoTargetUI()">
+                                <label class="form-check-label small fw-semibold text-dark" for="targetTypeSelected">
+                                    Fraternos seleccionados en tabla (<span id="targetSelectedCountBadge" class="fw-bold text-brand">0</span> seleccionados)
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="cobroUnicoTargetType" id="targetTypeSingle" value="single" checked onchange="window.Pagos.updateCobroUnicoTargetUI()">
+                                <label class="form-check-label small fw-semibold text-dark" for="targetTypeSingle">
+                                    Fraterno Individual Específico
+                                </label>
+                            </div>
+                            <div id="cobroUnicoSingleSelectWrapper" class="mt-2">
+                                <select class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" id="cobroUnicoSingleMemberSelect"></select>
+                            </div>
+                            <div class="form-check mt-2 mb-1">
+                                <input class="form-check-input" type="radio" name="cobroUnicoTargetType" id="targetTypeFilter" value="filter" onchange="window.Pagos.updateCobroUnicoTargetUI()">
+                                <label class="form-check-label small fw-semibold text-dark" for="targetTypeFilter">
+                                    Masivo por Filial o Rol
+                                </label>
+                            </div>
+                            <div id="cobroUnicoFilterSelectWrapper" class="mt-2 row g-2 d-none">
+                                <div class="col-6">
+                                    <select class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" id="cobroUnicoFilterFilial">
+                                        <option value="all">Todas las Filiales</option>
+                                        <option value="matriz_lp">Matriz (La Paz)</option>
+                                        <option value="cochabamba">Cochabamba</option>
+                                        <option value="santa_cruz">Santa Cruz</option>
+                                        <option value="peru">Perú</option>
+                                        <option value="chile">Chile</option>
+                                        <option value="europa">Europa</option>
+                                        <option value="estados_unidos">Estados Unidos</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <select class="form-select bg-surface-1 text-dark border-subtle rounded-3 small" id="cobroUnicoFilterRol">
+                                        <option value="all">Todos los Roles</option>
+                                        <option value="Fraterno Titular">Fraterno Titular</option>
+                                        <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                                        <option value="Guía de Fila">Guía de Fila</option>
+                                        <option value="Fundador Honorario">Fundador Honorario</option>
+                                        <option value="Directiva">Directiva</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Observaciones o Justificación (Opcional)</label>
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3 small" id="cobroUnicoObservacion" placeholder="Ej: Aprobado en asamblea extraordinaria de directiva">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-subtle bg-surface-2">
+                        <button type="button" class="btn btn-brand-subtle rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-portal-primary rounded-pill px-4" style="width: auto;">
+                            <i class="bi bi-check-lg me-1"></i> Asignar Cobro Único
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 13: MODIFICACIÓN DE CUOTAS POR SELECCIÓN MÚLTIPLE (DIRECTIVA) -->
+    <div class="modal fade" id="modalBatchCuotas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-layers-half text-brand me-2"></i>Modificar Cuotas por Selección Múltiple</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formBatchCuotas" onsubmit="window.Pagos.applyBatchCuotas(event)">
+                    <div class="modal-body p-4">
+                        <div class="alert alert-info bg-brand-subtle border-brand border-opacity-25 rounded-3 p-3 mb-3 small text-dark">
+                            <div class="fw-bold mb-1"><i class="bi bi-people-fill text-brand me-1"></i> Fraternos Seleccionados: <span id="batchModalCount">0</span></div>
+                            <div id="batchModalChipsPreview" class="d-flex flex-wrap gap-1 mt-1" style="max-height: 80px; overflow-y: auto;"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Operación en Lote <span class="text-danger">*</span></label>
+                            <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="batchCuotaAction" onchange="window.Pagos.updateBatchActionUI()" required>
+                                <option value="assign_cuota">Asignar una cuota del catálogo a todos los seleccionados</option>
+                                <option value="unassign_cuota">Exonerar / Quitar cuota de todos los seleccionados</option>
+                                <option value="adjust_monto">Ajustar tarifa exigida de la cuota para los seleccionados</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Cuota del Catálogo <span class="text-danger">*</span></label>
+                            <select class="form-select bg-surface-2 text-dark border-subtle rounded-3" id="batchCuotaSelect" required></select>
+                        </div>
+
+                        <div id="batchMontoWrapper" class="mb-3 d-none">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Nueva Tarifa Exigida (Bs.) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-surface-2 border-subtle text-dark fw-bold">Bs.</span>
+                                <input type="number" min="0" step="any" class="form-control bg-surface-2 text-dark border-subtle rounded-end-3 fw-bold" id="batchCuotaMonto" placeholder="Ej: 200">
+                            </div>
+                            <span class="form-text small text-muted">Aplica este monto preferencial exclusivamente a los fraternos seleccionados.</span>
+                        </div>
+
+                        <div id="batchMotivoWrapper" class="mb-3 d-none">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Motivo de Exoneración</label>
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3 small" id="batchCuotaMotivo" placeholder="Ej: Exención autorizada / Filial internacional">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-subtle bg-surface-2">
+                        <button type="button" class="btn btn-brand-subtle rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-portal-primary rounded-pill px-4" style="width: auto;">
+                            <i class="bi bi-check-lg me-1"></i> Aplicar a los Seleccionados
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 14: CAMBIAR NOMBRE DE CUOTA (DIRECTIVA) -->
+    <div class="modal fade" id="modalRenameCuota" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-surface-1 border border-subtle rounded-4 text-dark shadow-lg">
+                <div class="modal-header border-subtle bg-surface-2">
+                    <h5 class="modal-title fw-bold text-dark"><i class="bi bi-fonts text-brand me-2"></i>Cambiar Nombre de Cuota</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formRenameCuota" onsubmit="window.Pagos.saveQuickRenameCuota(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="renameCuotaId" value="">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Nuevo Título o Concepto Oficial <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-surface-2 text-dark border-subtle rounded-3" id="renameCuotaNewTitle" required placeholder="Ej: Inscripción Oficial Carnaval Oruro 2027">
+                            <span class="form-text small text-muted">El cambio de nombre se propagará en tiempo real al padrón, recibos emitidos y reportes contables.</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-subtle bg-surface-2">
+                        <button type="button" class="btn btn-brand-subtle rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-portal-primary rounded-pill px-4" style="width: auto;">
+                            <i class="bi bi-check-lg me-1"></i> Guardar Nombre
                         </button>
                     </div>
                 </form>
