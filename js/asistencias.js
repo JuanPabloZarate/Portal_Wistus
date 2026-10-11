@@ -770,16 +770,28 @@ class AsistenciasManager {
                 aspectRatio: 1.0
             };
 
-            await this.html5QrScanner.start(
-                { facingMode: this.currentCameraFacing },
-                config,
-                (decodedText) => {
-                    this.handleDecodedQRCode(decodedText);
-                },
-                (errorMessage) => {
-                    // Errores menores de parseo continuo ignorados
-                }
-            );
+            try {
+                await this.html5QrScanner.start(
+                    { facingMode: this.currentCameraFacing },
+                    config,
+                    (decodedText) => {
+                        this.handleDecodedQRCode(decodedText);
+                    },
+                    (errorMessage) => {
+                        // Errores menores de parseo continuo ignorados
+                    }
+                );
+            } catch (camModeErr) {
+                console.warn('Reintentando con cámara alternativa...', camModeErr);
+                await this.html5QrScanner.start(
+                    { facingMode: "user" },
+                    config,
+                    (decodedText) => {
+                        this.handleDecodedQRCode(decodedText);
+                    },
+                    (errorMessage) => {}
+                );
+            }
 
             this.isCameraScanning = true;
             this.isPausedForConfirmation = false;

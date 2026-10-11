@@ -1041,6 +1041,13 @@ body {
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
 }
 
+#qrCameraReader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: var(--radius-lg);
+}
+
 .scanner-laser {
     position: absolute;
     width: 100%;
