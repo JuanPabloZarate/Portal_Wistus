@@ -18,6 +18,7 @@ class MiembrosManager {
             const session = window.PortalState.getSession();
             if (session) {
                 if (session.role === 'control') this.renderControlDirectory();
+                if (session.role === 'directiva') this.renderDirectivaDirectory();
                 if (session.role === 'miembro') this.renderMemberProfile();
             }
         });
@@ -185,6 +186,194 @@ class MiembrosManager {
         container.innerHTML = html;
     }
 
+    // --- PADRÓN INSTITUCIONAL (ROL DIRECTIVA GENERAL - DESACOPLADO & CERO FINANCIERO) ---
+    renderDirectivaDirectory() {
+        const container = document.getElementById('directivaDirectoryTableBody');
+        if (!container) return;
+
+        const members = window.PortalState ? window.PortalState.getMembers() : [];
+        const totalEvents = (window.PortalState && window.PortalState.getEvents) ? window.PortalState.getEvents().length : 0;
+
+        // Distribución por filiales oficiales
+        const filialCounts = {};
+        members.forEach(m => {
+            if (m.estado_fraterno === 'eliminado') return;
+            const fid = m.filial_id || 'matriz_lp';
+            if (!filialCounts[fid]) {
+                filialCounts[fid] = { id: fid, name: m.filial_nombre || fid, count: 0 };
+            }
+            filialCounts[fid].count++;
+        });
+
+        const badgesContainer = document.getElementById('distDirectivaFilialesBadgesContainer');
+        if (badgesContainer) {
+            let fHtml = '';
+            Object.values(filialCounts).forEach(f => {
+                fHtml += `
+                    <span class="badge bg-surface-2 border border-subtle text-dark p-2 d-inline-flex align-items-center gap-1 rounded-3">
+                        <i class="bi bi-geo-alt text-brand"></i>
+                        <span class="fw-semibold">${f.name}:</span>
+                        <span class="badge bg-brand text-white ms-1">${f.count}</span>
+                    </span>
+                `;
+            });
+            badgesContainer.innerHTML = fHtml;
+        }
+
+        const badgeTotal = document.getElementById('distDirectivaFilialesCountBadge');
+        if (badgeTotal) badgeTotal.textContent = `${Object.keys(filialCounts).length} Filiales Oficiales`;
+
+        // Leer filtros independientes
+        const searchInput = document.getElementById('searchDirectivaMember');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        const filterFilialEl = document.getElementById('filterDirectivaFilial');
+        const selectedFilial = filterFilialEl ? filterFilialEl.value : 'all';
+
+        const filterRolEl = document.getElementById('filterDirectivaRol');
+        const selectedRol = filterRolEl ? filterRolEl.value : 'all';
+
+        const filterEstadoEl = document.getElementById('filterDirectivaEstado');
+        const selectedEstado = filterEstadoEl ? filterEstadoEl.value : 'all';
+
+        // Filtrar fraternos
+        const filtered = members.filter(m => {
+            if (m.estado_fraterno === 'eliminado') return false;
+
+            const fullName = `${m.nombres || ''} ${m.apellidos || ''}`.toLowerCase();
+            const ciStr = String(m.ci || '');
+            const fName = String(m.filial_nombre || '').toLowerCase();
+            const rName = String(m.rol_fraternal || '').toLowerCase();
+
+            const matchesSearch = !searchTerm ||
+                ciStr.includes(searchTerm) ||
+                fullName.includes(searchTerm) ||
+                fName.includes(searchTerm) ||
+                rName.includes(searchTerm);
+
+            let matchesFilial = selectedFilial === 'all' || m.filial_id === selectedFilial;
+            let matchesRol = selectedRol === 'all' || m.rol_fraternal === selectedRol;
+            let matchesEstado = selectedEstado === 'all' || 
+                (selectedEstado === 'activo' && m.estado_fraterno !== 'inactivo') ||
+                (selectedEstado === 'inactivo' && m.estado_fraterno === 'inactivo');
+
+            return matchesSearch && matchesFilial && matchesRol && matchesEstado;
+        });
+
+        const totalEl = document.getElementById('dirDirectivaCountTotal');
+        if (totalEl) totalEl.textContent = filtered.length;
+
+        let html = '';
+        filtered.forEach(m => {
+            let attended = 0;
+            if (m.asistencias) {
+                Object.values(m.asistencias).forEach(a => {
+                    if (a.estado === 'presente') attended++;
+                });
+            }
+            const attPct = totalEvents > 0 ? Math.round((attended / totalEvents) * 100) : 0;
+            const isActivo = m.estado_fraterno !== 'inactivo';
+
+            html += `
+            <tr class="align-middle">
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="${m.foto || 'assets/img/avatar-default.svg'}" class="rounded-circle border border-brand" width="40" height="40" alt="Foto">
+                        <div>
+                            <div class="fw-bold text-dark">${m.nombres} ${m.apellidos}</div>
+                            <div class="small text-secondary">${m.telefono || 'Sin teléfono'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="fw-bold text-brand font-monospace">${m.ci} ${m.ci_exp || 'LP'}</span>
+                </td>
+                <td>
+                    <span class="badge bg-surface-2 text-dark border border-subtle fw-semibold">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>${m.filial_nombre || 'Matriz (La Paz)'}
+                    </span>
+                </td>
+                <td>
+                    <div class="small text-dark fw-semibold">${m.rol_fraternal || 'Fraterno Titular'}</div>
+                    <div class="text-muted" style="font-size:0.75rem;">${m.antiguedad_anios || 1} años</div>
+                </td>
+                <td>
+                    <span class="small font-mono text-secondary">${m.telefono || 'Sin teléfono'}</span>
+                </td>
+                <td>
+                    <span class="badge ${isActivo ? 'bg-success-subtle text-success border border-success border-opacity-25' : 'bg-secondary-subtle text-secondary'} rounded-pill px-2.5 py-1 small">
+                        ${isActivo ? '<i class="bi bi-check-circle-fill me-1"></i>Activo' : '<i class="bi bi-dash-circle me-1"></i>Inactivo'}
+                    </span>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1" style="height: 6px; width: 60px; background: #e2e8f0;">
+                            <div class="progress-bar ${attPct >= 75 ? 'bg-success' : 'bg-brand'}" style="width: ${attPct}%"></div>
+                        </div>
+                        <span class="small text-primary fw-bold">${attPct}%</span>
+                    </div>
+                </td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="window.Miembros.viewMemberDetails('${m.ci}')" title="Ver Ficha y Datos Institucionales">
+                            <i class="bi bi-person-vcard"></i> Ficha
+                        </button>
+                        <button class="btn btn-outline-warning text-dark" onclick="window.Miembros.openEditMemberModal('${m.ci}')" title="Editar Fraterno">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+
+        if (filtered.length === 0) {
+            html = '<tr><td colspan="8" class="text-center py-4 text-muted">No se encontraron fraternos registrados en el padrón institucional con este criterio de filtro.</td></tr>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    exportDirectivaDirectoryCSV() {
+        const members = window.PortalState ? window.PortalState.getMembers() : [];
+        const totalEvents = (window.PortalState && window.PortalState.getEvents) ? window.PortalState.getEvents().length : 0;
+
+        let csv = 'CI,Expedido,Nombres,Apellidos,Filial,Rol Fraternal,Antiguedad,Telefono,Email,Estado,Asistencia_Pct\n';
+        members.forEach(m => {
+            if (m.estado_fraterno === 'eliminado') return;
+            let attended = 0;
+            if (m.asistencias) {
+                Object.values(m.asistencias).forEach(a => {
+                    if (a.estado === 'presente') attended++;
+                });
+            }
+            const attPct = totalEvents > 0 ? Math.round((attended / totalEvents) * 100) : 0;
+            const row = [
+                `"${m.ci}"`,
+                `"${m.ci_exp || 'LP'}"`,
+                `"${(m.nombres || '').replace(/"/g, '""')}"`,
+                `"${(m.apellidos || '').replace(/"/g, '""')}"`,
+                `"${m.filial_nombre || 'Matriz (La Paz)'}"`,
+                `"${m.rol_fraternal || 'Fraterno Titular'}"`,
+                `"${m.antiguedad_anios || 1}"`,
+                `"${m.telefono || ''}"`,
+                `"${m.email || ''}"`,
+                `"${m.estado_fraterno || 'activo'}"`,
+                `"${attPct}%"`
+            ];
+            csv += row.join(',') + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `padron_institucional_wistus_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     openMemberKardex(ci) {
         return this.viewMemberDetails(ci);
     }
@@ -214,6 +403,35 @@ class MiembrosManager {
         const editFilial = document.getElementById('kardexEditFilial');
         if (editFilial) editFilial.value = member.filial_id || 'matriz_lp';
 
+        // Visibilidad según rol (directiva institucional no ve cuotas ni pagos, ni puede dar de baja)
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        const isDirectiva = session && session.role === 'directiva';
+
+        const btnCuotas = document.getElementById('btnKardexCuotas');
+        const btnDelete = document.getElementById('btnKardexDelete');
+        const pagosCol = document.getElementById('kardexPagosCol');
+        const asistCol = document.getElementById('kardexAsistenciasCol');
+
+        if (btnCuotas) {
+            if (isDirectiva) btnCuotas.classList.add('d-none');
+            else btnCuotas.classList.remove('d-none');
+        }
+
+        if (btnDelete) {
+            if (isDirectiva) btnDelete.classList.add('d-none');
+            else btnDelete.classList.remove('d-none');
+        }
+
+        if (pagosCol) {
+            if (isDirectiva) {
+                pagosCol.classList.add('d-none');
+                if (asistCol) asistCol.className = 'col-12';
+            } else {
+                pagosCol.classList.remove('d-none');
+                if (asistCol) asistCol.className = 'col-md-6';
+            }
+        }
+
         // Lista de asistencias
         const events = window.PortalState.getEvents();
         let attHtml = '';
@@ -229,21 +447,28 @@ class MiembrosManager {
         });
         document.getElementById('kardexAsistenciasList').innerHTML = attHtml;
 
-        // Historial de pagos
-        let pagosHtml = '';
-        (member.pagos || []).forEach(p => {
-            pagosHtml += `<div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-25">
-                <div>
-                    <div class="fw-semibold text-dark small">${p.concepto}</div>
-                    <div class="text-secondary small">${p.fecha} &bull; ${p.nro_recibo}</div>
-                </div>
-                <span class="text-brand fw-bold">Bs. ${p.monto}</span>
-            </div>`;
-        });
-        if (!member.pagos || member.pagos.length === 0) {
-            pagosHtml = '<div class="text-muted small py-2">Sin pagos registrados.</div>';
+        // Historial de pagos (nunca inyectar datos financieros si la sesión es directiva)
+        const pagosContainer = document.getElementById('kardexPagosList');
+        if (pagosContainer) {
+            if (isDirectiva) {
+                pagosContainer.innerHTML = '';
+            } else {
+                let pagosHtml = '';
+                (member.pagos || []).forEach(p => {
+                    pagosHtml += `<div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <div class="fw-semibold text-dark small">${p.concepto}</div>
+                            <div class="text-secondary small">${p.fecha} &bull; ${p.nro_recibo}</div>
+                        </div>
+                        <span class="text-brand fw-bold">Bs. ${p.monto}</span>
+                    </div>`;
+                });
+                if (!member.pagos || member.pagos.length === 0) {
+                    pagosHtml = '<div class="text-muted small py-2">Sin pagos registrados.</div>';
+                }
+                pagosContainer.innerHTML = pagosHtml;
+            }
         }
-        document.getElementById('kardexPagosList').innerHTML = pagosHtml;
 
         const modalEl = document.getElementById('modalMemberKardex');
         if (modalEl && window.bootstrap) {
@@ -273,6 +498,9 @@ class MiembrosManager {
             if (elFilial) elFilial.textContent = filialNombre;
 
             this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             window.PortalApp.showToast(`¡Asignación oficial actualizada para ${updated.nombres}! Filial: ${filialNombre}`, 'success');
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
@@ -330,6 +558,10 @@ class MiembrosManager {
                 if (bsModal) bsModal.hide();
             }
 
+            this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             window.PortalApp.showToast(`¡Fraterno ${nombres} ${apellidos} registrado exitosamente en Filial ${filialNombre}!`);
         } catch (e) {
             window.PortalApp.showToast(e.message, 'danger');
@@ -341,6 +573,9 @@ class MiembrosManager {
         if (added > 0) {
             window.PortalApp.showToast(`¡Se generaron ${added} nuevos fraternos de prueba en el Padrón!`, 'success');
             this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
         } else {
             window.PortalApp.showToast('No se generaron nuevos fraternos.', 'info');
         }
@@ -409,8 +644,8 @@ class MiembrosManager {
 
     openEditMemberModal(ci) {
         const session = window.PortalState ? window.PortalState.getSession() : null;
-        if (!session || session.role !== 'control') {
-            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede editar la ficha completa de un fraterno.', 'danger');
+        if (!session || (session.role !== 'control' && session.role !== 'directiva')) {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Directiva puede editar la ficha de un fraterno.', 'danger');
             return;
         }
 
@@ -491,8 +726,8 @@ class MiembrosManager {
 
     submitEditMember() {
         const session = window.PortalState ? window.PortalState.getSession() : null;
-        if (!session || session.role !== 'control') {
-            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Mesa Directiva puede modificar datos oficiales.', 'danger');
+        if (!session || (session.role !== 'control' && session.role !== 'directiva')) {
+            if (window.PortalApp) window.PortalApp.showToast('Acceso restringido: Solo la Directiva puede modificar datos oficiales.', 'danger');
             return;
         }
 
@@ -559,6 +794,9 @@ class MiembrosManager {
             }
 
             this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             window.PortalApp.showToast(`¡Fraterno ${updated.nombres} ${updated.apellidos} actualizado exitosamente!`, 'success');
         } catch (err) {
             window.PortalApp.showToast(err.message, 'danger');
@@ -643,6 +881,9 @@ class MiembrosManager {
             }
 
             this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             window.PortalApp.showToast(`¡Fraterno ${removed.nombres} ${removed.apellidos} pasado a la Base de Eliminados!`, 'warning');
         } catch (err) {
             window.PortalApp.showToast(err.message, 'danger');
@@ -752,6 +993,9 @@ class MiembrosManager {
         try {
             const restored = window.PortalState.restoreMember(ci);
             this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             this.renderEliminadosTable();
             window.PortalApp.showToast(`¡Fraterno ${restored.nombres} ${restored.apellidos} restaurado con éxito al Padrón activo!`, 'success');
         } catch (err) {
@@ -772,6 +1016,10 @@ class MiembrosManager {
         const ok = window.PortalState.permanentlyDeleteEliminado(ci);
         if (ok) {
             this.renderEliminadosTable();
+            this.renderControlDirectory();
+            if (typeof this.renderDirectivaDirectory === 'function') this.renderDirectivaDirectory();
+            if (window.PortalApp && typeof window.PortalApp.renderDirectivaDashboard === 'function') window.PortalApp.renderDirectivaDashboard();
+            if (window.PortalApp && typeof window.PortalApp.renderControlDashboard === 'function') window.PortalApp.renderControlDashboard();
             const badgeEl = document.getElementById('badgeCountEliminados');
             if (badgeEl && window.PortalState.getEliminados) {
                 badgeEl.textContent = window.PortalState.getEliminados().length;

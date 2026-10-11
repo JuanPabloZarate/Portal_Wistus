@@ -124,6 +124,16 @@
                         </p>
                     </div>
 
+                    <!-- Chips de acceso rápido de prueba (Control / Directiva) -->
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-3 flex-wrap">
+                        <button type="button" class="btn btn-xs btn-outline-secondary btn-quick-admin rounded-pill px-2.5 py-1 small" data-user="admi" data-pass="admi123" title="Acceso de prueba: Mesa Directiva y Control">
+                            <i class="bi bi-shield-lock-fill text-primary me-1"></i>Control: admi / admi123
+                        </button>
+                        <button type="button" class="btn btn-xs btn-outline-secondary btn-quick-admin rounded-pill px-2.5 py-1 small" data-user="directiva" data-pass="directiva123" title="Acceso de prueba: Directiva General">
+                            <i class="bi bi-people-fill text-success me-1"></i>Directiva: directiva / directiva123
+                        </button>
+                    </div>
+
                     <form id="formLoginControl">
                         <div class="text-start mb-2">
                             <label for="inputControlUser" class="form-label small fw-bold text-secondary mb-1">
@@ -248,29 +258,56 @@
                     </a>
                 </div>
 
-                <!-- SECCIÓN ROL CONTROL / DIRECTIVA -->
+                <!-- SECCIÓN ROL DIRECTIVA GENERAL (GESTIÓN INSTITUCIONAL) -->
+                <div id="sidebarSectionDirectiva" class="d-none">
+                    <span class="sidebar-category-label">Módulo Gestión Fraternidad</span>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="directiva-dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard Institucional</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="directiva-directorio">
+                        <i class="bi bi-people"></i>
+                        <span>Padrón Institucional</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-asistencias">
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span>Control Asistencias</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-eventos">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Gestión Eventos</span>
+                    </a>
+                </div>
+
+                <!-- SECCIÓN ROL CONTROL / MESA DIRECTIVA -->
                 <div id="sidebarSectionControl" class="d-none">
-                    <span class="sidebar-category-label">Mesa Directiva</span>
+                    <span class="sidebar-category-label">Módulo Gestión Fraternidad</span>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-dashboard">
                         <i class="bi bi-bar-chart-line"></i>
                         <span>Métricas Globales</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="directiva-directorio">
+                        <i class="bi bi-people"></i>
+                        <span>Padrón Institucional</span>
                     </a>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-asistencias">
                         <i class="bi bi-qr-code-scan"></i>
                         <span>Terminal Asistencias</span>
                     </a>
+                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-eventos">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Gestión Eventos</span>
+                    </a>
+
+                    <span class="sidebar-category-label mt-2">Módulo Financiero</span>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-pagos">
                         <i class="bi bi-wallet2"></i>
                         <span>Directiva de Cuotas</span>
                         <span class="sidebar-badge bg-danger text-white" id="sidebarBadgeVouchers" style="display:none;">0</span>
                     </a>
                     <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-directorio">
-                        <i class="bi bi-people"></i>
+                        <i class="bi bi-cash-stack"></i>
                         <span>Cobros & Padrón</span>
-                    </a>
-                    <a href="#" class="sidebar-nav-item nav-link-subpage" data-subpage="control-eventos">
-                        <i class="bi bi-calendar-event"></i>
-                        <span>Gestión Eventos</span>
                     </a>
                 </div>
             </div>
@@ -896,11 +933,288 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VISTAS DE ROL CONTROL / DIRECTIVA                                         -->
+    <!-- VISTAS DE ROL DIRECTIVA GENERAL (MÓDULO GESTIÓN INSTITUCIONAL)             -->
     <!-- ========================================================================= -->
 
+    <!-- SUBPÁGINA DIRECTIVA 1: DASHBOARD INSTITUCIONAL (CERO MÉTRICAS FINANCIERAS) -->
+    <div id="view-directiva-dashboard" class="app-view container py-4 d-none">
+        <!-- Banner Festivo & Cuenta Regresiva Gestión Institucional -->
+        <div class="card festive-banner-card gold-shimmer-card p-4 mb-4 text-white rounded-4 shadow-lg border-0">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                        <span class="badge badge-socavon-gold px-3 py-1 rounded-pill">
+                            <i class="bi bi-people-fill me-1"></i> DIRECTIVA GENERAL FRATERNAL
+                        </span>
+                        <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-2 py-1 rounded-pill small">
+                            Sábado de Peregrinación &bull; 06 Feb 2027 - 06:00 AM
+                        </span>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-white"><i class="bi bi-award-fill text-warning me-2"></i>Carnaval de Oruro 2027 &bull; Gestión Institucional</h3>
+                    <p class="text-white-50 small mb-0">
+                        Fraternidad Tinkus Wistus &bull; Panel de Monitoreo Fraternal, Padrón y Asistencias
+                    </p>
+                </div>
+                <div class="col-lg-5 text-center text-lg-end">
+                    <div class="countdown-box shadow-sm">
+                        <div class="countdown-unit text-center">
+                            <div class="fs-2 fw-bold text-warning font-mono countdown-days">00</div>
+                            <div class="small text-uppercase text-white-50" style="font-size:0.65rem; letter-spacing:1px;">Días</div>
+                        </div>
+                        <div class="fs-4 text-warning fw-bold">:</div>
+                        <div class="countdown-unit text-center">
+                            <div class="fs-2 fw-bold text-warning font-mono countdown-hours">00</div>
+                            <div class="small text-uppercase text-white-50" style="font-size:0.65rem; letter-spacing:1px;">Horas</div>
+                        </div>
+                        <div class="fs-4 text-warning fw-bold">:</div>
+                        <div class="countdown-unit text-center">
+                            <div class="fs-2 fw-bold text-warning font-mono countdown-minutes">00</div>
+                            <div class="small text-uppercase text-white-50" style="font-size:0.65rem; letter-spacing:1px;">Min</div>
+                        </div>
+                        <div class="fs-4 text-warning fw-bold">:</div>
+                        <div class="countdown-unit text-center">
+                            <div class="fs-2 fw-bold text-warning font-mono countdown-seconds">00</div>
+                            <div class="small text-uppercase text-white-50" style="font-size:0.65rem; letter-spacing:1px;">Seg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- SUBPÁGINA 6: DASHBOARD CONTROL (MÉTRICAS GLOBALES) -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1">Dashboard Institucional & Gestión Fraternal</h4>
+                <p class="text-secondary small mb-0">Supervisión del padrón oficial, red de filiales y participación fraterna para el Carnaval de Oruro 2027.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-portal-primary btn-sm rounded-3" style="width: auto;" onclick="window.Miembros.openNewMemberModal()">
+                    <i class="bi bi-person-plus me-1"></i> Registrar Fraterno
+                </button>
+                <button class="btn btn-brand-subtle btn-sm rounded-3 nav-link-subpage" data-subpage="directiva-directorio">
+                    <i class="bi bi-people me-1"></i> Padrón Institucional
+                </button>
+            </div>
+        </div>
+
+        <!-- Tarjetas de Métricas Institucionales (Estrictamente Fraternales - Cero Cifras Financieras) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Fraternos Activos</span>
+                        <div class="icon-box bg-brand-subtle text-brand"><i class="bi bi-people-fill"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-white" id="directivaMetricActivos">0</div>
+                    <div class="small text-muted mt-1" id="directivaMetricSubActivos">0 inactivos u observados</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Filiales Oficiales</span>
+                        <div class="icon-box bg-info bg-opacity-10 text-info"><i class="bi bi-globe-americas"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-white" id="directivaMetricFiliales">7 Sedes</div>
+                    <div class="small text-muted mt-1" id="directivaMetricSubFiliales">Presencia nacional e internacional</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Asistencia Promedio</span>
+                        <div class="icon-box bg-success bg-opacity-10 text-success"><i class="bi bi-pie-chart-fill"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-success" id="directivaMetricAsistenciaPct">0%</div>
+                    <div class="small text-muted mt-1" id="directivaMetricSubAsistencia">Promedio global institucional</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="text-secondary small text-uppercase fw-semibold">Próximos Eventos</span>
+                        <div class="icon-box bg-warning bg-opacity-10 text-warning"><i class="bi bi-calendar-event"></i></div>
+                    </div>
+                    <div class="fs-2 fw-bold text-white" id="directivaMetricEventosCount">0</div>
+                    <div class="small text-muted mt-1" id="directivaMetricSubEventos">Ensayos y convocatorias oficiales</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribución Fraternal por Sedes / Filiales -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-4 mb-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="text-secondary small text-uppercase fw-semibold d-block">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> Red de Filiales Tinkus Wistus
+                    </span>
+                    <h5 class="fw-bold text-dark mb-0">Distribución de Fraternos por Sede Oficial</h5>
+                </div>
+                <span class="badge bg-brand text-dark px-3 py-2 rounded-pill fw-bold">7 Filiales Oficiales</span>
+            </div>
+            <div class="row g-3" id="directivaFilialesBadgesContainer">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Módulos de Operación Fraternal -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="portal-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-0">
+                            <i class="bi bi-qr-code-scan text-brand me-2"></i>Control de Asistencias QR
+                        </h6>
+                        <button class="btn btn-brand-subtle btn-sm rounded-3 nav-link-subpage" data-subpage="control-asistencias">
+                            Abrir &rarr;
+                        </button>
+                    </div>
+                    <p class="text-secondary small">
+                        Supervisa el marcaje en tiempo real mediante terminal escáner QR en los puntos de concentración rumbo al Carnaval de Oruro 2027.
+                    </p>
+                    <div class="text-center py-2">
+                        <button class="btn btn-portal-primary btn-md rounded-3 px-4 fw-semibold nav-link-subpage" style="width: auto;" data-subpage="control-asistencias">
+                            <i class="bi bi-camera me-2"></i> Ir al Terminal de Asistencias
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="portal-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-white text-uppercase small letter-spacing-1 mb-0">
+                            <i class="bi bi-calendar-check text-brand me-2"></i>Gestión de Eventos y Ensayos
+                        </h6>
+                        <button class="btn btn-brand-subtle btn-sm rounded-3 nav-link-subpage" data-subpage="control-eventos">
+                            Abrir &rarr;
+                        </button>
+                    </div>
+                    <p class="text-secondary small">
+                        Consulta y programa ensayos, recorridos y convocatorias oficiales de la fraternidad para todas las filiales.
+                    </p>
+                    <div class="text-center py-2">
+                        <button class="btn btn-brand-subtle btn-md rounded-3 px-4 fw-semibold nav-link-subpage" style="width: auto;" data-subpage="control-eventos">
+                            <i class="bi bi-calendar3 me-2"></i> Ver Calendario de Eventos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBPÁGINA DIRECTIVA 2: PADRÓN INSTITUCIONAL (DESACOPLADO & CERO FINANCIERO) -->
+    <div id="view-directiva-directorio" class="app-view container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="bi bi-people text-brand me-2"></i>Padrón Institucional de la Fraternidad</h4>
+                <p class="text-secondary small mb-0">Directorio institucional oficial de fraternos para el Carnaval de Oruro 2027. Exclusivo para gestión fraternal.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-portal-primary rounded-3" style="width: auto;" onclick="window.Miembros.openNewMemberModal()">
+                    <i class="bi bi-person-plus me-1"></i> Nuevo Fraterno
+                </button>
+                <button class="btn btn-brand-subtle rounded-3" onclick="window.Miembros.exportDirectivaDirectoryCSV()">
+                    <i class="bi bi-download me-1"></i> Exportar Padrón CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Métricas y Distribución por Filial Oficial -->
+        <div class="row g-3 mb-4" id="padronDirectivaDistributionCards">
+            <div class="col-12">
+                <div class="card bg-surface-1 border border-subtle rounded-4 p-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="text-secondary small text-uppercase fw-semibold d-block">
+                                <i class="bi bi-globe-americas text-brand me-1"></i> Red de Filiales Oficiales de Tinkus Wistus
+                            </span>
+                            <h5 class="fw-bold text-dark mb-0">Distribución Institucional por Sedes (7 Filiales Oficiales)</h5>
+                        </div>
+                        <span class="badge bg-brand text-dark px-3 py-2 rounded-pill fw-bold" id="distDirectivaFilialesCountBadge">7 Filiales Oficiales</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 pt-1" id="distDirectivaFilialesBadgesContainer">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y Contadores de Padrón Institucional -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-3 mb-4">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <div class="input-wrapper-portal py-1 px-3">
+                        <i class="bi bi-search text-brand"></i>
+                        <input type="text" id="searchDirectivaMember" class="form-control-portal py-1 small" placeholder="Buscar por CI, nombre o rol..." oninput="window.Miembros.renderDirectivaDirectory()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="filterDirectivaFilial" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.renderDirectivaDirectory()">
+                        <option value="all">-- Todas las Filiales --</option>
+                        <option value="matriz_lp">Matriz (La Paz)</option>
+                        <option value="cochabamba">Cochabamba</option>
+                        <option value="santa_cruz">Santa Cruz</option>
+                        <option value="peru">Perú</option>
+                        <option value="chile">Chile</option>
+                        <option value="europa">Europa</option>
+                        <option value="estados_unidos">Estados Unidos</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filterDirectivaRol" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.renderDirectivaDirectory()">
+                        <option value="all">-- Todos los Roles --</option>
+                        <option value="Fraterno Titular">Fraterno Titular</option>
+                        <option value="Fraterno Aspirante">Fraterno Aspirante</option>
+                        <option value="Guía de Fila">Guía de Fila</option>
+                        <option value="Fundador Honorario">Fundador Honorario</option>
+                        <option value="Directiva">Directiva</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="filterDirectivaEstado" class="form-select bg-surface-2 text-dark border-subtle rounded-3" onchange="window.Miembros.renderDirectivaDirectory()">
+                        <option value="all">-- Todos los Estados --</option>
+                        <option value="activo">Solo Activos</option>
+                        <option value="inactivo">Solo Inactivos</option>
+                    </select>
+                </div>
+                <div class="col-md-2 text-end">
+                    <span class="badge bg-brand text-dark px-3 py-2 rounded-pill fw-bold">
+                        Total: <span id="dirDirectivaCountTotal">0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla del Padrón Institucional (Gestión Fraternal y Asistencia) -->
+        <div class="card bg-surface-1 border border-subtle rounded-4 p-4">
+            <div class="table-responsive">
+                <table class="table-minimal" id="directivaDirectoryTable">
+                    <thead>
+                        <tr>
+                            <th>Fraterno</th>
+                            <th>CI</th>
+                            <th>Filial</th>
+                            <th>Rol Fraternal</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>% Asistencia</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directivaDirectoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VISTAS DE ROL CONTROL (ADMIN / MÓDULO FINANCIERO & CONTROL GLOBAL)        -->
+    <!-- ========================================================================= -->
+
+    <!-- SUBPÁGINA 6: DASHBOARD CONTROL (MÉTRICAS GLOBALES & FINANCIERAS) -->
     <div id="view-control-dashboard" class="app-view container py-4 d-none">
         <!-- Banner Festivo & Cuenta Regresiva Panel de Control -->
         <div class="card festive-banner-card gold-shimmer-card p-4 mb-4 text-white rounded-4 shadow-lg border-0">
@@ -2168,24 +2482,24 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            <button type="button" class="btn btn-outline-brand btn-sm rounded-3" onclick="window.Miembros.openCuotasFromKardex()" title="Gestionar cuotas asignadas y cobros únicos">
+                            <button type="button" class="btn btn-outline-brand btn-sm rounded-3" id="btnKardexCuotas" onclick="window.Miembros.openCuotasFromKardex()" title="Gestionar cuotas asignadas y cobros únicos">
                                 <i class="bi bi-wallet2 me-1"></i> Cuotas Asignadas
                             </button>
                             <button type="button" class="btn btn-outline-warning text-dark btn-sm rounded-3" onclick="window.Miembros.openEditFromKardex()" title="Editar todos los datos del fraterno">
                                 <i class="bi bi-pencil-square me-1"></i> Editar Fraterno
                             </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-3" onclick="window.Miembros.promptDeleteFromKardex()" title="Pasar a Base de Eliminados">
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-3" id="btnKardexDelete" onclick="window.Miembros.promptDeleteFromKardex()" title="Pasar a Base de Eliminados">
                                 <i class="bi bi-trash3 me-1"></i> Dar de Baja
                             </button>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="kardexAsistenciasCol">
                             <h6 class="fw-bold text-brand small text-uppercase mb-2"><i class="bi bi-calendar-check me-1"></i> Historial de Asistencias</h6>
                             <div class="p-3 bg-surface-2 rounded-3 border border-subtle" id="kardexAsistenciasList" style="max-height: 240px; overflow-y: auto;"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="kardexPagosCol">
                             <h6 class="fw-bold text-brand small text-uppercase mb-2"><i class="bi bi-receipt me-1"></i> Historial de Pagos</h6>
                             <div class="p-3 bg-surface-2 rounded-3 border border-subtle" id="kardexPagosList" style="max-height: 240px; overflow-y: auto;"></div>
                         </div>

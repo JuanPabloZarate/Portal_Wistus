@@ -486,7 +486,14 @@ const DEFAULT_PORTAL_CONFIG = {
         pin: '2027',
         nombre: 'Mesa Directiva y Control',
         fraternidad: "Fraternidad Tinkus Wistus",
-        allowed_users: ['admi', 'directiva', 'control', 'admin', 'supervisor']
+        allowed_users: ['admi', 'control', 'admin', 'supervisor']
+    },
+    directiva_user: {
+        username: 'directiva',
+        password: 'directiva123',
+        nombre: 'Directiva General Fraternal',
+        fraternidad: "Fraternidad Tinkus Wistus",
+        allowed_users: ['directiva']
     }
 };
 

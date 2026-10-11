@@ -22,6 +22,7 @@ class PortalStateManager {
                     parsed.current_theme = 'wistus';
                     parsed.themes = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.themes));
                     parsed.control_user = JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.control_user));
+                    parsed.directiva_user = DEFAULT_PORTAL_CONFIG.directiva_user ? JSON.parse(JSON.stringify(DEFAULT_PORTAL_CONFIG.directiva_user)) : null;
                     
                     if (!parsed.eliminados || !Array.isArray(parsed.eliminados)) {
                         parsed.eliminados = [];

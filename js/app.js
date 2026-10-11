@@ -27,6 +27,8 @@ class PortalAppManager {
             if (this.currentView === 'member-eventos') this.renderEventsTimeline();
             if (this.currentView === 'control-eventos') this.renderEventsTimeline(true);
             if (this.currentView === 'member-perfil') this.renderMemberProfileEdit();
+            if (this.currentView === 'directiva-dashboard') this.renderDirectivaDashboard();
+            if (this.currentView === 'directiva-directorio' && window.Miembros) window.Miembros.renderDirectivaDirectory();
         });
     }
 
@@ -59,6 +61,30 @@ class PortalAppManager {
     }
 
     showView(viewName) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        const currentRole = session ? session.role : null;
+
+        // Vistas financieras protegidas
+        const financialViews = ['control-pagos', 'control-dashboard', 'control-directorio'];
+
+        if (currentRole === 'directiva') {
+            if (financialViews.includes(viewName) || (viewName.startsWith('member-') && viewName !== 'login')) {
+                console.warn(`Acceso restringido: El rol directiva no tiene acceso a '${viewName}'.`);
+                if (typeof this.showToast === 'function') {
+                    this.showToast('Acceso restringido: La Directiva General no tiene acceso al módulo financiero.', 'warning');
+                }
+                viewName = 'directiva-dashboard';
+            }
+        } else if (currentRole === 'miembro') {
+            if (viewName.startsWith('control-') || viewName.startsWith('directiva-')) {
+                viewName = 'member-dashboard';
+            }
+        } else if (!currentRole) {
+            if (viewName !== 'login') {
+                viewName = 'login';
+            }
+        }
+
         this.currentView = viewName;
 
         // Ocultar todas las vistas principales
@@ -103,6 +129,10 @@ class PortalAppManager {
         if (viewName === 'control-pagos') window.Pagos.renderControlPayments();
         if (viewName === 'control-directorio') window.Miembros.renderControlDirectory();
         if (viewName === 'control-eventos') this.renderEventsTimeline(true);
+
+        if (viewName === 'directiva-dashboard') this.renderDirectivaDashboard();
+        if (viewName === 'directiva-directorio') window.Miembros.renderDirectivaDirectory();
+
         if (viewName === 'login') {
             setTimeout(() => {
                 const ciInput = document.getElementById('inputCI');
@@ -113,7 +143,9 @@ class PortalAppManager {
 
     navigateHome() {
         const session = window.PortalState.getSession();
-        if (session && session.role === 'control') {
+        if (session && session.role === 'directiva') {
+            this.showView('directiva-dashboard');
+        } else if (session && session.role === 'control') {
             this.showView('control-dashboard');
         } else if (session && session.role === 'miembro') {
             this.showView('member-dashboard');
@@ -125,6 +157,8 @@ class PortalAppManager {
     navigateToDashboard(role) {
         if (role === 'miembro') {
             this.showView('member-dashboard');
+        } else if (role === 'directiva') {
+            this.showView('directiva-dashboard');
         } else if (role === 'control') {
             this.showView('control-dashboard');
         } else {
@@ -146,7 +180,9 @@ class PortalAppManager {
             'control-asistencias': 'Terminal de Asistencias',
             'control-pagos': 'Libro de Cuotas',
             'control-directorio': 'Cobros & Padrón',
-            'control-eventos': 'Gestión de Eventos'
+            'control-eventos': 'Gestión de Eventos',
+            'directiva-dashboard': 'Dashboard Institucional',
+            'directiva-directorio': 'Padrón Institucional'
         };
 
         const title = breadcrumbsMap[viewName] || viewName;
@@ -165,6 +201,7 @@ class PortalAppManager {
         const viewLogin = document.getElementById('view-login');
         const sectionMember = document.getElementById('sidebarSectionMember');
         const sectionControl = document.getElementById('sidebarSectionControl');
+        const sectionDirectiva = document.getElementById('sidebarSectionDirectiva');
         const btnMarca = document.getElementById('btnSidebarMarca');
         const nameEl = document.getElementById('sidebarUserName');
         const subEl = document.getElementById('sidebarUserSub');
@@ -191,7 +228,9 @@ class PortalAppManager {
         const displayName = session.nombre_completo || session.username || 'Fraterno';
         const displayRole = session.role === 'control' 
             ? 'Directiva & Control' 
-            : (session.filial_nombre || session.rol_fraternal || 'Fraterno Titular');
+            : (session.role === 'directiva' 
+                ? 'Directiva General' 
+                : (session.filial_nombre || session.rol_fraternal || 'Fraterno Titular'));
         const initial = (session.nombre_completo || session.username || 'W').charAt(0).toUpperCase();
 
         // Actualizar datos de usuario en la barra superior básica
@@ -220,6 +259,7 @@ class PortalAppManager {
         if (session.role === 'miembro') {
             if (sectionMember) sectionMember.classList.remove('d-none');
             if (sectionControl) sectionControl.classList.add('d-none');
+            if (sectionDirectiva) sectionDirectiva.classList.add('d-none');
             if (btnMarca) btnMarca.classList.add('d-none');
             if (topbarMenuProfileItem) topbarMenuProfileItem.classList.remove('d-none');
             if (topbarMenuProfileDivider) topbarMenuProfileDivider.classList.remove('d-none');
@@ -236,8 +276,17 @@ class PortalAppManager {
             }
 
             this.renderMobileBottomNav('miembro');
+        } else if (session.role === 'directiva') {
+            if (sectionMember) sectionMember.classList.add('d-none');
+            if (sectionControl) sectionControl.classList.add('d-none');
+            if (sectionDirectiva) sectionDirectiva.classList.remove('d-none');
+            if (btnMarca) btnMarca.classList.add('d-none');
+            if (topbarMenuProfileItem) topbarMenuProfileItem.classList.add('d-none');
+            if (topbarMenuProfileDivider) topbarMenuProfileDivider.classList.add('d-none');
+            this.renderMobileBottomNav('directiva');
         } else if (session.role === 'control') {
             if (sectionMember) sectionMember.classList.add('d-none');
+            if (sectionDirectiva) sectionDirectiva.classList.add('d-none');
             if (sectionControl) sectionControl.classList.remove('d-none');
             if (btnMarca) btnMarca.classList.remove('d-none');
             if (topbarMenuProfileItem) topbarMenuProfileItem.classList.add('d-none');
@@ -267,6 +316,31 @@ class PortalAppManager {
                     <span>Mi QR</span>
                 </a>
                 <a href="#" class="bottom-nav-item ${this.currentView === 'member-eventos' ? 'active' : ''}" data-subpage="member-eventos">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Eventos</span>
+                </a>
+                <a href="#" class="bottom-nav-item bottom-nav-more" id="btnBottomNavMore" title="Más opciones">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Más</span>
+                </a>
+            `;
+        } else if (role === 'directiva') {
+            nav.innerHTML = `
+                <a href="#" class="bottom-nav-item ${this.currentView === 'directiva-dashboard' ? 'active' : ''}" data-subpage="directiva-dashboard">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'directiva-directorio' ? 'active' : ''}" data-subpage="directiva-directorio">
+                    <i class="bi bi-people"></i>
+                    <span>Padrón</span>
+                </a>
+                <a href="#" class="bottom-nav-fab-wrap ${this.currentView === 'control-asistencias' ? 'active' : ''}" data-subpage="control-asistencias" title="Abrir Terminal Asistencias">
+                    <div class="bottom-nav-fab">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </div>
+                    <span>Asistencias</span>
+                </a>
+                <a href="#" class="bottom-nav-item ${this.currentView === 'control-eventos' ? 'active' : ''}" data-subpage="control-eventos">
                     <i class="bi bi-calendar-event"></i>
                     <span>Eventos</span>
                 </a>
@@ -470,6 +544,7 @@ class PortalAppManager {
         const q = query.toLowerCase();
         const session = window.PortalState.getSession();
         const isControl = session && session.role === 'control';
+        const isDirectiva = session && session.role === 'directiva';
 
         // 1. Catálogo de Vistas según rol
         const viewsCatalog = isControl ? [
@@ -478,6 +553,11 @@ class PortalAppManager {
             { id: 'control-pagos', title: 'Libro de Cuotas', desc: 'Registro de aportes y cobro rápido', icon: 'bi-journal-text', badge: 'Vista' },
             { id: 'control-directorio', title: 'Cobros & Directorio', desc: 'Padrón oficial y kardex individual', icon: 'bi-people', badge: 'Vista' },
             { id: 'control-eventos', title: 'Gestión de Eventos', desc: 'Crear y programar ensayos y recorridos', icon: 'bi-calendar-event', badge: 'Vista' }
+        ] : isDirectiva ? [
+            { id: 'directiva-dashboard', title: 'Dashboard Institucional', desc: 'Métricas fraternales, filiales y eventos', icon: 'bi-speedometer2', badge: 'Vista' },
+            { id: 'directiva-directorio', title: 'Padrón Institucional', desc: 'Directorio oficial y fichas fraternales', icon: 'bi-people', badge: 'Vista' },
+            { id: 'control-asistencias', title: 'Control de Asistencias', desc: 'Terminal QR y lista institucional', icon: 'bi-qr-code-scan', badge: 'Vista' },
+            { id: 'control-eventos', title: 'Gestión de Eventos', desc: 'Calendario y programación de ensayos', icon: 'bi-calendar-event', badge: 'Vista' }
         ] : [
             { id: 'member-dashboard', title: 'Inicio / Mi Dashboard', desc: 'Estado general y resumen fraternal', icon: 'bi-grid-1x2', badge: 'Vista' },
             { id: 'member-perfil', title: 'Mi Perfil & Datos Personales', desc: 'Editar fotografía, datos personales y verificar completitud', icon: 'bi-person-gear', badge: 'Vista' },
@@ -591,6 +671,13 @@ class PortalAppManager {
                         window.Miembros.openMemberKardex(actionVal);
                     }
                 }, 200);
+            } else if (session && session.role === 'directiva') {
+                this.showView('directiva-directorio');
+                setTimeout(() => {
+                    if (window.Miembros && typeof window.Miembros.openMemberKardex === 'function') {
+                        window.Miembros.openMemberKardex(actionVal);
+                    }
+                }, 200);
             } else {
                 // Si es fraterno, le permitimos simular o consultar
                 window.Auth.loginAsMember(actionVal);
@@ -629,6 +716,38 @@ class PortalAppManager {
                     <div>
                         <div class="more-option-title text-danger">Cerrar Sesión</div>
                         <div class="more-option-sub text-muted">Salir de mi portal</div>
+                    </div>
+                </button>
+            `;
+        } else if (role === 'directiva') {
+            body.innerHTML = `
+                <button class="more-option-item btn-more-nav-action" data-target="directiva-dashboard">
+                    <div class="more-option-icon"><i class="bi bi-speedometer2"></i></div>
+                    <div>
+                        <div class="more-option-title">Dashboard Institucional</div>
+                        <div class="more-option-sub">Métricas fraternales y sedes</div>
+                    </div>
+                </button>
+                <button class="more-option-item btn-more-nav-action" data-target="directiva-directorio">
+                    <div class="more-option-icon"><i class="bi bi-people"></i></div>
+                    <div>
+                        <div class="more-option-title">Padrón Institucional</div>
+                        <div class="more-option-sub">Directorio y fichas oficiales</div>
+                    </div>
+                </button>
+                <button class="more-option-item btn-more-nav-action" data-target="control-eventos">
+                    <div class="more-option-icon"><i class="bi bi-calendar-event"></i></div>
+                    <div>
+                        <div class="more-option-title">Gestión de Eventos</div>
+                        <div class="more-option-sub">Calendario y convocatorias</div>
+                    </div>
+                </button>
+                <hr class="border-subtle my-2">
+                <button class="more-option-item text-danger btn-logout-action">
+                    <div class="more-option-icon bg-danger bg-opacity-20 text-danger"><i class="bi bi-box-arrow-right text-danger"></i></div>
+                    <div>
+                        <div class="more-option-title text-danger">Cerrar Sesión</div>
+                        <div class="more-option-sub text-muted">Salir del portal institucional</div>
                     </div>
                 </button>
             `;
@@ -796,6 +915,84 @@ class PortalAppManager {
             </div>`;
         });
         container.innerHTML = html;
+    }
+
+    // --- DASHBOARD DIRECTIVA GENERAL (INSTITUCIONAL - CERO CIFRAS FINANCIERAS) ---
+    renderDirectivaDashboard() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (!session || (session.role !== 'directiva' && session.role !== 'control')) return;
+
+        const members = window.PortalState.getMembers() || [];
+        const events = window.PortalState.getEvents() || [];
+
+        // 1. Fraternos Activos
+        const activeMembers = members.filter(m => m.estado_fraterno !== 'inactivo' && m.estado_fraterno !== 'eliminado');
+        const inactiveMembers = members.length - activeMembers.length;
+
+        const elActivos = document.getElementById('directivaMetricActivos');
+        const elSubActivos = document.getElementById('directivaMetricSubActivos');
+        if (elActivos) elActivos.textContent = activeMembers.length;
+        if (elSubActivos) elSubActivos.textContent = `${inactiveMembers} inactivos u observados`;
+
+        // 2. Red de Filiales Oficiales
+        const filialCounts = {};
+        members.forEach(m => {
+            if (m.estado_fraterno === 'eliminado') return;
+            const fid = m.filial_id || 'matriz_lp';
+            const fname = m.filial_nombre || 'Matriz (La Paz)';
+            if (!filialCounts[fid]) filialCounts[fid] = { name: fname, count: 0 };
+            filialCounts[fid].count++;
+        });
+        const numFiliales = Object.keys(filialCounts).length;
+        const elFiliales = document.getElementById('directivaMetricFiliales');
+        const elSubFiliales = document.getElementById('directivaMetricSubFiliales');
+        if (elFiliales) elFiliales.textContent = `${numFiliales} Sedes`;
+        if (elSubFiliales) elSubFiliales.textContent = 'Presencia oficial nacional e internacional';
+
+        // 3. Tasa de Asistencia Promedio Institucional
+        let totalAssistanceSlots = 0;
+        let totalPresents = 0;
+        if (events.length > 0) {
+            members.forEach(m => {
+                if (m.estado_fraterno === 'eliminado') return;
+                if (m.asistencias) {
+                    Object.values(m.asistencias).forEach(a => {
+                        totalAssistanceSlots++;
+                        if (a && a.estado === 'presente') totalPresents++;
+                    });
+                }
+            });
+        }
+        const avgAttPct = totalAssistanceSlots > 0 ? Math.round((totalPresents / totalAssistanceSlots) * 100) : 0;
+        const elAttPct = document.getElementById('directivaMetricAsistenciaPct');
+        const elSubAtt = document.getElementById('directivaMetricSubAsistencia');
+        if (elAttPct) elAttPct.textContent = `${avgAttPct}%`;
+        if (elSubAtt) elSubAtt.textContent = `Promedio general sobre convocatorias oficiales`;
+
+        // 4. Próximos Eventos y Convocatorias
+        const elEventos = document.getElementById('directivaMetricEventosCount');
+        const elSubEventos = document.getElementById('directivaMetricSubEventos');
+        if (elEventos) elEventos.textContent = events.length;
+        if (elSubEventos) elSubEventos.textContent = 'Ensayos y recorridos en calendario';
+
+        // 5. Badges de Distribución de Filiales
+        const container = document.getElementById('directivaFilialesBadgesContainer');
+        if (container) {
+            let html = '';
+            Object.values(filialCounts).forEach(f => {
+                html += `
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card bg-surface-2 border border-subtle p-3 rounded-3 text-center shadow-sm">
+                            <div class="text-brand mb-1"><i class="bi bi-geo-alt-fill fs-5"></i></div>
+                            <div class="fw-bold text-dark small">${f.name}</div>
+                            <div class="fs-4 fw-bold text-brand font-mono">${f.count}</div>
+                            <div class="text-muted small" style="font-size:0.75rem;">fraternos inscritos</div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
     }
 
     // --- DASHBOARD CONTROL ---

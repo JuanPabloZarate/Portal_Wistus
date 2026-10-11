@@ -596,6 +596,11 @@ class PagosManager {
     // 4. VISTA CONTROL / DIRECTIVA (VERIFICACIÓN & LIBRO MAYOR)
     // =========================================================================
     renderControlPayments() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            return;
+        }
+
         const summary = window.PortalState.getFinancialSummary();
 
         // Actualizar métricas financieras de control
@@ -959,6 +964,13 @@ class PagosManager {
     }
 
     openEditFraternoCuotasModal(ci) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene acceso a editar cuotas.', 'warning');
+            }
+            return;
+        }
         const member = window.PortalState.getMemberByCI(ci);
         if (!member) return;
 
@@ -1675,6 +1687,14 @@ class PagosManager {
     // 5. REVISIÓN DETALLADA DE VOUCHERS CON LIGHTBOX / ZOOM (DIRECTIVA)
     // =========================================================================
     openViewVoucherModal(ci, voucherId, isDirectiva = false) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene acceso a revisar comprobantes financieros.', 'warning');
+            }
+            return;
+        }
+
         const member = window.PortalState.getMemberByCI(ci);
         if (!member) return;
 
@@ -1757,6 +1777,13 @@ class PagosManager {
     }
 
     confirmVoucherDirectly(ci, voucherId, customMonto = null) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para aprobar pagos.', 'danger');
+            }
+            return;
+        }
         try {
             const payment = window.PortalState.confirmVoucher(ci, voucherId, customMonto);
             window.PortalApp.showToast(`¡Pago de Bs. ${payment.monto} verificado y confirmado exitosamente! Recibo: ${payment.nro_recibo}`, 'success');
@@ -1788,6 +1815,13 @@ class PagosManager {
     }
 
     rejectVoucherDirectly(ci, voucherId, motivo = '') {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para observar comprobantes.', 'danger');
+            }
+            return;
+        }
         try {
             window.PortalState.rejectVoucher(ci, voucherId, motivo);
             window.PortalApp.showToast('Comprobante observado. Se notificó al fraterno para regularizar.', 'info');
@@ -1799,6 +1833,13 @@ class PagosManager {
     }
 
     confirmAllVouchersInBatch() {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para confirmar pagos en lote.', 'danger');
+            }
+            return;
+        }
         const pending = window.PortalState.getPendingVouchers();
         if (pending.length === 0) {
             window.PortalApp.showToast('No hay comprobantes pendientes de verificación.', 'info');
@@ -2025,6 +2066,13 @@ class PagosManager {
     }
 
     openRegisterPaymentModal(prefillCI = '') {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene acceso a registrar pagos ni cobros.', 'warning');
+            }
+            return;
+        }
         const modalEl = document.getElementById('modalRegisterPayment');
         if (!modalEl || !window.bootstrap) return;
 
@@ -2101,6 +2149,13 @@ class PagosManager {
     // 8. CONFIGURACIÓN DE CUOTAS DE LA FRATERNIDAD (DIRECTIVA)
     // =========================================================================
     openCuotaEditorModal(cuotaId = null) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para gestionar cuotas.', 'danger');
+            }
+            return;
+        }
         const modalEl = document.getElementById('modalCuotaEditor');
         if (!modalEl || !window.bootstrap) return;
 
@@ -2139,6 +2194,14 @@ class PagosManager {
     saveCuotaEditor(event) {
         if (event) event.preventDefault();
 
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para guardar cuotas.', 'danger');
+            }
+            return;
+        }
+
         const id = document.getElementById('cuotaEditId')?.value;
         const title = document.getElementById('cuotaEditTitle')?.value.trim();
         const monto = parseFloat(document.getElementById('cuotaEditMonto')?.value);
@@ -2174,6 +2237,14 @@ class PagosManager {
     }
 
     deleteCuotaPrompt(cuotaId) {
+        const session = window.PortalState ? window.PortalState.getSession() : null;
+        if (session && session.role === 'directiva') {
+            if (window.PortalApp && typeof window.PortalApp.showToast === 'function') {
+                window.PortalApp.showToast('Acceso restringido: El rol directiva no tiene autorización para eliminar cuotas.', 'danger');
+            }
+            return;
+        }
+
         const cuota = window.PortalState.getCuotaById(cuotaId);
         if (!cuota) return;
 

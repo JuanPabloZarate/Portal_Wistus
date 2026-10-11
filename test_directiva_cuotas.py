@@ -146,6 +146,9 @@ class TestDirectivaCuotasModule(unittest.TestCase):
     # -------------------------------------------------------------
     def test_12_deep_behavioral_and_adversarial_suite(self):
         """Ejecuta el runner de pruebas reales en Node.js sobre los métodos de PortalState y PagosManager."""
+        import shutil
+        if not shutil.which('node'):
+            self.skipTest("Node.js no está disponible en este entorno.")
         import subprocess
         res = subprocess.run(['node', os.path.join(PROJECT_ROOT, 'test_deep_directiva_cuotas.js')], capture_output=True, text=True)
         self.assertEqual(res.returncode, 0, f"Deep behavioral suite failed:\n{res.stdout}\n{res.stderr}")

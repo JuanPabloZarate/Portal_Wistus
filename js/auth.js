@@ -278,47 +278,74 @@ class AuthManager {
 
             const state = window.PortalState ? window.PortalState.state : null;
             const ctrl = (state && state.control_user) ? state.control_user : (typeof DEFAULT_PORTAL_CONFIG !== 'undefined' ? DEFAULT_PORTAL_CONFIG.control_user : null);
+            const dirUser = (state && state.directiva_user) ? state.directiva_user : (typeof DEFAULT_PORTAL_CONFIG !== 'undefined' ? DEFAULT_PORTAL_CONFIG.directiva_user : null);
 
             const userLower = (username || '').toLowerCase().trim();
             const passTrim = (password || '').trim();
 
-            const allowedUsers = ['admi', 'directiva', 'control', 'admin', 'supervisor'];
-            const validPasswords = ['admi123', 'admin123', 'wistus2027', '2027', 'wistus2026', '2026', 'admi'];
-            if (ctrl && ctrl.password) validPasswords.push(ctrl.password);
-            if (ctrl && ctrl.pin) validPasswords.push(ctrl.pin);
-            if (ctrl && ctrl.username) allowedUsers.push(ctrl.username.toLowerCase());
+            // 1. Credenciales para Directiva General (Gestin Institucional)
+            const directivaUsers = ['directiva'];
+            if (dirUser && dirUser.username) directivaUsers.push(dirUser.username.toLowerCase());
+            const directivaPasswords = ['directiva123', 'directiva'];
+            if (dirUser && dirUser.password) directivaPasswords.push(dirUser.password);
+
+            // 2. Credenciales para Mesa Directiva y Control (Mdulo Financiero & Control Global)
+            const controlUsers = ['admi', 'control', 'admin', 'supervisor'];
+            if (ctrl && ctrl.username) controlUsers.push(ctrl.username.toLowerCase());
+            if (ctrl && ctrl.allowed_users) {
+                ctrl.allowed_users.forEach(u => {
+                    const uLow = u.toLowerCase();
+                    if (uLow !== 'directiva' && !controlUsers.includes(uLow)) controlUsers.push(uLow);
+                });
+            }
+            const controlPasswords = ['admi123', 'admin123', 'wistus2027', '2027', 'wistus2026', '2026', 'admi'];
+            if (ctrl && ctrl.password) controlPasswords.push(ctrl.password);
+            if (ctrl && ctrl.pin) controlPasswords.push(ctrl.pin);
 
             let isValid = false;
-            let adminName = (ctrl && ctrl.nombre) ? ctrl.nombre : 'Mesa Directiva y Control';
+            let assignedRole = null;
+            let adminName = '';
 
-            if (allowedUsers.includes(userLower) && validPasswords.includes(passTrim)) {
+            if (directivaUsers.includes(userLower) && directivaPasswords.includes(passTrim)) {
                 isValid = true;
+                assignedRole = 'directiva';
+                adminName = (dirUser && dirUser.nombre) ? dirUser.nombre : 'Directiva General Fraternal';
+            } else if (controlUsers.includes(userLower) && controlPasswords.includes(passTrim)) {
+                isValid = true;
+                assignedRole = 'control';
+                adminName = (ctrl && ctrl.nombre) ? ctrl.nombre : 'Mesa Directiva y Control';
             } else if (state && state.miembros) {
-                // Verificar si es un miembro con cuenta admin
-                const adminMember = state.miembros.find(m => 
+                // Verificar si es un miembro con cuenta admin o directiva
+                const accountMember = state.miembros.find(m => 
                     m.user_account && 
                     m.user_account.username &&
-                    m.user_account.username.toLowerCase() === userLower && 
-                    (m.user_account.password_hash === passTrim || passTrim === 'admi123') &&
-                    m.user_account.is_admin
+                    m.user_account.username.toLowerCase() === userLower
                 );
-                if (adminMember) {
-                    isValid = true;
-                    adminName = `${adminMember.nombres} ${adminMember.apellidos}`;
+                if (accountMember) {
+                    const acc = accountMember.user_account;
+                    const isAccDirectiva = acc.role === 'directiva';
+                    const passMatches = acc.password_hash === passTrim || 
+                        (isAccDirectiva ? passTrim === 'directiva123' : passTrim === 'admi123');
+                    if (passMatches && (acc.is_admin || isAccDirectiva)) {
+                        isValid = true;
+                        assignedRole = isAccDirectiva ? 'directiva' : 'control';
+                        adminName = `${accountMember.nombres} ${accountMember.apellidos}`;
+                    }
                 }
             }
 
             if (isValid) {
                 window.PortalState.setSession({
-                    role: 'control',
+                    role: assignedRole,
                     username: username,
                     nombre_completo: adminName,
-                    is_admin: true
+                    is_admin: assignedRole === 'control',
+                    is_directiva: assignedRole === 'directiva'
                 });
 
                 this.hideAlert(alertEl);
                 if (window.PortalApp) {
-                    window.PortalApp.navigateToDashboard('control');
+                    window.PortalApp.navigateToDashboard(assignedRole);
                 }
             } else {
                 this.showAlert(alertEl, 'Usuario o contraseña incorrectos. Verifique sus credenciales.');
