@@ -1208,6 +1208,79 @@ class TestPortalProcessesAndData(unittest.TestCase):
         mgr.reload_state()
         self.assertEqual(len(mgr.miembros), 0, "No debe revivir tras purga permanente")
 
+    def test_34_control_qr_attendance_verification_modal(self):
+        """Verifica la existencia del Modal Integral de Verificación de Asistencia QR en index.html."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Modal id
+        self.assertIn('id="modalVerificacionAsistenciaQR"', index_content)
+        # Elementos de datos del fraterno
+        self.assertIn('id="modalVerifFoto"', index_content)
+        self.assertIn('id="modalVerifNombre"', index_content)
+        self.assertIn('id="modalVerifCI"', index_content)
+        self.assertIn('id="modalVerifFilial"', index_content)
+        self.assertIn('id="modalVerifRol"', index_content)
+        self.assertIn('id="modalVerifCuotasChip"', index_content)
+        # Elementos del evento del día y registro
+        self.assertIn('id="modalVerifEventoTitulo"', index_content)
+        self.assertIn('id="modalVerifEventoFecha"', index_content)
+        self.assertIn('id="modalVerifHoraMarcada"', index_content)
+        # Elementos de la base histórica de asistencia
+        self.assertIn('id="modalVerifPctAsistencia"', index_content)
+        self.assertIn('id="modalVerifProgressBar"', index_content)
+        self.assertIn('id="modalVerifHabilitacionBadge"', index_content)
+        self.assertIn('id="modalVerifDesgloseHistorial"', index_content)
+        # Botones de Conforme y paso al siguiente
+        self.assertIn('id="btnModalConfirmAndNext"', index_content)
+        self.assertIn('id="modalVerifCountdownText"', index_content)
+        self.assertIn('id="btnToggleCountdown"', index_content)
+
+    def test_35_control_date_selector_and_event_automation(self):
+        """Verifica la automatización por fecha y bloqueo de evento para escaneo en asistencias."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Controles de fecha en index.html
+        self.assertIn('id="selectControlEventDate"', index_content)
+        self.assertIn('id="btnAutoDateEvent"', index_content)
+        self.assertIn('id="controlLockedNotice"', index_content)
+        self.assertIn('id="lockedEventTitleText"', index_content)
+        self.assertIn('id="lockedEventDateText"', index_content)
+
+        # Métodos en asistencias.js
+        asist_path = os.path.join(JS_DIR, 'asistencias.js')
+        with open(asist_path, 'r', encoding='utf-8') as f:
+            asist_content = f.read()
+
+        self.assertIn('autoSelectTodayEvent', asist_content)
+        self.assertIn('handleDateChange', asist_content)
+        self.assertIn('updateLockedEventBanner', asist_content)
+        self.assertIn('showVerificationModal', asist_content)
+        self.assertIn('confirmAndNextMember', asist_content)
+        self.assertIn('startAutoAdvanceCountdown', asist_content)
+
+    def test_36_chrome_camera_permission_flow_and_instructions(self):
+        """Verifica la compatibilidad y guías para cámara en Google Chrome."""
+        index_path = os.path.join(WORKSPACE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        self.assertIn('id="chromeCameraHelpBanner"', index_content)
+        self.assertIn('Permiso de Cámara en Google Chrome', index_content)
+        self.assertIn('id="scannerLiveStatusBadge"', index_content)
+        self.assertIn('id="scannerAutoAdvanceSwitch"', index_content)
+
+        asist_path = os.path.join(JS_DIR, 'asistencias.js')
+        with open(asist_path, 'r', encoding='utf-8') as f:
+            asist_content = f.read()
+
+        self.assertIn('isSecureContext', asist_content)
+        self.assertIn('chromeCameraHelpBanner', asist_content)
+        self.assertIn('scannerLiveStatusBadge', asist_content)
+
 if __name__ == '__main__':
     unittest.main()
 

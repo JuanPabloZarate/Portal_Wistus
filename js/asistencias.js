@@ -13,17 +13,28 @@
 class AsistenciasManager {
     constructor() {
         this.currentEventId = 'ev_4'; // Evento activo por defecto
+        this.selectedDate = new Date().toISOString().split('T')[0];
         this.selectedBlockFilter = 'all';
         this.selectedStatusFilter = 'all';
         this.recentCheckins = [];
         this.html5QrScanner = null;
         this.isCameraScanning = false;
+        this.isPausedForConfirmation = false;
+        this.autoAdvanceEnabled = true;
+        this.countdownTimer = null;
+        this.countdownSeconds = 3;
+        this.currentScannedCI = null;
+        this.modalInstance = null;
         this.currentCameraFacing = 'environment';
         this.soundEnabled = true;
         this.audioCtx = null;
     }
 
     init() {
+        // Inicializar fecha seleccionada
+        const today = new Date().toISOString().split('T')[0];
+        this.selectedDate = today;
+
         // Escuchar cambios de estado reactivos
         window.PortalState.subscribe(() => {
             const session = window.PortalState.getSession();
@@ -33,14 +44,42 @@ class AsistenciasManager {
             }
         });
 
-        // Asegurar que el evento actual esté sincronizado
+        // Asegurar que el evento actual esté sincronizado automáticamente
+        this.syncInitialEvent();
+        this.bindKeyboardShortcuts();
+    }
+
+    syncInitialEvent() {
         const events = window.PortalState.getEvents();
-        const activeEv = events.find(e => e.estado === 'activo');
-        if (activeEv) {
-            this.currentEventId = activeEv.id;
-        } else if (events.length > 0) {
-            this.currentEventId = events[0].id;
+        const today = new Date().toISOString().split('T')[0];
+        const todayEvent = events.find(e => e.fecha === today);
+        if (todayEvent) {
+            this.currentEventId = todayEvent.id;
+            this.selectedDate = today;
+        } else {
+            const activeEv = events.find(e => e.estado === 'activo');
+            if (activeEv) {
+                this.currentEventId = activeEv.id;
+                this.selectedDate = activeEv.fecha || today;
+            } else if (events.length > 0) {
+                this.currentEventId = events[0].id;
+                this.selectedDate = events[0].fecha || today;
+            }
         }
+    }
+
+    bindKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            const modalEl = document.getElementById('modalVerificacionAsistenciaQR');
+            if (modalEl && modalEl.classList.contains('show')) {
+                if (e.key === 'Enter' || e.code === 'Space') {
+                    e.preventDefault();
+                    this.confirmAndNextMember();
+                } else if (e.key === 'Escape') {
+                    this.closeVerificationModal(false);
+                }
+            }
+        });
     }
 
     // =========================================================================
@@ -272,33 +311,92 @@ class AsistenciasManager {
     // =========================================================================
     // VISTA CONTROL / DIRECTIVA: TABLERO DE GESTIÓN Y TERMINAL QR
     // =========================================================================
+    autoSelectTodayEvent() {
+        const today = new Date().toISOString().split('T')[0];
+        this.selectedDate = today;
+        const dateInput = document.getElementById('selectControlEventDate');
+        if (dateInput) dateInput.value = today;
+
+        const events = window.PortalState.getEvents();
+        const todayEv = events.find(e => e.fecha === today);
+        if (todayEv) {
+            this.setActiveEvent(todayEv.id);
+            window.PortalApp.showToast(`Convocatoria de hoy fijada: "${todayEv.title}"`, 'success');
+        } else {
+            const activeEv = events.find(e => e.estado === 'activo') || events[0];
+            if (activeEv) {
+                this.setActiveEvent(activeEv.id);
+                window.PortalApp.showToast(`Sin evento programado para hoy (${today}). Manteniendo: "${activeEv.title}"`, 'info');
+            }
+        }
+        this.updateLockedEventBanner();
+    }
+
+    handleDateChange(dateStr) {
+        if (!dateStr) return;
+        this.selectedDate = dateStr;
+        const events = window.PortalState.getEvents();
+        const matches = events.filter(e => e.fecha === dateStr);
+        if (matches.length > 0) {
+            this.setActiveEvent(matches[0].id);
+            window.PortalApp.showToast(`Evento asignado para ${dateStr}: "${matches[0].title}"`, 'success');
+        } else {
+            window.PortalApp.showToast(`No existe convocatoria programada para ${dateStr}. Puede crear una en "Nuevo Evento".`, 'warning');
+            this.updateLockedEventBanner();
+        }
+    }
+
+    updateLockedEventBanner() {
+        const ev = window.PortalState.getEventById(this.currentEventId);
+        const titleEl = document.getElementById('lockedEventTitleText');
+        const dateEl = document.getElementById('lockedEventDateText');
+        const badgeEl = document.getElementById('lockedEventStatusBadge');
+        if (ev && titleEl && dateEl) {
+            titleEl.textContent = ev.title;
+            dateEl.textContent = `${ev.fecha} (${ev.hora || 'Horario oficial'})`;
+            if (badgeEl) {
+                badgeEl.innerHTML = `<i class="bi bi-shield-check me-1"></i>Evento Fijado (${ev.tipo || 'Convocatoria'})`;
+            }
+        }
+    }
+
     setActiveEvent(eventId) {
         this.currentEventId = eventId;
         const ev = window.PortalState.getEventById(eventId);
-        if (ev && ev.estado !== 'activo') {
-            window.PortalState.updateEvent(eventId, { estado: 'activo' });
+        if (ev) {
+            this.selectedDate = ev.fecha || this.selectedDate;
+            if (ev.estado !== 'activo') {
+                window.PortalState.updateEvent(eventId, { estado: 'activo' });
+            }
         }
         this.renderControlAttendances();
-        window.PortalApp.showToast(`Punto de Asistencia activo establecido: "${ev ? ev.title : eventId}"`, 'success');
+        window.PortalApp.showToast(`Convocatoria activa establecida: "${ev ? ev.title : eventId}"`, 'success');
         window.PortalApp.showView('control-asistencias');
     }
 
     renderControlAttendances() {
         const events = window.PortalState.getEvents();
         const selectEvent = document.getElementById('selectControlEvent');
+        const selectDate = document.getElementById('selectControlEventDate');
+        
+        if (selectDate && !selectDate.value) {
+            selectDate.value = this.selectedDate;
+        }
+
         if (selectEvent) {
             selectEvent.innerHTML = events.map(ev => 
                 `<option value="${ev.id}" ${ev.id === this.currentEventId ? 'selected' : ''}>${ev.estado === 'activo' ? '🔴 [ACTIVO HOY] ' : ''}${ev.title} (${ev.fecha})</option>`
             ).join('');
             selectEvent.onchange = (e) => {
-                this.currentEventId = e.target.value;
-                this.renderControlAttendances();
+                this.setActiveEvent(e.target.value);
             };
         }
 
+        this.updateLockedEventBanner();
+
         const activeEvent = window.PortalState.getEventById(this.currentEventId) || events[0];
 
-        // Renderizar banner informativo del Punto de Asistencia Activo
+        // Renderizar banner informativo del Punto de Control Activo
         const activeBanner = document.getElementById('controlActivePointBanner');
         if (activeBanner && activeEvent) {
             activeBanner.innerHTML = `
@@ -307,7 +405,7 @@ class AsistenciasManager {
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="badge ${activeEvent.estado === 'activo' ? 'bg-success animate__animated animate__pulse animate__infinite' : 'bg-secondary'} px-3 py-1 rounded-pill">
-                                    <i class="bi bi-broadcast me-1"></i>${activeEvent.estado === 'activo' ? 'PUNTO DE ASISTENCIA ACTIVO' : 'CONVOCATORIA: ' + activeEvent.estado.toUpperCase()}
+                                    <i class="bi bi-broadcast me-1"></i>${activeEvent.estado === 'activo' ? 'CONVOCATORIA Y CONTROL ACTIVO' : 'CONVOCATORIA: ' + activeEvent.estado.toUpperCase()}
                                 </span>
                                 <span class="badge bg-surface-2 text-brand border border-subtle rounded-pill">${activeEvent.tipo}</span>
                             </div>
@@ -320,7 +418,7 @@ class AsistenciasManager {
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <button class="btn btn-outline-brand btn-sm rounded-pill px-3" onclick="window.PortalApp.openEventModal('${activeEvent.id}')">
-                                <i class="bi bi-pencil me-1"></i> Editar Punto
+                                <i class="bi bi-pencil me-1"></i> Editar Convocatoria
                             </button>
                             <button class="btn btn-brand btn-sm rounded-pill px-3" onclick="window.PortalApp.openEventModal()">
                                 <i class="bi bi-plus-lg me-1"></i> Nuevo Evento
@@ -634,7 +732,21 @@ class AsistenciasManager {
     async startCameraScanner() {
         const readerEl = document.getElementById('qrCameraReader');
         const startBtn = document.getElementById('btnToggleQrCamera');
+        const pauseBtn = document.getElementById('btnPauseResumeScanner');
+        const placeholder = document.getElementById('qrCameraPlaceholder');
+        const helpBanner = document.getElementById('chromeCameraHelpBanner');
+        const statusBadge = document.getElementById('scannerLiveStatusBadge');
+
         if (!readerEl) return;
+
+        // Comprobación de contexto seguro para Chrome
+        const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        if (!isSecure && location.protocol !== 'https:') {
+            if (helpBanner) {
+                helpBanner.classList.remove('d-none');
+            }
+            window.PortalApp.showToast('En Chrome se recomienda http://localhost:8000 o HTTPS para habilitar la cámara.', 'warning');
+        }
 
         if (typeof Html5Qrcode === 'undefined') {
             window.PortalApp.showToast('Librería de escáner cargando...', 'info');
@@ -642,12 +754,18 @@ class AsistenciasManager {
         }
 
         try {
+            if (helpBanner) helpBanner.classList.add('d-none');
+            if (statusBadge) {
+                statusBadge.innerHTML = '<i class="bi bi-hourglass-split me-1 text-warning"></i> Solicitando permiso en Chrome...';
+                statusBadge.className = 'badge bg-warning bg-opacity-25 text-warning border border-warning rounded-pill small';
+            }
+
             if (!this.html5QrScanner) {
                 this.html5QrScanner = new Html5Qrcode('qrCameraReader');
             }
 
             const config = {
-                fps: 15,
+                fps: 20,
                 qrbox: { width: 250, height: 250 },
                 aspectRatio: 1.0
             };
@@ -664,23 +782,34 @@ class AsistenciasManager {
             );
 
             this.isCameraScanning = true;
+            this.isPausedForConfirmation = false;
+
             if (startBtn) {
                 startBtn.innerHTML = '<i class="bi bi-stop-circle-fill me-1 text-danger"></i> Detener Cámara';
-                startBtn.className = 'btn btn-danger btn-sm rounded-pill px-3';
+                startBtn.className = 'btn btn-danger btn-sm rounded-pill px-3 shadow-sm';
             }
-            readerEl.classList.remove('d-none');
-            const guide = document.getElementById('scannerCameraGuide');
-            if (guide) guide.classList.remove('d-none');
+            if (pauseBtn) pauseBtn.classList.remove('d-none');
+            if (placeholder) placeholder.classList.add('d-none');
+            if (statusBadge) {
+                statusBadge.innerHTML = '<i class="bi bi-broadcast me-1 text-success"></i> Cámara en Vivo (Chrome)';
+                statusBadge.className = 'badge bg-success bg-opacity-25 text-success border border-success rounded-pill small';
+            }
 
-            window.PortalApp.showToast('Cámara iniciada. Apunte al código QR del carnet.', 'info');
+            window.PortalApp.showToast('Cámara activa. Enfoque el código QR del carnet.', 'success');
         } catch (err) {
-            console.error('Error al iniciar cámara:', err);
+            console.error('Error al iniciar cámara en Chrome:', err);
             this.isCameraScanning = false;
-            window.PortalApp.showToast('No se pudo acceder a la cámara. Verifique permisos o use el selector rápido.', 'warning');
+            if (helpBanner) helpBanner.classList.remove('d-none');
+            if (statusBadge) {
+                statusBadge.innerHTML = '<i class="bi bi-camera-video-off me-1 text-danger"></i> Cámara no disponible';
+                statusBadge.className = 'badge bg-danger bg-opacity-25 text-danger border border-danger rounded-pill small';
+            }
+            window.PortalApp.showToast('No se pudo acceder a la cámara en Chrome. Verifique los permisos mostrados arriba o use el selector rápido.', 'warning');
         }
     }
 
     async stopCameraScanner() {
+        this.stopAutoAdvanceCountdown();
         if (this.html5QrScanner && this.isCameraScanning) {
             try {
                 await this.html5QrScanner.stop();
@@ -688,16 +817,26 @@ class AsistenciasManager {
                 console.warn('Error al detener cámara:', e);
             }
             this.isCameraScanning = false;
+            this.isPausedForConfirmation = false;
         }
 
         const startBtn = document.getElementById('btnToggleQrCamera');
         if (startBtn) {
             startBtn.innerHTML = '<i class="bi bi-camera-video me-1"></i> Iniciar Escáner con Cámara';
-            startBtn.className = 'btn btn-portal-primary btn-sm rounded-pill px-3';
+            startBtn.className = 'btn btn-portal-primary btn-sm rounded-pill px-3 shadow-sm';
         }
 
-        const guide = document.getElementById('scannerCameraGuide');
-        if (guide) guide.classList.add('d-none');
+        const pauseBtn = document.getElementById('btnPauseResumeScanner');
+        if (pauseBtn) pauseBtn.classList.add('d-none');
+
+        const placeholder = document.getElementById('qrCameraPlaceholder');
+        if (placeholder) placeholder.classList.remove('d-none');
+
+        const statusBadge = document.getElementById('scannerLiveStatusBadge');
+        if (statusBadge) {
+            statusBadge.innerHTML = '<i class="bi bi-camera-video me-1"></i> Lector QR en Vivo';
+            statusBadge.className = 'badge bg-surface-2 text-brand border border-subtle rounded-pill small';
+        }
     }
 
     async switchCameraFacing() {
@@ -705,6 +844,27 @@ class AsistenciasManager {
         if (this.isCameraScanning) {
             await this.stopCameraScanner();
             await this.startCameraScanner();
+        }
+    }
+
+    togglePauseScanning() {
+        const pauseBtn = document.getElementById('btnPauseResumeScanner');
+        if (!this.html5QrScanner || !this.isCameraScanning) return;
+
+        if (this.isPausedForConfirmation) {
+            try {
+                this.html5QrScanner.resume();
+            } catch (e) {}
+            this.isPausedForConfirmation = false;
+            if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-pause-circle me-1"></i> Pausar';
+            window.PortalApp.showToast('Escaneo reanudado', 'info');
+        } else {
+            try {
+                this.html5QrScanner.pause(true);
+            } catch (e) {}
+            this.isPausedForConfirmation = true;
+            if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-play-circle me-1"></i> Reanudar';
+            window.PortalApp.showToast('Escaneo pausado', 'info');
         }
     }
 
@@ -729,11 +889,21 @@ class AsistenciasManager {
     }
 
     handleDecodedQRCode(decodedText) {
+        if (this.isPausedForConfirmation) return;
+
         const extractedCI = this.extractCIFromPayload(decodedText);
         if (!extractedCI) {
             this.playFeedbackTone('error');
-            window.PortalApp.showToast('Formato de QR no reconocido.', 'danger');
+            window.PortalApp.showToast('Formato de QR no reconocido o dañado.', 'danger');
             return;
+        }
+
+        // Pausar temporalmente para congelar el fotograma y evitar rebotes
+        this.isPausedForConfirmation = true;
+        if (this.html5QrScanner && this.isCameraScanning) {
+            try {
+                this.html5QrScanner.pause(true);
+            } catch (e) {}
         }
 
         this.processAttendanceScan(extractedCI);
@@ -753,13 +923,22 @@ class AsistenciasManager {
         if (!member) {
             this.playFeedbackTone('error');
             if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
-            window.PortalApp.showToast(`Código QR no reconocido: El CI ${ci} no existe en el Padrón Oficial Carnaval de Oruro 2027.`, 'danger');
+            window.PortalApp.showToast(`Código QR no reconocido: El CI ${ci} no existe en el Padrón Oficial.`, 'danger');
+            
+            // Reanudar cámara tras 2 segundos de advertencia si estaba escaneando
+            setTimeout(() => {
+                this.isPausedForConfirmation = false;
+                if (this.html5QrScanner && this.isCameraScanning) {
+                    try { this.html5QrScanner.resume(); } catch (e) {}
+                }
+            }, 2000);
             return;
         }
 
         const activeEvent = window.PortalState.getEventById(this.currentEventId);
-        const eventTitle = activeEvent ? activeEvent.title : 'Evento';
+        const eventTitle = activeEvent ? activeEvent.title : 'Convocatoria Fraternal';
         const eventLugar = activeEvent ? activeEvent.lugar : 'Punto Oficial Tinkus Wistus';
+        const eventFecha = activeEvent ? activeEvent.fecha : this.selectedDate;
 
         // Comprobar si ya estaba registrado
         const prevReg = (member.asistencias && member.asistencias[this.currentEventId]);
@@ -767,12 +946,13 @@ class AsistenciasManager {
 
         let targetStatus = 'presente';
         const now = new Date();
-        const horaMarcada = now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+        const horaMarcada = now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-        // Marcar la asistencia en el estado reactivo
+        // Marcar la asistencia en el estado reactivo vinculada estrictamente al evento activo del día
         window.PortalState.markAttendance(member.ci, this.currentEventId, targetStatus, 'Terminal QR Directiva', {
             lugar: eventLugar,
-            hora: horaMarcada
+            hora: horaMarcada,
+            fecha: eventFecha
         });
 
         // Registrar en feed de marcajes recientes
@@ -796,17 +976,276 @@ class AsistenciasManager {
             if (window.navigator && window.navigator.vibrate) window.navigator.vibrate([40, 60, 40]);
         }
 
-        // Mostrar Ficha de Confirmación en la Terminal
+        // Mostrar Ficha de Confirmación en la Terminal lateral
         this.displayScannerResultCard(member, targetStatus, horaMarcada, eventTitle, eventLugar, alreadyRegistered);
 
-        // Actualizar vistas
+        // Desplegar Modal Integral de Verificación de Asistencia
+        this.showVerificationModal(member, targetStatus, horaMarcada, activeEvent, alreadyRegistered, prevReg);
+
+        // Actualizar vistas del tablero
         this.renderControlAttendances();
 
         if (alreadyRegistered) {
-            window.PortalApp.showToast(`¡Fraterno ${member.nombres} ya tenía registro previo! Hora actualizada a ${horaMarcada}.`, 'warning');
+            window.PortalApp.showToast(`¡Fraterno ${member.nombres} ya tenía registro previo!`, 'warning');
         } else {
             window.PortalApp.showToast(`¡QR VALIDADO! Asistencia registrada para ${member.nombres} ${member.apellidos}`, 'success');
         }
+    }
+
+    showVerificationModal(member, estado, horaMarcada, activeEvent, alreadyRegistered, prevReg) {
+        this.currentScannedCI = member.ci;
+        const modalEl = document.getElementById('modalVerificacionAsistenciaQR');
+        if (!modalEl) return;
+
+        // 1. Datos Principales del Fraterno
+        const elFoto = document.getElementById('modalVerifFoto');
+        if (elFoto) elFoto.src = member.foto || 'assets/img/avatar-default.svg';
+
+        const elNombre = document.getElementById('modalVerifNombre');
+        if (elNombre) elNombre.textContent = `${member.nombres} ${member.apellidos}`;
+
+        const elCI = document.getElementById('modalVerifCI');
+        if (elCI) elCI.textContent = `CI: ${member.ci} ${member.ci_exp || 'LP'}`;
+
+        const elFilial = document.getElementById('modalVerifFilial');
+        if (elFilial) elFilial.textContent = member.filial_nombre || 'Matriz (La Paz)';
+
+        const elRol = document.getElementById('modalVerifRol');
+        if (elRol) elRol.textContent = member.rol_fraternal || 'Fraterno Titular';
+
+        const elTimestamp = document.getElementById('modalVerifTimestamp');
+        if (elTimestamp) elTimestamp.textContent = horaMarcada;
+
+        // 2. Insignia de Estado
+        const elBadge = document.getElementById('modalVerifEstadoBadge');
+        if (elBadge) {
+            if (alreadyRegistered) {
+                elBadge.innerHTML = `<span class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6"><i class="bi bi-clock-history me-1"></i> REGISTRO PREVIO (Ya Marcado)</span>`;
+            } else {
+                elBadge.innerHTML = `<span class="badge bg-success text-white px-3 py-2 rounded-pill fs-6"><i class="bi bi-check-circle-fill me-1"></i> ¡ASISTENCIA REGISTRADA!</span>`;
+            }
+        }
+
+        // 3. Cuotas
+        const elCuotas = document.getElementById('modalVerifCuotasChip');
+        if (elCuotas) {
+            const pagosCount = (member.pagos || []).length;
+            const cuotasTotal = (DEFAULT_PORTAL_CONFIG.cuotas_definidas || []).length;
+            if (pagosCount >= cuotasTotal) {
+                elCuotas.innerHTML = '<span class="badge bg-success"><i class="bi bi-shield-check me-1"></i>Cuotas al Día</span>';
+            } else if (pagosCount > 0) {
+                elCuotas.innerHTML = `<span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>${pagosCount}/${cuotasTotal} Cuotas</span>`;
+            } else {
+                elCuotas.innerHTML = '<span class="badge bg-danger"><i class="bi bi-exclamation-circle me-1"></i>Cuotas Pendientes</span>';
+            }
+        }
+
+        // 4. Convocatoria / Evento del Día
+        const elEvTitulo = document.getElementById('modalVerifEventoTitulo');
+        if (elEvTitulo) elEvTitulo.textContent = activeEvent ? activeEvent.title : 'Convocatoria Activa';
+
+        const elEvFecha = document.getElementById('modalVerifEventoFecha');
+        if (elEvFecha) elEvFecha.textContent = activeEvent ? activeEvent.fecha : this.selectedDate;
+
+        const elEvHora = document.getElementById('modalVerifHoraMarcada');
+        if (elEvHora) elEvHora.textContent = horaMarcada;
+
+        const elEvLugar = document.getElementById('modalVerifEventoLugar');
+        if (elEvLugar) elEvLugar.textContent = activeEvent ? activeEvent.lugar : 'Punto Oficial';
+
+        // 5. Base de Asistencia Previa (Historial acumulado del Fraterno)
+        const events = window.PortalState.getEvents();
+        let totalOblig = 0;
+        let pres = 0;
+        let atra = 0;
+        let falt = 0;
+        let lice = 0;
+
+        events.forEach(ev => {
+            if (ev.obligatorio) totalOblig++;
+            const reg = (member.asistencias && member.asistencias[ev.id]);
+            if (reg) {
+                if (reg.estado === 'presente') pres++;
+                else if (reg.estado === 'atraso') atra++;
+                else if (reg.estado === 'licencia') lice++;
+                else if (reg.estado === 'falta') falt++;
+            }
+        });
+
+        const puntajeEfectivo = pres + (atra * 0.7) + (lice * 0.9);
+        const pct = totalOblig > 0 ? Math.min(100, Math.round((puntajeEfectivo / totalOblig) * 100)) : 100;
+
+        const elPct = document.getElementById('modalVerifPctAsistencia');
+        if (elPct) elPct.textContent = `${pct}%`;
+
+        const elProg = document.getElementById('modalVerifProgressBar');
+        if (elProg) {
+            elProg.style.width = `${pct}%`;
+            elProg.className = `progress-bar ${pct >= 80 ? 'bg-success' : (pct >= 60 ? 'bg-warning' : 'bg-danger')}`;
+        }
+
+        const elHab = document.getElementById('modalVerifHabilitacionBadge');
+        if (elHab) {
+            if (pct >= 80) {
+                elHab.innerHTML = `<span class="badge bg-success text-white px-2 py-1 rounded-pill small"><i class="bi bi-shield-check me-1"></i>HABILITADO 2027</span>`;
+            } else if (pct >= 60) {
+                elHab.innerHTML = `<span class="badge bg-warning text-dark px-2 py-1 rounded-pill small"><i class="bi bi-exclamation-triangle me-1"></i>EN OBSERVACIÓN</span>`;
+            } else {
+                elHab.innerHTML = `<span class="badge bg-danger text-white px-2 py-1 rounded-pill small"><i class="bi bi-x-octagon me-1"></i>INHABILITADO</span>`;
+            }
+        }
+
+        const elDesglose = document.getElementById('modalVerifDesgloseHistorial');
+        if (elDesglose) {
+            elDesglose.innerHTML = `
+                <div class="d-flex justify-content-between flex-wrap small">
+                    <span><strong class="text-success">${pres}</strong> Pres.</span>
+                    <span><strong class="text-warning">${atra}</strong> Atra.</span>
+                    <span><strong class="text-danger">${falt}</strong> Falt.</span>
+                    <span><strong class="text-info">${lice}</strong> Lic.</span>
+                </div>
+            `;
+        }
+
+        // 6. Alerta de Registro Previo
+        const elAvisoDup = document.getElementById('modalVerifAvisoDuplicado');
+        const elAvisoDupTxt = document.getElementById('modalVerifAvisoDuplicadoTexto');
+        if (elAvisoDup) {
+            if (alreadyRegistered) {
+                elAvisoDup.classList.remove('d-none');
+                if (elAvisoDupTxt && prevReg) {
+                    elAvisoDupTxt.textContent = `Atención: Este fraterno ya estaba registrado previamente a las ${prevReg.hora || 'hora anterior'} (${prevReg.estado || 'presente'}).`;
+                }
+            } else {
+                elAvisoDup.classList.add('d-none');
+            }
+        }
+
+        // 7. Botones de estado rápido
+        this.updateModalStatusButtons(estado);
+
+        // 8. Desplegar Modal Bootstrap
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            if (!this.modalInstance) {
+                this.modalInstance = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+            }
+            this.modalInstance.show();
+        }
+
+        // 9. Iniciar cuenta regresiva para avance continuo
+        this.startAutoAdvanceCountdown();
+    }
+
+    confirmAndNextMember() {
+        this.stopAutoAdvanceCountdown();
+
+        // Ocultar modal
+        const modalEl = document.getElementById('modalVerificacionAsistenciaQR');
+        if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const inst = bootstrap.Modal.getInstance(modalEl) || this.modalInstance;
+            if (inst) inst.hide();
+        }
+
+        // Reanudar cámara inmediatamente para el siguiente fraterno
+        this.isPausedForConfirmation = false;
+        if (this.html5QrScanner && this.isCameraScanning) {
+            try {
+                this.html5QrScanner.resume();
+            } catch (e) {
+                console.warn('Error al reanudar cámara:', e);
+            }
+        }
+
+        this.playFeedbackTone('success');
+        window.PortalApp.showToast('Conforme recibido. Listo para el siguiente fraterno.', 'info');
+    }
+
+    closeVerificationModal(resumeScan = true) {
+        this.stopAutoAdvanceCountdown();
+        const modalEl = document.getElementById('modalVerificacionAsistenciaQR');
+        if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const inst = bootstrap.Modal.getInstance(modalEl) || this.modalInstance;
+            if (inst) inst.hide();
+        }
+
+        this.isPausedForConfirmation = false;
+        if (resumeScan && this.html5QrScanner && this.isCameraScanning) {
+            try {
+                this.html5QrScanner.resume();
+            } catch (e) {}
+        }
+    }
+
+    startAutoAdvanceCountdown() {
+        this.stopAutoAdvanceCountdown();
+        if (!this.autoAdvanceEnabled) {
+            const txt = document.getElementById('modalVerifCountdownText');
+            if (txt) txt.textContent = 'Auto-siguiente en pausa';
+            const btn = document.getElementById('btnToggleCountdown');
+            if (btn) btn.textContent = 'Reanudar';
+            return;
+        }
+
+        this.countdownSeconds = 3;
+        const countSecEl = document.getElementById('modalVerifCountdownSec');
+        const txt = document.getElementById('modalVerifCountdownText');
+        const btn = document.getElementById('btnToggleCountdown');
+        if (countSecEl) countSecEl.textContent = this.countdownSeconds;
+        if (txt) txt.innerHTML = `<i class="bi bi-hourglass-split text-brand me-1"></i>Siguiente en <strong id="modalVerifCountdownSec" class="font-mono text-dark">${this.countdownSeconds}</strong>s`;
+        if (btn) btn.textContent = 'Pausar';
+
+        this.countdownTimer = setInterval(() => {
+            this.countdownSeconds--;
+            const countEl = document.getElementById('modalVerifCountdownSec');
+            if (countEl) countEl.textContent = this.countdownSeconds;
+
+            if (this.countdownSeconds <= 0) {
+                this.stopAutoAdvanceCountdown();
+                this.confirmAndNextMember();
+            }
+        }, 1000);
+    }
+
+    stopAutoAdvanceCountdown() {
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
+    }
+
+    toggleModalCountdown() {
+        const btn = document.getElementById('btnToggleCountdown');
+        if (this.countdownTimer) {
+            this.stopAutoAdvanceCountdown();
+            const txt = document.getElementById('modalVerifCountdownText');
+            if (txt) txt.textContent = 'Pausado';
+            if (btn) btn.textContent = 'Reanudar';
+        } else {
+            this.autoAdvanceEnabled = true;
+            this.startAutoAdvanceCountdown();
+        }
+    }
+
+    changeModalAttendanceStatus(nuevoEstado) {
+        if (!this.currentScannedCI) return;
+        this.stopAutoAdvanceCountdown();
+        const btn = document.getElementById('btnToggleCountdown');
+        if (btn) btn.textContent = 'Reanudar';
+
+        window.PortalState.markAttendance(this.currentScannedCI, this.currentEventId, nuevoEstado, 'Directiva (Corrección Manual)');
+        this.updateModalStatusButtons(nuevoEstado);
+        this.renderControlAttendances();
+        this.playFeedbackTone('success');
+        window.PortalApp.showToast(`Estado actualizado a: ${nuevoEstado.toUpperCase()}`, 'info');
+    }
+
+    updateModalStatusButtons(estado) {
+        const btnPres = document.getElementById('btnModalSetPresente');
+        const btnAtra = document.getElementById('btnModalSetAtraso');
+        const btnLice = document.getElementById('btnModalSetLicencia');
+        if (btnPres) btnPres.className = `btn ${estado === 'presente' ? 'btn-success text-white' : 'btn-outline-success'}`;
+        if (btnAtra) btnAtra.className = `btn ${estado === 'atraso' ? 'btn-warning text-dark' : 'btn-outline-warning'}`;
+        if (btnLice) btnLice.className = `btn ${estado === 'licencia' ? 'btn-info text-dark' : 'btn-outline-info'}`;
     }
 
     displayScannerResultCard(member, estado, hora, evento, lugar, yaEstaba) {
